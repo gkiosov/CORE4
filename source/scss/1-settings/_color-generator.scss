@@ -1,0 +1,68 @@
+// ==========================================
+// Генератор CSS-переменных и утилит из палитры
+// ==========================================
+
+@use 'sass:map';
+@use 'sass:meta';
+@use 'colors' as colors;
+
+// ==========================================
+// Миксин для генерации CSS-переменных
+// ==========================================
+
+@mixin generate-color-variables($color-map: colors.$colors, $prefix: '') {
+	@each $color-name, $shades in $color-map {
+		@each $shade, $value in $shades {
+			--#{$prefix}#{$color-name}-#{$shade}: #{$value};
+		}
+
+		// Алиас для основного цвета (500)
+		--#{$prefix}#{$color-name}: var(--#{$prefix}#{$color-name}-500);
+	}
+}
+
+// ==========================================
+// Миксин для генерации утилитарных классов
+// ==========================================
+
+@mixin generate-color-utilities($color-map: colors.$colors) {
+	// Текст
+	@each $color-name, $shades in $color-map {
+		@each $shade, $value in $shades {
+			.text-#{$color-name}-#{$shade} {
+				color: var(--#{$color-name}-#{$shade});
+			}
+		}
+
+		// Алиас для 500
+		.text-#{$color-name} {
+			color: var(--#{$color-name}-500);
+		}
+	}
+
+	// Фон
+	@each $color-name, $shades in $color-map {
+		@each $shade, $value in $shades {
+			.bg-#{$color-name}-#{$shade} {
+				background-color: var(--#{$color-name}-#{$shade});
+			}
+		}
+
+		.bg-#{$color-name} {
+			background-color: var(--#{$color-name}-500);
+		}
+	}
+
+	// Границы
+	@each $color-name, $shades in $color-map {
+		@each $shade, $value in $shades {
+			.border-#{$color-name}-#{$shade} {
+				border-color: var(--#{$color-name}-#{$shade});
+			}
+		}
+
+		.border-#{$color-name} {
+			border-color: var(--#{$color-name}-500);
+		}
+	}
+}

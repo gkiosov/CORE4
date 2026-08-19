@@ -1,0 +1,90 @@
+// ==========================================
+// 14. Карточки
+// ==========================================
+
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+.card {
+	background: var(--color-background-secondary);
+	border: 0;
+	border-radius: tools.radius('lg');
+	overflow: hidden;
+	padding: tools.spacing(4);
+	transition: all settings.$transition-base;
+
+	@include tools.hover(transform, 0.3s) {
+		transform: translateY(-4px);
+		box-shadow: var(--shadow-lg);
+	}
+
+	&__image {
+		@include tools.responsive-image;
+		background: var(--color-background-tertiary);
+		margin: -1 * tools.spacing(4) -1 * tools.spacing(4) tools.spacing(4);
+
+		@include tools.adaptive-spacing(
+				margin-top,
+				-4,
+				settings.$spacing-scale
+		);
+		@include tools.adaptive-spacing(
+				margin-left,
+				-4,
+				settings.$spacing-scale
+		);
+		@include tools.adaptive-spacing(
+				margin-right,
+				-4,
+				settings.$spacing-scale
+		);
+		@include tools.adaptive-spacing(
+				margin-bottom,
+				4,
+				settings.$spacing-scale
+		);
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: tools.spacing(3);
+	}
+
+	&__title {
+		@include tools.font('xl', 'semibold', 'tight');
+		@include tools.truncate(1);
+	}
+
+	&__description {
+		@include tools.font('base', 'normal', 'relaxed', var(--color-text-secondary));
+		@include tools.truncate(3);
+	}
+
+	&__footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: tools.spacing(2);
+		padding-top: tools.spacing(3);
+		border-top: 1px solid var(--color-border);
+	}
+
+	&__price {
+		@include tools.font('xl', 'bold');
+		color: tools.color('primary');
+	}
+
+	&--featured {
+		border-color: tools.color('primary');
+		box-shadow: var(--shadow-md);
+
+		@include tools.theme-aware('background', #eff6ff, #1e293b);
+	}
+
+	&--small {
+		padding: tools.spacing(3);
+		text-align: center;
+		@include tools.font('sm');
+	}
+}

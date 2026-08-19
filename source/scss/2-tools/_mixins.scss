@@ -1,0 +1,392 @@
+// ==========================================
+// Миксины
+// ==========================================
+
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+@use '../1-settings/index' as settings;
+@use 'functions' as functions;
+
+// ==========================================
+// 1. Адаптивность (медиа-запросы)
+// ==========================================
+
+// Мобильные-first
+@mixin respond-to($breakpoint) {
+	$value: map.get(settings.$breakpoints, $breakpoint);
+	@if $value {
+		@media (min-width: $value) {
+			@content;
+		}
+	} @else {
+		@warn "Unknown breakpoint: #{$breakpoint}.";
+	}
+}
+
+// Десктоп-first
+@mixin respond-below($breakpoint) {
+	$value: map.get(settings.$breakpoints, $breakpoint);
+	@if $value {
+		@media (max-width: $value - 1px) {
+			@content;
+		}
+	} @else {
+		@warn "Unknown breakpoint: #{$breakpoint}.";
+	}
+}
+
+// Интервал
+@mixin respond-between($min, $max) {
+	$min-value: map.get(settings.$breakpoints, $min);
+	$max-value: map.get(settings.$breakpoints, $max);
+	@if $min-value and $max-value {
+		@media (min-width: $min-value) and (max-width: $max-value - 1px) {
+			@content;
+		}
+	} @else {
+		@warn "Unknown breakpoint: #{$min} or #{$max}.";
+	}
+}
+
+// ==========================================
+// 2. Адаптивные отступы (ступенчатые)
+// ==========================================
+
+@mixin adaptive-spacing($property, $base, $scales) {
+	#{$property}: functions.module($base);
+
+	@each $breakpoint, $multiplier in $scales {
+		@include respond-to($breakpoint) {
+			#{$property}: functions.module($base * $multiplier);
+		}
+	}
+}
+
+@mixin adaptive-font-size($base, $scales) {
+	font-size: functions.module($base);
+
+	@each $breakpoint, $multiplier in $scales {
+		@include respond-to($breakpoint) {
+			font-size: functions.module($base * $multiplier);
+		}
+	}
+}
+
+@mixin adaptive-module($property, $base, $scales) {
+	#{$property}: functions.module($base);
+
+	@each $breakpoint, $multiplier in $scales {
+		@include respond-to($breakpoint) {
+			#{$property}: functions.module($base * $multiplier);
+		}
+	}
+}
+
+// ==========================================
+// 3. Сетка (Grid)
+// ==========================================
+
+@mixin make-row($gap: settings.$grid-gap) {
+	display: grid;
+	grid-template-columns: repeat(settings.$grid-columns, 1fr);
+	gap: $gap;
+}
+
+@mixin make-col($span) {
+	grid-column: span $span;
+}
+
+@mixin make-col-exact($start, $end) {
+	grid-column: $start / $end;
+}
+
+// ==========================================
+// 4. Типографика
+// ==========================================
+
+@mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
+	font-size: functions.font-size($size);
+	font-weight: map.get(settings.$font-weight, $weight);
+
+	@if $line-height != normal {
+		line-height: functions.line-height($line-height);
+	}
+
+	color: $color;
+}
+
+@mixin heading($level: 1) {
+	$sizes: (
+		1: '7xl',  // 48px
+		2: '6xl',  // 44px
+		3: '5xl',  // 40px
+		4: '4xl',  // 36px
+		5: '3xl',  // 32px
+		6: '2xl'   // 28px
+	);
+
+	$line-heights: (
+		1: '7xl',  // 52px
+		2: '6xl',  // 48px
+		3: '5xl',  // 44px
+		4: '4xl',  // 40px
+		5: '3xl',  // 36px
+		6: '2xl'   // 32px
+	);
+
+	$size: map.get($sizes, $level);
+	$lh: map.get($line-heights, $level);
+
+	@include font($size, 'bold', $lh);
+	margin-block-end: functions.spacing(4);
+}
+
+// ==========================================
+// 5. Темизация
+// ==========================================
+
+@mixin theme-aware($property, $light-value, $dark-value) {
+	#{$property}: $light-value;
+
+	@media (prefers-color-scheme: dark) {
+		#{$property}: $dark-value;
+	}
+
+	[data-theme="dark"] & {
+		#{$property}: $dark-value;
+	}
+
+	[data-theme="light"] & {
+		#{$property}: $light-value;
+	}
+}
+
+// ==========================================
+// 6. Компоненты и утилиты
+// ==========================================
+
+@mixin hover($property: all, $duration: settings.$transition-base) {
+	transition: $property $duration;
+
+	&:hover {
+		@content;
+	}
+}
+
+@mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
+	&:focus-visible {
+		outline: 2px solid $color;
+		outline-offset: $offset;
+	}
+}
+
+@mixin custom-scrollbar($width: 8px, $radius: 4px) {
+	&::-webkit-scrollbar {
+		width: $width;
+		height: $width;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: var(--scrollbar-track);
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: var(--scrollbar-thumb);
+		border-radius: $radius;
+
+		&:hover {
+			background: var(--scrollbar-thumb-hover);
+		}
+	}
+}
+
+@mixin overlay($opacity: 0.5, $z-index: z-index('overlay')) {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, $opacity);
+	z-index: $z-index;
+}
+
+@mixin center($position: absolute) {
+	position: $position;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+@mixin absolute($top: null, $right: null, $bottom: null, $left: null) {
+	position: absolute;
+	top: $top;
+	right: $right;
+	bottom: $bottom;
+	left: $left;
+}
+
+@mixin fixed($top: null, $right: null, $bottom: null, $left: null) {
+	position: fixed;
+	top: $top;
+	right: $right;
+	bottom: $bottom;
+	left: $left;
+}
+
+@mixin truncate($lines: 1) {
+	@if $lines == 1 {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	} @else {
+		display: -webkit-box;
+		-webkit-line-clamp: $lines;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+}
+
+@mixin clearfix {
+	&::after {
+		content: '';
+		display: block;
+		clear: both;
+	}
+}
+
+@mixin responsive-image {
+	position: relative;
+	overflow: hidden;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+@mixin gradient($direction: to right, $color1: #3b82f6, $color2: #2563eb) {
+	background: linear-gradient($direction, $color1, $color2);
+}
+
+@mixin animation($name, $duration: 0.3s, $timing: ease, $delay: 0s) {
+	@media (prefers-reduced-motion: no-preference) {
+		animation: $name $duration $timing $delay;
+	}
+}
+
+@mixin responsive-video($ratio: 16/9) {
+	position: relative;
+	padding-bottom: math.div(100%, $ratio);
+	height: 0;
+	overflow: hidden;
+
+	iframe,
+	video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+// ==========================================
+// 7. Логические отступы (гибкие)
+// ==========================================
+
+// 7.1. margin-block (одно или два значения)
+
+@mixin margin-block($top, $bottom: null) {
+	@if $bottom != null {
+		margin-block: functions.spacing($top) functions.spacing($bottom);
+	} @else {
+		margin-block: functions.spacing($top);
+	}
+}
+
+// 7.2. margin-inline (одно или два значения)
+
+@mixin margin-inline($start, $end: null) {
+	@if $end != null {
+		margin-inline: functions.spacing($start) functions.spacing($end);
+	} @else {
+		margin-inline: functions.spacing($start);
+	}
+}
+
+// 7.3. padding-block (одно или два значения)
+
+@mixin padding-block($top, $bottom: null) {
+	@if $bottom != null {
+		padding-block: functions.spacing($top) functions.spacing($bottom);
+	} @else {
+		padding-block: functions.spacing($top);
+	}
+}
+
+// 7.4. padding-inline (одно или два значения)
+
+@mixin padding-inline($start, $end: null) {
+	@if $end != null {
+		padding-inline: functions.spacing($start) functions.spacing($end);
+	} @else {
+		padding-inline: functions.spacing($start);
+	}
+}
+
+// 7.5. Универсальный миксин для margin (все 4 стороны)
+
+@mixin margin($top: null, $right: null, $bottom: null, $left: null) {
+	@if $top != null and $right != null and $bottom != null and $left != null {
+		margin-block: functions.spacing($top) functions.spacing($bottom);
+		margin-inline: functions.spacing($right) functions.spacing($left);
+	} @else if $top != null and $right != null and $bottom == null and $left == null {
+		margin-block: functions.spacing($top) functions.spacing($right);
+		margin-inline: functions.spacing($top) functions.spacing($right);
+	} @else if $top != null and $right == null and $bottom == null and $left == null {
+		margin-block: functions.spacing($top);
+		margin-inline: functions.spacing($top);
+	} @else {
+		margin: 0;
+	}
+}
+
+// 7.6. Универсальный миксин для padding (все 4 стороны)
+
+@mixin padding($top: null, $right: null, $bottom: null, $left: null) {
+	@if $top != null and $right != null and $bottom != null and $left != null {
+		padding-block: functions.spacing($top) functions.spacing($bottom);
+		padding-inline: functions.spacing($right) functions.spacing($left);
+	} @else if $top != null and $right != null and $bottom == null and $left == null {
+		padding-block: functions.spacing($top) functions.spacing($right);
+		padding-inline: functions.spacing($top) functions.spacing($right);
+	} @else if $top != null and $right == null and $bottom == null and $left == null {
+		padding-block: functions.spacing($top);
+		padding-inline: functions.spacing($top);
+	} @else {
+		padding: 0;
+	}
+}
+
+// ==========================================
+// 8. Миксины для OKLCH-цветов
+// ==========================================
+
+// Фон с цветом и прозрачностью
+@mixin bg-color($name, $shade: '500', $alpha: 1) {
+	background: functions.color($name, $shade, $alpha);
+}
+
+// Текст с цветом и прозрачностью
+@mixin text-color($name, $shade: '500', $alpha: 1) {
+	color: functions.color($name, $shade, $alpha);
+}
+
+// Граница с цветом и прозрачностью
+@mixin border-color($name, $shade: '500', $alpha: 1) {
+	border-color: functions.color($name, $shade, $alpha);
+}
+
+// Цвет с прозрачностью (для любого свойства)
+@mixin color-with-alpha($property, $name, $shade: '500', $alpha: 1) {
+	#{$property}: functions.color($name, $shade, $alpha);
+}

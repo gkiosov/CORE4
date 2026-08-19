@@ -1,0 +1,59 @@
+// ==========================================
+// 11. Базовые лейауты
+// ==========================================
+
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+// Сайдбар + контент
+.layout-sidebar {
+	display: grid;
+	gap: tools.spacing(4);
+
+	@include tools.respond-to('md') {
+		grid-template-columns: tools.spacing(20) 1fr;
+	}
+
+	@include tools.respond-to('lg') {
+		grid-template-columns: tools.spacing(24) 1fr;
+		gap: tools.spacing(6);
+	}
+}
+
+// 3 колонки
+.layout-3cols {
+	display: grid;
+	gap: tools.spacing(4);
+
+	@include tools.respond-to('md') {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@include tools.respond-to('lg') {
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: tools.spacing(6);
+	}
+}
+
+// Страница (header + main + footer)
+.layout-page {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	min-height: 100svh;
+	min-height: 100dvh;
+}
+
+// Полноэкранный блок
+.fullscreen {
+	min-height: 100svh;
+	min-height: 100dvh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: tools.spacing(8);
+}
+
+// Альтернативный фон
+.section-alt {
+	background: var(--color-background-secondary);
+}

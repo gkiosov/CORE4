@@ -1,0 +1,273 @@
+// ==========================================
+// 12. Утилитарные классы
+// ==========================================
+
+@use 'sass:map';
+@use '../1-settings/index' as settings;
+@use '../1-settings/colors' as colors;
+@use '../1-settings/color-generator' as color-generator;
+@use '../2-tools/index' as tools;
+
+// ================================
+// 1. Display
+// ================================
+
+.d-block { display: block; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+.d-none { display: none; }
+
+@each $breakpoint, $value in settings.$breakpoints {
+	@include tools.respond-to($breakpoint) {
+		.d-#{$breakpoint}-block { display: block; }
+		.d-#{$breakpoint}-flex { display: flex; }
+		.d-#{$breakpoint}-grid { display: grid; }
+		.d-#{$breakpoint}-none { display: none; }
+	}
+}
+
+// ================================
+// 2. Flexbox
+// ================================
+
+.flex-row { flex-direction: row; }
+.flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+.flex-1 { flex: 1; }
+.flex-auto { flex: 0 0 auto; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+.align-start { align-items: flex-start; }
+.align-center { align-items: center; }
+.align-end { align-items: flex-end; }
+.align-stretch { align-items: stretch; }
+
+// ================================
+// 3. Spacing (margin, padding)
+// ================================
+
+// 3.1. Margin (логический)
+
+@each $name, $modules in settings.$spacing-modules {
+	// margin-block-start: top
+	.u-mbs-#{$name} {
+		@include tools.margin-block($modules);
+	}
+
+	// margin-block-end: bottom
+	.u-mbe-#{$name} {
+		@include tools.margin-block(0, $modules);
+	}
+
+	// margin-inline-start: left
+	.u-mis-#{$name} {
+		@include tools.margin-inline($modules);
+	}
+
+	// margin-inline-end: right
+	.u-mie-#{$name} {
+		@include tools.margin-inline(0, $modules);
+	}
+}
+
+// 3.2. Padding (логический)
+
+@each $name, $modules in settings.$spacing-modules {
+	// padding-block-start: top
+	.u-pbs-#{$name} {
+		@include tools.padding-block($modules);
+	}
+
+	// padding-block-end: bottom
+	.u-pbe-#{$name} {
+		@include tools.padding-block(0, $modules);
+	}
+
+	// padding-inline-start: left
+	.u-pis-#{$name} {
+		@include tools.padding-inline($modules);
+	}
+
+	// padding-inline-end: right
+	.u-pie-#{$name} {
+		@include tools.padding-inline(0, $modules);
+	}
+}
+
+// 3.3. Универсальные утилиты (для быстрых правок)
+
+// Все стороны сразу
+@each $name, $modules in settings.$spacing-modules {
+	.u-m-#{$name} {
+		@include tools.margin-block($modules);
+		@include tools.margin-inline($modules);
+	}
+
+	.u-p-#{$name} {
+		@include tools.padding-block($modules);
+		@include tools.padding-inline($modules);
+	}
+}
+
+// ================================
+// 4. Text
+// ================================
+
+// Генерация классов .text-* с font-size и line-height
+@each $name, $modules in settings.$font-size-modules {
+	.text-#{$name} {
+		font-size: tools.module($modules);
+
+		// Автоматический line-height из соответствующей карты
+		$line-height-modules: map.get(settings.$line-height-modules, $name);
+		@if $line-height-modules {
+			line-height: tools.module($line-height-modules);
+		}
+	}
+}
+
+// Отдельные утилиты для line-height (если нужно переопределить)
+@each $name, $modules in settings.$line-height-modules {
+	.leading-#{$name} {
+		line-height: tools.module($modules);
+	}
+}
+
+// Генерация классов для font-weight
+@each $name, $value in settings.$font-weight {
+	.fw-#{$name} { font-weight: $value; }
+}
+
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.text-uppercase { text-transform: uppercase; }
+.text-lowercase { text-transform: lowercase; }
+.text-capitalize { text-transform: capitalize; }
+.text-truncate { @include tools.truncate(1); }
+
+.text-primary { color: tools.color('primary'); }
+.text-success { color: tools.color('success'); }
+.text-warning { color: tools.color('warning'); }
+.text-error { color: tools.color('error'); }
+.text-muted { color: var(--color-text-secondary); }
+.text-inverse { color: var(--color-text-inverse); }
+
+// ================================
+// 5. Colors (background)
+// ================================
+
+.bg-primary { background: tools.color('primary'); }
+.bg-success { background: tools.color('success'); }
+.bg-warning { background: tools.color('warning'); }
+.bg-error { background: tools.color('error'); }
+.bg-white { background: var(--color-background); }
+.bg-muted { background: var(--color-background-secondary); }
+.bg-inverse { background: var(--color-background-inverse); }
+
+// ================================
+// 6. Border & Radius
+// ================================
+
+.border { border: 1px solid var(--color-border); }
+.border-0 { border: 0; }
+.border-top { border-top: 1px solid var(--color-border); }
+.border-bottom { border-bottom: 1px solid var(--color-border); }
+
+@each $name, $modules in settings.$radius-modules {
+	.rounded-#{$name} {
+		@if $name == 'full' {
+			border-radius: 9999px;
+		} @else {
+			border-radius: tools.module($modules);
+		}
+	}
+}
+
+// ================================
+// 7. Shadows
+// ================================
+
+@each $name, $value in settings.$shadows {
+	.shadow-#{$name} { box-shadow: $value; }
+}
+.shadow-none { box-shadow: none; }
+
+// ================================
+// 8. Position & Z-index
+// ================================
+
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.position-fixed { position: fixed; }
+.position-sticky { position: sticky; }
+
+@each $name, $value in settings.$z-index {
+	.z-#{$name} { z-index: $value; }
+}
+
+// ================================
+// 9. Width / Height
+// ================================
+
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-screen { width: 100vw; }
+
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-screen { height: 100vh; }
+.h-screen-svh { height: 100svh; }
+
+.min-h-screen { min-height: 100vh; }
+.min-h-screen-svh { min-height: 100svh; }
+
+// ================================
+// 10. Overflow
+// ================================
+
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-scroll { overflow: scroll; }
+.overflow-x-hidden { overflow-x: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+
+// ================================
+// 11. Cursor
+// ================================
+
+.cursor-pointer { cursor: pointer; }
+.cursor-default { cursor: default; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+// ================================
+// 12. User Select
+// ================================
+
+.select-none { user-select: none; }
+.select-text { user-select: text; }
+
+// ================================
+// 13. Pointer Events
+// ================================
+
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+// ==========================================
+// 14. Генерация утилит для всех цветов
+// ==========================================
+
+// Используем миксин для генерации классов .text-*, .bg-*, .border-*
+@include color-generator.generate-color-utilities(colors.$colors);

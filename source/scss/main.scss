@@ -1,0 +1,26 @@
+// ==========================================
+// Главный файл — импорт всех частей
+// ==========================================
+
+// 1. Settings (с явным namespace)
+@use '1-settings/index' as settings;
+
+// 2. Tools (с явным namespace)
+@use '2-tools/index' as tools;
+
+// 3. Generic (базовые стили)
+@use '3-generic/base';
+@use '3-generic/typography';
+
+// 4. Objects
+@use '4-objects/grid';
+@use '4-objects/layout';
+@use '4-objects/utilities';
+
+// 5. Components
+@use '5-components/button';
+@use '5-components/card';
+@use '5-components/modal';
+
+// 6. Глобальные стили (опционально)
+// @use '6-global/animations';

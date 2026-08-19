@@ -1,0 +1,146 @@
+// ==========================================
+// 5. Современный reset (2026)
+// ==========================================
+
+:where(*, *::before, *::after) {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	scrollbar-gutter: stable;
+	--vh: 1vh;
+	--dvh: 1dvh;
+	--svh: 1svh;
+	--lvh: 1lvh;
+}
+
+html {
+	overflow-x: clip;
+	-webkit-text-size-adjust: 100%;
+
+	@media (prefers-reduced-motion: no-preference) {
+		scroll-behavior: smooth;
+	}
+}
+
+body {
+	min-height: 100svh;
+	min-height: 100dvh;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-tap-highlight-color: transparent;
+	text-wrap: pretty;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	background-color: var(--color-background);
+	color: var(--color-text);
+	transition: background-color var(--theme-transition), color var(--theme-transition);
+}
+
+:where(img, picture, video, canvas, svg) {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+:where(svg) {
+	vertical-align: middle;
+}
+
+:where(a) {
+	color: var(--color-text-link);
+	text-decoration: none;
+
+	&:where(:not([class])) {
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	&:hover {
+		color: var(--color-text-link-hover);
+	}
+}
+
+:where(ul, ol) {
+	list-style: none;
+}
+
+:where(table) {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+
+:where(input, button, textarea, select) {
+	font: inherit;
+	color: inherit;
+}
+
+:where(button) {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+
+	&::-moz-focus-inner {
+		border: 0;
+		padding: 0;
+	}
+}
+
+:where(textarea) {
+	resize: vertical;
+}
+
+:where(fieldset) {
+	border: none;
+	padding: 0;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-border-focus);
+	outline-offset: 2px;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	padding: 0 !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	clip: rect(0 0 0 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--scrollbar-thumb);
+	border-radius: 4px;
+
+	&:hover {
+		background: var(--scrollbar-thumb-hover);
+	}
+}

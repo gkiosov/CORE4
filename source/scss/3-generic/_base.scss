@@ -1,0 +1,65 @@
+// ==========================================
+// 8. Базовые стили
+// ==========================================
+
+@use 'sass:map';
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+body {
+	font-family: map.get(settings.$font-family, 'base');
+	font-size: tools.font-size('base');
+	line-height: tools.line-height('base');
+}
+
+// Контейнер
+.container {
+	width: 100%;
+	max-width: map.get(settings.$container-max-widths, 'xl');
+	margin: 0 auto;
+
+	@include tools.adaptive-spacing(
+			padding-left,
+			4, // 16px (база)
+			settings.$spacing-scale
+	);
+
+	@include tools.adaptive-spacing(
+			padding-right,
+			4,
+			settings.$spacing-scale
+	);
+}
+
+// Секции
+.section {
+	@include tools.adaptive-spacing(
+			padding-top,
+			8, // 32px
+			settings.$spacing-scale
+	);
+
+	@include tools.adaptive-spacing(
+			padding-bottom,
+			8,
+			settings.$spacing-scale
+	);
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid var(--color-border);
+	margin: tools.spacing(6) 0;
+}
+
+// Debug
+
+.debug-spacing {
+	outline: 1px solid red;
+
+	@each $name, $modules in settings.$spacing-modules {
+		&--#{$name} {
+			padding: tools.spacing($name);
+		}
+	}
+}

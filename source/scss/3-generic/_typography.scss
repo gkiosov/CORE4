@@ -1,0 +1,94 @@
+// ==========================================
+// Типографика (семантическая)
+// ==========================================
+
+@use 'sass:color';
+@use 'sass:map';
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+// Заголовки
+h1, .h1 { @include tools.heading(1); }
+h2, .h2 { @include tools.heading(2); }
+h3, .h3 { @include tools.heading(3); }
+h4, .h4 { @include tools.heading(4); }
+h5, .h5 { @include tools.heading(5); }
+h6, .h6 { @include tools.heading(6); }
+
+// Параграфы
+p {
+	line-height: tools.line-height('md');
+	@include tools.margin-block(4);
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// Списки
+ul, ol {
+	padding-left: tools.spacing(6);
+	margin-bottom: tools.spacing(4);
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+ul { list-style-type: disc; }
+ol { list-style-type: decimal; }
+
+li {
+	margin-bottom: tools.spacing(2);
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// Цитаты
+blockquote {
+	padding-left: tools.spacing(4);
+	border-left: 4px solid var(--color-border);
+	color: var(--color-text-secondary);
+	font-style: italic;
+	margin: tools.spacing(6) 0;
+
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// Код
+code, pre {
+	font-family: map.get(settings.$font-family, 'mono');
+	background: var(--color-background-secondary);
+	border-radius: tools.radius('sm');
+}
+
+code {
+	padding: tools.spacing(1) tools.spacing(2);
+	font-size: 0.9em;
+}
+
+pre {
+	padding: tools.spacing(4);
+	overflow-x: auto;
+
+	code {
+		padding: 0;
+		background: transparent;
+	}
+}
+
+// Мелкий текст
+small, .small {
+	font-size: tools.font-size('sm');
+	color: var(--color-text-secondary);
+}
+
+// Выделение
+mark {
+	background: color.change(tools.color('warning'), $alpha: 0.2);
+	padding: 0 tools.spacing(1);
+}

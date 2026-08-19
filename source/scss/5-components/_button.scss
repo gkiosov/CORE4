@@ -1,0 +1,189 @@
+// ==========================================
+// Кнопки
+// ==========================================
+
+@use 'sass:map';
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+.btn {
+	align-items: center;
+	border: 0;
+	border-radius: tools.radius('md');
+	cursor: pointer;
+	display: inline-flex;
+	font-weight: map.get(settings.$font-weight, 'medium');
+	gap: tools.spacing(4);
+	justify-content: center;
+	text-decoration: none;
+	transition: all settings.$transition-base;
+	user-select: none;
+
+	@include tools.focus-ring;
+
+	// Базовые отступы
+	padding: tools.spacing(3) tools.spacing(6);
+	font-size: tools.font-size('sm'); // 14px
+
+	// Адаптация (явная, без магии)
+	@include tools.respond-to('md') {
+		padding: tools.spacing(4) tools.spacing(8);
+		font-size: tools.font-size('base'); // 16px
+	}
+
+	@include tools.respond-to('lg') {
+		padding: tools.spacing(4) tools.spacing(10);
+		font-size: tools.font-size('md'); // 18px
+	}
+
+	// ================================
+	// Размеры
+	// ================================
+
+	&--sm {
+		padding: tools.spacing(2) tools.spacing(4);
+		font-size: tools.font-size('xs'); // 12px
+
+		@include tools.respond-to('md') {
+			padding: tools.spacing(3) tools.spacing(6);
+			font-size: tools.font-size('sm'); // 14px
+		}
+	}
+
+	&--lg {
+		padding: tools.spacing(4) tools.spacing(8);
+		font-size: tools.font-size('md'); // 18px
+
+		@include tools.respond-to('md') {
+			padding: tools.spacing(5) tools.spacing(10);
+			font-size: tools.font-size('lg'); // 20px
+		}
+
+		@include tools.respond-to('lg') {
+			padding: tools.spacing(6) tools.spacing(12);
+			font-size: tools.font-size('xl'); // 24px
+		}
+	}
+
+	// ================================
+	// Варианты
+	// ================================
+
+	&--primary {
+		background: var(--color-primary);
+		color: var(--color-text-inverse);
+
+		&:hover {
+			background: var(--color-primary-hover); // ✅
+		}
+
+		&:active {
+			background: var(--color-primary-active); // ✅
+		}
+	}
+
+	&--secondary {
+		background: var(--color-background-secondary);
+		color: var(--color-text);
+		border-color: var(--color-border);
+
+		&:hover {
+			background: var(--color-background-hover);
+			border-color: var(--color-border-hover);
+		}
+	}
+
+	&--success {
+		background: var(--color-success);
+		color: var(--color-text-inverse);
+
+		&:hover {
+			background: var(--color-success-hover); // ✅
+		}
+	}
+
+	&--danger {
+		background: var(--color-danger);
+		color: var(--color-text-inverse);
+
+		&:hover {
+			background: var(--color-danger-hover); // ✅
+		}
+	}
+
+	&--warning {
+		background: var(--color-warning);
+		color: var(--color-text-inverse);
+
+		&:hover {
+			background: var(--color-warning-hover); // ✅
+		}
+	}
+
+	&--info {
+		background: var(--color-info);
+		color: var(--color-text-inverse);
+
+		&:hover {
+			background: var(--color-info-hover); // ✅
+		}
+	}
+
+	&--outline {
+		background: transparent;
+		border-color: currentColor;
+
+		&.btn--primary {
+			color: var(--color-primary);
+
+			&:hover {
+				background: var(--color-primary);
+				color: var(--color-text-inverse);
+			}
+		}
+	}
+
+	&--ghost {
+		background: transparent;
+
+		&:hover {
+			background: var(--color-background-hover);
+		}
+	}
+
+	// Состояния
+	&--disabled,
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	&--loading {
+		position: relative;
+		color: transparent !important;
+		pointer-events: none;
+
+		&::after {
+			content: '';
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			border: 2px solid currentColor;
+			border-radius: 50%;
+			border-top-color: transparent;
+			animation: spin 0.8s linear infinite;
+		}
+	}
+
+	&--block {
+		width: 100%;
+	}
+}
+
+// Анимация спиннера
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

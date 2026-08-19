@@ -1,0 +1,257 @@
+// ==========================================
+// Функции (модульная система)
+// ==========================================
+
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use '../1-settings/index' as settings;
+
+// ==========================================
+// 1. Базовые функции для модулей
+// ==========================================
+
+// Получение значения в пикселях из модулей
+@function module($modules) {
+	@if $modules == null {
+		@warn "module() received null value!";
+		@return 0;
+	}
+	@return $modules * settings.$module;
+}
+
+// Получение отступа в пикселях из модулей
+// 2-tools/_functions.scss
+
+@function spacing($name) {
+	// Если $name — число, преобразуем в строку
+	@if meta.type-of($name) == 'number' {
+		$name: meta.inspect($name);
+	}
+
+	$modules: map.get(settings.$spacing-modules, $name);
+
+	@if $modules == null {
+		@warn "spacing() called with unknown key: '#{$name}'";
+		@return 0;
+	}
+	@return module($modules);
+}
+
+// Получение радиуса в пикселях из модулей
+@function radius($name) {
+	$modules: map.get(settings.$radius-modules, $name);
+	@if $modules == null {
+		@warn "radius() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$radius-modules)}";
+		@return 0;
+	}
+	@if $name == 'full' {
+		@return 9999px;
+	}
+	@return module($modules);
+}
+
+// Получение размера шрифта в пикселях из модулей
+@function font-size($name) {
+	$modules: map.get(settings.$font-size-modules, $name);
+	@if $modules == null {
+		@warn "font-size() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$font-size-modules)}";
+		@return 16px; // fallback
+	}
+	@return module($modules);
+}
+
+// Получение line-height в пикселях из модулей
+@function line-height($name) {
+	$modules: map.get(settings.$line-height-modules, $name);
+	@if $modules == null {
+		@warn "line-height() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$line-height-modules)}";
+		@return 24px; // fallback
+	}
+	@return module($modules);
+}
+
+// ==========================================
+// 2. Функции для доступа к данным
+// ==========================================
+
+@function breakpoint($name) {
+	$value: map.get(settings.$breakpoints, $name);
+	@if $value == null {
+		@warn "breakpoint() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$breakpoints)}";
+		@return 0;
+	}
+	@return $value;
+}
+
+@function color($name) {
+	$value: map.get(settings.$colors, $name);
+	@if $value == null {
+		@warn "color() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$colors)}";
+		@return #000;
+	}
+	@return $value;
+}
+
+@function shadow($name) {
+	$value: map.get(settings.$shadows, $name);
+	@if $value == null {
+		@warn "shadow() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$shadows)}";
+		@return none;
+	}
+	@return $value;
+}
+
+@function z-index($name) {
+	$value: map.get(settings.$z-index, $name);
+	@if $value == null {
+		@warn "z-index() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$z-index)}";
+		@return 0;
+	}
+	@return $value;
+}
+
+// ==========================================
+// 3. Адаптивные функции
+// ==========================================
+
+@function adaptive-module($base, $multiplier: 1) {
+	@return module($base * $multiplier);
+}
+
+// ==========================================
+// 4. Clamp-fluid (плавная адаптация)
+// ==========================================
+
+@function clamp-fluid($min, $max, $min-width: 375px, $max-width: 1400px) {
+	@if type-of($min) != 'number' or type-of($max) != 'number' {
+		@warn "clamp-fluid() requires numeric values. Received: #{$min}, #{$max}";
+		@return $min;
+	}
+	$slope: math.div($max - $min, $max-width - $min-width);
+	$intercept: $min - $slope * $min-width;
+	@return clamp(#{$min}, #{$intercept} + #{$slope * 100}vw, #{$max});
+}
+
+// ==========================================
+// 5. Viewport-безопасные единицы
+// ==========================================
+
+@function vh($value, $type: 'svh') {
+	@if type-of($value) != 'number' {
+		@warn "vh() requires numeric value. Received: #{$value}";
+		@return $value;
+	}
+	@if $type == 'svh' {
+		@return calc(#{$value} * var(--svh));
+	} @else if $type == 'dvh' {
+		@return calc(#{$value} * var(--dvh));
+	} @else if $type == 'lvh' {
+		@return calc(#{$value} * var(--lvh));
+	} @else {
+		@return calc(#{$value} * var(--vh));
+	}
+}
+
+// ==========================================
+// 6. Вспомогательные функции для отладки
+// ==========================================
+
+// Проверка наличия ключа в карте
+@function has-key($map, $key) {
+	@if $map == null or $key == null {
+		@return false;
+	}
+	@return map.has-key($map, $key);
+}
+
+// Получение списка всех ключей карты (для отладки)
+@function list-keys($map) {
+	@if $map == null {
+		@return null;
+	}
+	@return map.keys($map);
+}
+
+// ==========================================
+// 7. Функции для работы с цветами (OKLCH)
+// ==========================================
+
+// Получение цвета по имени и оттенку с опциональной прозрачностью
+@function color($name, $shade: '500', $alpha: 1) {
+	$result: null;
+	$base-color: null;
+
+	// 1. Проверяем семантические цвета
+	$semantic-map: map.get(settings.$semantic-colors, $name);
+	@if $semantic-map != null {
+		$base-color: map.get($semantic-map, $shade);
+		@if $base-color != null {
+			@if $alpha < 1 {
+				@return color.change($base-color, $alpha: $alpha);
+			}
+			@return $base-color;
+		}
+		@warn "Shade '#{$shade}' not found for semantic color '#{$name}'";
+	}
+
+	// 2. Проверяем основную палитру
+	$color-map: map.get(settings.$colors, $name);
+	@if $color-map != null {
+		$base-color: map.get($color-map, $shade);
+		@if $base-color != null {
+			@if $alpha < 1 {
+				@return color.change($base-color, $alpha: $alpha);
+			}
+			@return $base-color;
+		}
+		@warn "Shade '#{$shade}' not found for color '#{$name}'. Available: #{map.keys($color-map)}";
+	}
+
+	// 3. Fallback
+	@if $result == null {
+		@warn "Color '#{$name}' not found in palette. Available: #{map.keys(settings.$colors)}";
+		@return oklch(0.5 0 0);
+	}
+
+	@return $result;
+}
+
+// Явная функция для семантических цветов с прозрачностью
+@function semantic-color($role, $shade: '500', $alpha: 1) {
+	$color-map: map.get(settings.$semantic-colors, $role);
+
+	@if $color-map == null {
+		@warn "Semantic color '#{$role}' not found. Available: #{map.keys(settings.$semantic-colors)}";
+		@return oklch(0.5 0 0);
+	}
+
+	$base-color: map.get($color-map, $shade);
+
+	@if $base-color == null {
+		@warn "Shade '#{$shade}' not found for semantic color '#{$role}'";
+		@return oklch(0.5 0 0);
+	}
+
+	@if $alpha < 1 {
+		@return color.change($base-color, $alpha: $alpha);
+	}
+
+	@return $base-color;
+}
+
+// Универсальная функция для работы с прозрачностью
+@function color-alpha($name, $shade: '500', $alpha: 0.5) {
+	@return color($name, $shade, $alpha);
+}
+
+// Функция для получения CSS-переменной цвета
+@function color-var($name, $shade: '500') {
+	@return var(--#{$name}-#{$shade});
+}
+
+// Функция для получения CSS-переменной семантического цвета
+@function semantic-color-var($role, $shade: '500') {
+	@return var(--#{$role}-#{$shade});
+}
