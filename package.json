@@ -1,6 +1,6 @@
 {
-  "name": "core4",
-  "version": "1.0.0",
+  "name": "CORE4",
+  "version": "0.1.0",
   "description": "Дизайн-система",
   "main": "source/js/main.js",
   "scripts": {
