@@ -3,10 +3,8 @@
 // ==========================================
 
 export const CONFIG = {
-    // Префиксы для классов и атрибутов
-    PREFIX: 'ds', // Дизайн-система
+    PREFIX: 'core4',
 
-    // Классы для состояния компонентов
     STATE: {
         ACTIVE: 'is-active',
         OPEN: 'is-open',
@@ -16,7 +14,6 @@ export const CONFIG = {
         DISABLED: 'is-disabled'
     },
 
-    // Атрибуты для JavaScript
     ATTR: {
         THEME: 'data-theme',
         MODAL: 'data-modal',
@@ -26,7 +23,6 @@ export const CONFIG = {
         TARGET: 'data-target'
     },
 
-    // Селекторы
     SELECTORS: {
         MODAL: '[data-modal]',
         ACCORDION: '[data-accordion]',
@@ -35,7 +31,6 @@ export const CONFIG = {
         BUTTON: '[data-button]'
     },
 
-    // Клавиатура
     KEYBOARD: {
         ESC: 'Escape',
         ENTER: 'Enter',
@@ -47,7 +42,6 @@ export const CONFIG = {
         ARROW_RIGHT: 'ArrowRight'
     },
 
-    // Анимации
     ANIMATION: {
         DURATION: {
             FAST: 150,
@@ -60,5 +54,7 @@ export const CONFIG = {
             EASE_OUT: 'ease-out',
             EASE_IN_OUT: 'ease-in-out'
         }
-    }
+    },
+
+    THEME_KEY: 'core4-theme'
 };

@@ -4,15 +4,13 @@
 
 import { CONFIG } from '../../core/_config.js';
 import { qsa } from '../../utilities/_dom.js';
+import { Keyboard } from '../../utilities/_keyboard.js';
 import { Modal } from './_modal.js';
 
 let modals = [];
 
-/**
- * Инициализация всех модалок на странице
- */
 export function initModals() {
-    const elements = qsa(CONFIG.SELECTORS.MODAL || '[data-modal]');
+    const elements = qsa(CONFIG.SELECTORS.MODAL);
 
     elements.forEach((element, index) => {
         const modal = new Modal(element, {
@@ -21,7 +19,14 @@ export function initModals() {
         modals.push(modal);
     });
 
-    // Подписка на клики по триггерам
+    // Глобальный обработчик Escape
+    document.addEventListener('keydown', (e) => {
+        if (!Keyboard.isEscape(e)) return;
+        const openModal = modals.slice().reverse().find(m => m.isOpen);
+        if (openModal) openModal.close();
+    });
+
+    // Глобальный обработчик триггеров
     document.addEventListener('click', (e) => {
         const trigger = e.target.closest('[data-modal-trigger]');
         if (!trigger) return;
@@ -32,12 +37,14 @@ export function initModals() {
         if (modalElement) {
             const modal = modals.find(m => m.element === modalElement);
             if (modal) {
-                modal.toggle(trigger);
                 e.preventDefault();
+                modal.toggle(trigger);
             }
         }
     });
+
+    return modals;
 }
 
-export { Modal };
+export { Modal, modals };
 export default { initModals, Modal };
