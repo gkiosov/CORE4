@@ -23,22 +23,22 @@
 		background: var(--color-background-tertiary);
 		margin: -1 * tools.spacing(4) -1 * tools.spacing(4) tools.spacing(4);
 
-		@include tools.adaptive-spacing(
+		@include tools.adaptive(
 				margin-top,
 				-4,
 				settings.$spacing-scale
 		);
-		@include tools.adaptive-spacing(
+		@include tools.adaptive(
 				margin-left,
 				-4,
 				settings.$spacing-scale
 		);
-		@include tools.adaptive-spacing(
+		@include tools.adaptive(
 				margin-right,
 				-4,
 				settings.$spacing-scale
 		);
-		@include tools.adaptive-spacing(
+		@include tools.adaptive(
 				margin-bottom,
 				4,
 				settings.$spacing-scale

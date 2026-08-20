@@ -18,13 +18,13 @@ body {
 	max-width: map.get(settings.$container-max-widths, 'xl');
 	margin: 0 auto;
 
-	@include tools.adaptive-spacing(
+	@include tools.adaptive(
 			padding-left,
 			4, // 16px (база)
 			settings.$spacing-scale
 	);
 
-	@include tools.adaptive-spacing(
+	@include tools.adaptive(
 			padding-right,
 			4,
 			settings.$spacing-scale
@@ -33,13 +33,13 @@ body {
 
 // Секции
 .section {
-	@include tools.adaptive-spacing(
+	@include tools.adaptive(
 			padding-top,
 			8, // 32px
 			settings.$spacing-scale
 	);
 
-	@include tools.adaptive-spacing(
+	@include tools.adaptive(
 			padding-bottom,
 			8,
 			settings.$spacing-scale

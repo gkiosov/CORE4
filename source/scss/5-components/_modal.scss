@@ -40,7 +40,7 @@
 		transition: transform settings.$transition-slow;
 
 		@include tools.custom-scrollbar;
-		@include tools.adaptive-spacing(
+		@include tools.adaptive(
 				padding,
 				6, // 24px
 				settings.$spacing-scale
