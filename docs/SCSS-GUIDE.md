@@ -424,11 +424,11 @@ Desktop-first. Применяет стили до указанного брей�
 
 ### Адаптивные отступы
 
-#### `adaptive-spacing($property, $base, $scales)`
+#### `adaptive($property, $base, $scales)`
 Меняет отступ в зависимости от брейкпоинта.
 
 ```scss
-@mixin adaptive-spacing($property, $base, $scales) {
+@mixin adaptive($property, $base, $scales) {
   #{$property}: module($base);
   
   @each $breakpoint, $multiplier in $scales {
@@ -443,7 +443,7 @@ Desktop-first. Применяет стили до указанного брей�
 ```scss
 .section {
   // padding: 32px на мобилках, 48px на планшетах, 64px на десктопе
-  @include tools.adaptive-spacing(
+  @include tools.adaptive(
     padding,
     8,
     (
@@ -455,7 +455,7 @@ Desktop-first. Применяет стили до указанного брей�
 
 .container {
   // padding-inline: 16px → 24px → 32px
-  @include tools.adaptive-spacing(
+  @include tools.adaptive(
     padding-inline,
     4,
     (
@@ -613,54 +613,113 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 
 ### Компоненты и утилиты
 
-#### `hover($property: all, $duration: $transition-base)`
-Добавляет анимацию при наведении.
+#### `@mixin hover($property: all, $duration: settings.$transition-base)`
+Добавляет секцию @media (hover: hover) для класса с описанием :hover и :focus-visible, а так же параметры анимации.
 
 ```scss
-@mixin hover($property: all, $duration: settings.$transition-base) {
-  transition: $property $duration;
-  
-  &:hover {
-    @content;
-  }
+@mixin hover($property: all, $duration: settings.$transition-base, $timing: ease) {
+	// Transition выставляем ВСЕГДА (он не мешает на touch)
+	@if $property != none {
+		transition: $property $duration $timing;
+	}
+
+	// Hover только для устройств с настоящим наведением
+	@media (hover: hover) {
+		&:hover {
+			@content;
+		}
+	}
+
+	// Для клавиатуры — всегда показываем эффект
+	&:focus-visible {
+		@content;
+	}
 }
 ```
 
 **Пример:**
 ```scss
-.btn {
-  @include tools.hover(background) {
-    background: var(--color-primary-hover);
-  }
+// Простая смена цвета (кнопка)
+.btn--primary {
+	background: var(--color-primary);
+	color: var(--color-text-inverse);
+
+	@include hover(background-color) {
+		background: var(--color-primary-hover);
+	}
 }
 
+// Несколько свойств одновременно
+.btn--secondary {
+	background: var(--color-bg-secondary);
+	color: var(--color-text);
+	border-color: var(--color-border);
+
+	// Перечисляем свойства, которые анимируем
+	@include hover((background-color, border-color, color)) {
+		background: var(--color-bg-hover);
+		border-color: var(--color-border-hover);
+		color: var(--color-text-hover);
+	}
+}
+
+// Анимация поднятия (карточка)
 .card {
-  @include tools.hover(transform, 0.3s) {
-    transform: translateY(-4px);
-  }
-}
-```
+	background: var(--color-surface);
+	box-shadow: tools.shadow('sm');
 
-#### `focus-ring($color: var(--color-border-focus), $offset: 2px)`
-Добавляет стили для фокуса при навигации с клавиатуры.
-
-```scss
-@mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
-  &:focus-visible {
-    outline: 2px solid $color;
-    outline-offset: $offset;
-  }
-}
-```
-
-**Пример:**
-```scss
-.btn {
-  @include tools.focus-ring;
+	// Анимируем transform и box-shadow с кастомной длительностью
+	@include hover((transform, box-shadow), 0.25s, ease-out) {
+		transform: translateY(-4px);
+		box-shadow: tools.shadow('lg');
+	}
 }
 
-.input {
-  @include tools.focus-ring(var(--color-primary), 4px);
+// Анимация масштаба (иконка/кнопка-иконка)
+.icon-btn {
+	background: transparent;
+	color: var(--color-text);
+
+	@include hover((transform, color), 0.2s) {
+		transform: scale(1.1);
+		color: var(--color-primary);
+	}
+}
+
+// Смена цвета + подчёркивание (ссылка)
+.link {
+	color: var(--color-primary);
+	text-decoration: none;
+	position: relative;
+
+	@include hover((color, width), 0.3s) {
+		color: var(--color-primary-hover);
+
+		// Если хочешь анимировать псевдоэлемент — делай это внутри
+		&:after {
+			width: 100%;
+		}
+	}
+
+	&:after {
+		content: '';
+		position: absolute;
+		bottom: -2px;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background: currentColor;
+		transition: width 0.3s ease; // дублируем для плавности псевдо
+	}
+}
+
+// Без анимации (мгновенный скачок)
+.tag {
+	background: var(--color-bg);
+
+	@include hover(none) {
+		background: var(--color-bg-hover);
+	}
 }
 ```
 
