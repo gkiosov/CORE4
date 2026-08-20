@@ -723,6 +723,29 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
+#### `focus-ring($color: var(--color-border-focus), $offset: 2px)`
+Добавляет стили для фокуса при навигации с клавиатуры.
+
+```scss
+@mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: $offset;
+  }
+}
+```
+
+**Пример:**
+```scss
+.btn {
+	@include tools.focus-ring;
+}
+
+.input {
+  @include tools.focus-ring(var(--color-primary), 4px);
+}
+```
+
 #### `custom-scrollbar($width: 8px, $radius: 4px)`
 Создаёт кастомный скроллбар.
 
