@@ -105,41 +105,55 @@
 // 4. Типографика
 // ==========================================
 
-@mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
-	font-size: functions.font-size($size);
-	font-weight: map.get(settings.$font-weight, $weight);
-
-	@if $line-height != normal {
-		line-height: functions.line-height($line-height);
+// Универсальный миксин для шрифта
+@mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text), $family: null) {
+	@if $family != null {
+		font-family: $family;
 	}
 
-	color: $color;
+	font-size: functions.font-size($size);
+
+	@if $weight != normal and $weight != null {
+		font-weight: map.get(settings.$font-weight, $weight);
+	} @else if $weight == null {
+		// пропускаем
+	} @else {
+		font-weight: $weight;
+	}
+
+	@if $line-height != normal and $line-height != null {
+		line-height: functions.line-height($line-height);
+	} @else if $line-height == null {
+		// пропускаем
+	} @else {
+		line-height: $line-height;
+	}
+
+	@if $color != null {
+		color: $color;
+	}
 }
 
-@mixin heading($level: 1) {
-	$sizes: (
-		1: '7xl',  // 48px
-		2: '6xl',  // 44px
-		3: '5xl',  // 40px
-		4: '4xl',  // 36px
-		5: '3xl',  // 32px
-		6: '2xl'   // 28px
-	);
+// Только текст (без family)
+@mixin text($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
+	@include font($size, $weight, $line-height, $color, null);
+}
 
-	$line-heights: (
-		1: '7xl',  // 52px
-		2: '6xl',  // 48px
-		3: '5xl',  // 44px
-		4: '4xl',  // 40px
-		5: '3xl',  // 36px
-		6: '2xl'   // 32px
-	);
+// Только семейство
+@mixin font-family($family) {
+	font-family: $family;
+}
+
+// Заголовки (обновлённые с family)
+@mixin heading($level: 1, $family: var(--font-family-heading)) {
+	$sizes: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
+	$line-heights: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
 
 	$size: map.get($sizes, $level);
 	$lh: map.get($line-heights, $level);
 
-	@include font($size, 'bold', $lh);
-	margin-block-end: functions.spacing(4);
+	@include font($size, 'bold', $lh, var(--pink-500), $family);
+	@include margin-block(0, 4);
 }
 
 // ==========================================
@@ -201,7 +215,7 @@
 	}
 }
 
-@mixin overlay($opacity: 0.5, $z-index: z-index('overlay')) {
+@mixin overlay($opacity: 0.5, $z-index: functions.z-index('overlay')) {
 	position: fixed;
 	inset: 0;
 	background: rgba(0, 0, 0, $opacity);

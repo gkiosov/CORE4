@@ -1,89 +1,74 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
-	mode: isProduction ? 'production' : 'development',
+	mode: isProd ? 'production' : 'development',
 
-	entry: {
-		main: './source/js/main.js',
-		// Если нужен отдельный файл для страниц
-		// admin: './source/js/admin.js'
-	},
+	// Точка входа — только JS. SCSS подтянем через import внутри main.js
+	entry: './source/js/main.js',
 
 	output: {
-		path: path.resolve(__dirname, 'build/js'),
-		filename: isProduction ? '[name].min.js' : '[name].js',
-		clean: true
+		path: path.resolve(__dirname, 'build'),
+		filename: isProd ? 'js/main.min.js' : 'js/main.js',
+		clean: {
+			keep: /\.html$/, // не удалять файлы, заканчивающиеся на .html
+		},
 	},
-
-	devtool: isProduction ? false : 'source-map',
 
 	module: {
 		rules: [
+			// JS
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['@babel/preset-env']
-					}
-				}
+						presets: ['@babel/preset-env'],
+					},
+				},
 			},
+			// SCSS → CSS
 			{
 				test: /\.scss$/,
 				use: [
-					MiniCssExtractPlugin.loader,
-					'css-loader',
-					'sass-loader'
-				]
-			}
-		]
+					MiniCssExtractPlugin.loader, // выносит CSS в файл
+					'css-loader',                // разрешает импорты в CSS
+					'postcss-loader',            // ← autoprefixer
+					'sass-loader',               // компилирует SCSS
+				],
+			},
+		],
 	},
 
 	plugins: [
 		new MiniCssExtractPlugin({
-			filename: '../build/css/[name].css'
-		})
+			filename: isProd ? 'css/main.min.css' : 'css/main.css',
+		}),
 	],
 
 	optimization: {
-		minimize: isProduction,
+		minimize: isProd,
 		minimizer: [
-			new TerserPlugin({
-				terserOptions: {
-					compress: {
-						drop_console: isProduction,
-						drop_debugger: isProduction
-					}
-				}
-			}),
-			new CssMinimizerPlugin()
-		]
+			'...', // стандартный TerserPlugin для JS
+			new CssMinimizerPlugin(), // минификация CSS
+		],
 	},
+
+	devtool: isProd ? false : 'source-map',
 
 	devServer: {
 		static: {
 			directory: path.join(__dirname, 'build'),
 		},
-		port: 3000,
-		open: true, // Автоматически открывать браузер
-		hot: true,  // Горячая перезагрузка
-		liveReload: true,
-		watchFiles: ['source/**/*.js', 'source/**/*.scss', '*.html']
+		devMiddleware: {
+			writeToDisk: true, // пишет файлы на диск, а не только в память
+		},
+		open: true,  // открывает браузер
+		hot: true,   // Hot Module Replacement
+		port: 8080,
 	},
-
-	resolve: {
-		alias: {
-			'@': path.resolve(__dirname, 'source')
-		}
-	},
-
-	watchOptions: {
-		ignored: /node_modules/
-	}
 };

@@ -1,8 +1,9 @@
 // 1-settings/_themes.scss
 
 @use 'sass:map';
-@use 'colors' as *;
-@use 'color-generator' as *;
+@use 'colors' as colors;
+@use 'color-generator' as color-generator;
+@use 'variables' as vars;
 
 // ==========================================
 // 1. Генерация всех цветовых переменных
@@ -10,7 +11,7 @@
 
 :root {
 	// ✅ Вызываем генератор! Это создаст все --red-*, --blue-*, --grey-* и т.д.
-	@include generate-color-variables($colors);
+	@include color-generator.generate-color-variables(colors.$colors);
 
 	// ==========================================
 	// 2. Тематические переменные
@@ -18,7 +19,11 @@
 
 	--theme-transition: 0.2s ease;
 
-	// Теперь эти переменные существуют!
+	--font-family-base: #{vars.$font-family-base};
+	--font-family-heading: #{vars.$font-family-heading};
+	--font-family-mono: #{vars.$font-family-mono};
+	--font-family-accent: #{vars.$font-family-accent};
+
 	--color-background: var(--grey-50);
 	--color-background-secondary: var(--grey-100);
 	--color-background-tertiary: var(--grey-200);

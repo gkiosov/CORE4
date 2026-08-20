@@ -48,6 +48,7 @@ $font-weight: (
 
 // Семейства шрифтов
 $font-family: (
+	'header': (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif),
 	'base': (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif),
 	'mono': ('SF Mono', 'Menlo', 'Monaco', monospace)
 );

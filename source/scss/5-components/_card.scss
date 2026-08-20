@@ -52,12 +52,12 @@
 	}
 
 	&__title {
-		@include tools.font('xl', 'semibold', 'tight');
+		@include tools.font('xl', 'semibold', 'base');
 		@include tools.truncate(1);
 	}
 
 	&__description {
-		@include tools.font('base', 'normal', 'relaxed', var(--color-text-secondary));
+		@include tools.font('base', 'normal', 'base', var(--color-text-secondary));
 		@include tools.truncate(3);
 	}
 
