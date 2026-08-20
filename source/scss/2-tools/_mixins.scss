@@ -50,30 +50,10 @@
 }
 
 // ==========================================
-// 2. Адаптивные отступы (ступенчатые)
+// 2. Адаптивные значения (ступенчатые)
 // ==========================================
 
-@mixin adaptive-spacing($property, $base, $scales) {
-	#{$property}: functions.module($base);
-
-	@each $breakpoint, $multiplier in $scales {
-		@include respond-to($breakpoint) {
-			#{$property}: functions.module($base * $multiplier);
-		}
-	}
-}
-
-@mixin adaptive-font-size($base, $scales) {
-	font-size: functions.module($base);
-
-	@each $breakpoint, $multiplier in $scales {
-		@include respond-to($breakpoint) {
-			font-size: functions.module($base * $multiplier);
-		}
-	}
-}
-
-@mixin adaptive-module($property, $base, $scales) {
+@mixin adaptive($property, $base, $scales) {
 	#{$property}: functions.module($base);
 
 	@each $breakpoint, $multiplier in $scales {
@@ -106,30 +86,21 @@
 // ==========================================
 
 // Универсальный миксин для шрифта
-@mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text), $family: null) {
-	@if $family != null {
-		font-family: $family;
-	}
-
+@mixin font($size, $weight: null, $line-height: null, $color: null, $family: null) {
 	font-size: functions.font-size($size);
 
-	@if $weight != normal and $weight != null {
+	@if $family {
+		font-family: $family;
+	}
+	@if $weight and map.has-key(settings.$font-weight, $weight) {
 		font-weight: map.get(settings.$font-weight, $weight);
-	} @else if $weight == null {
-		// пропускаем
-	} @else {
+	} @else if $weight {
 		font-weight: $weight;
 	}
-
-	@if $line-height != normal and $line-height != null {
+	@if $line-height {
 		line-height: functions.line-height($line-height);
-	} @else if $line-height == null {
-		// пропускаем
-	} @else {
-		line-height: $line-height;
 	}
-
-	@if $color != null {
+	@if $color {
 		color: $color;
 	}
 }
@@ -145,14 +116,15 @@
 }
 
 // Заголовки (обновлённые с family)
-@mixin heading($level: 1, $family: var(--font-family-heading)) {
+@mixin heading(
+	$level: 1,
+	$color: var(--color-text), // ← вместо var(--pink-500)
+	$family: var(--font-family-heading)
+) {
 	$sizes: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
-	$line-heights: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
-
 	$size: map.get($sizes, $level);
-	$lh: map.get($line-heights, $level);
 
-	@include font($size, 'bold', $lh, var(--pink-500), $family);
+	@include font($size, 'bold', $size, $color, $family);
 	@include margin-block(0, 4);
 }
 
@@ -180,10 +152,18 @@
 // 6. Компоненты и утилиты
 // ==========================================
 
-@mixin hover($property: all, $duration: settings.$transition-base) {
-	transition: $property $duration;
+@mixin hover($property: all, $duration: settings.$transition-base, $timing: ease) {
+	@if $property != none {
+		transition: $property $duration $timing;
+	}
 
-	&:hover {
+	@media (hover: hover) {
+		&:hover {
+			@content;
+		}
+	}
+
+	&:focus-visible {
 		@content;
 	}
 }
@@ -192,6 +172,7 @@
 	&:focus-visible {
 		outline: 2px solid $color;
 		outline-offset: $offset;
+		@content;
 	}
 }
 
@@ -307,7 +288,7 @@
 // 7. Логические отступы (гибкие)
 // ==========================================
 
-// 7.1. margin-block (одно или два значения)
+// margin-block (одно или два значения)
 
 @mixin margin-block($top, $bottom: null) {
 	@if $bottom != null {
@@ -317,7 +298,7 @@
 	}
 }
 
-// 7.2. margin-inline (одно или два значения)
+// margin-inline (одно или два значения)
 
 @mixin margin-inline($start, $end: null) {
 	@if $end != null {
@@ -327,7 +308,7 @@
 	}
 }
 
-// 7.3. padding-block (одно или два значения)
+// padding-block (одно или два значения)
 
 @mixin padding-block($top, $bottom: null) {
 	@if $bottom != null {
@@ -337,7 +318,7 @@
 	}
 }
 
-// 7.4. padding-inline (одно или два значения)
+// padding-inline (одно или два значения)
 
 @mixin padding-inline($start, $end: null) {
 	@if $end != null {
@@ -347,8 +328,7 @@
 	}
 }
 
-// 7.5. Универсальный миксин для margin (все 4 стороны)
-
+// Универсальный миксин для margin (все 4 стороны)
 @mixin margin($top: null, $right: null, $bottom: null, $left: null) {
 	@if $top != null and $right != null and $bottom != null and $left != null {
 		margin-block: functions.spacing($top) functions.spacing($bottom);
@@ -364,8 +344,7 @@
 	}
 }
 
-// 7.6. Универсальный миксин для padding (все 4 стороны)
-
+// Универсальный миксин для padding (все 4 стороны)
 @mixin padding($top: null, $right: null, $bottom: null, $left: null) {
 	@if $top != null and $right != null and $bottom != null and $left != null {
 		padding-block: functions.spacing($top) functions.spacing($bottom);
