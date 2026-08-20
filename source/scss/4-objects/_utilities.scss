@@ -157,24 +157,34 @@
 .text-capitalize { text-transform: capitalize; }
 .text-truncate { @include tools.truncate(1); }
 
-.text-primary { color: tools.color('primary'); }
-.text-success { color: tools.color('success'); }
-.text-warning { color: tools.color('warning'); }
-.text-error { color: tools.color('error'); }
-.text-muted { color: var(--color-text-secondary); }
-.text-inverse { color: var(--color-text-inverse); }
+// ================================
+// 4. Text colors (семантические)
+// ================================
+
+.text-primary   { color: var(--color-primary); }
+.text-success   { color: var(--color-success); }
+.text-warning   { color: var(--color-warning); }
+.text-danger    { color: var(--color-danger); }
+.text-error     { color: var(--color-error); } // или добавь --color-error в тему
+.text-info      { color: var(--color-info); }
+.text-neutral   { color: var(--color-neutral); }
+.text-muted     { color: var(--color-text-secondary); }
+.text-inverse   { color: var(--color-text-inverse); }
 
 // ================================
 // 5. Colors (background)
 // ================================
 
-.bg-primary { background: tools.color('primary'); }
-.bg-success { background: tools.color('success'); }
-.bg-warning { background: tools.color('warning'); }
-.bg-error { background: tools.color('error'); }
-.bg-white { background: var(--color-background); }
-.bg-muted { background: var(--color-background-secondary); }
-.bg-inverse { background: var(--color-background-inverse); }
+.bg-surface   { background: var(--color-background); }
+.bg-primary   { background: var(--color-primary); }
+.bg-success   { background: var(--color-success); }
+.bg-warning   { background: var(--color-warning); }
+.bg-danger    { background: var(--color-danger); }
+.bg-error     { background: var(--color-error); }
+.bg-info      { background: var(--color-info); }
+.bg-neutral   { color: var(--color-neutral); }
+.bg-muted     { background: var(--color-background-secondary); }
+.bg-inverse   { background: var(--color-background-inverse); }
 
 // ================================
 // 6. Border & Radius
@@ -264,10 +274,3 @@
 
 .pointer-events-none { pointer-events: none; }
 .pointer-events-auto { pointer-events: auto; }
-
-// ==========================================
-// 14. Генерация утилит для всех цветов
-// ==========================================
-
-// Используем миксин для генерации классов .text-*, .bg-*, .border-*
-@include color-generator.generate-color-utilities(colors.$colors);

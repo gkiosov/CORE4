@@ -3,32 +3,20 @@
 @use 'sass:map';
 @use 'colors' as colors;
 @use 'color-generator' as color-generator;
-@use 'variables' as vars;
+@use 'typography' as typo;
 
 // ==========================================
-// 1. Генерация всех цветовых переменных
+// 1. Светлая тема (миксин)
 // ==========================================
 
-:root {
-	// ✅ Вызываем генератор! Это создаст все --red-*, --blue-*, --grey-* и т.д.
-	@include color-generator.generate-color-variables(colors.$colors);
-
-	// ==========================================
-	// 2. Тематические переменные
-	// ==========================================
-
-	--theme-transition: 0.2s ease;
-
-	--font-family-base: #{vars.$font-family-base};
-	--font-family-heading: #{vars.$font-family-heading};
-	--font-family-mono: #{vars.$font-family-mono};
-	--font-family-accent: #{vars.$font-family-accent};
-
+@mixin light-theme {
 	--color-background: var(--grey-50);
 	--color-background-secondary: var(--grey-100);
 	--color-background-tertiary: var(--grey-200);
 	--color-background-hover: var(--grey-300);
 	--color-background-inverse: var(--grey-900);
+
+	--color-neutral: var(--grey-500);
 
 	--color-text: var(--grey-900);
 	--color-text-secondary: var(--grey-700);
@@ -55,6 +43,9 @@
 	--color-danger: var(--red-500);
 	--color-danger-hover: var(--red-600);
 
+	--color-error: var(--red-500);
+	--color-error-hover: var(--red-600);
+
 	--color-info: var(--light-blue-500);
 	--color-info-hover: var(--light-blue-600);
 
@@ -69,7 +60,7 @@
 }
 
 // ==========================================
-// 3. Тёмная тема
+// 2. Тёмная тема (миксин)
 // ==========================================
 
 @mixin dark-theme {
@@ -118,61 +109,37 @@
 }
 
 // ==========================================
-// 4. Применение тем
+// 3. Применение
 // ==========================================
 
+:root {
+	// Генерация палитры
+	@include color-generator.generate-color-variables(colors.$colors);
+
+	// Шрифты из typography
+	--font-family-base: #{map.get(typo.$font-family, 'base')};
+	--font-family-heading: #{map.get(typo.$font-family, 'heading')};
+	--font-family-mono: #{map.get(typo.$font-family, 'mono')};
+	--font-family-accent: #{map.get(typo.$font-family, 'accent')};
+
+	// Тема по умолчанию (светлая)
+	@include light-theme;
+
+	--theme-transition: 0.2s ease;
+}
+
+// Системная тёмная тема
 @media (prefers-color-scheme: dark) {
 	:root {
 		@include dark-theme;
 	}
 }
 
+// Ручное переключение
 :root[data-theme="dark"] {
 	@include dark-theme;
 }
 
 :root[data-theme="light"] {
-	// Возвращаем светлую тему
-	--color-background: var(--grey-50);
-	--color-background-secondary: var(--grey-100);
-	--color-background-tertiary: var(--grey-200);
-	--color-background-hover: var(--grey-300);
-	--color-background-inverse: var(--grey-900);
-
-	--color-text: var(--grey-900);
-	--color-text-secondary: var(--grey-700);
-	--color-text-tertiary: var(--grey-500);
-	--color-text-inverse: var(--grey-50);
-	--color-text-link: var(--blue-500);
-	--color-text-link-hover: var(--blue-600);
-
-	--color-border: var(--grey-300);
-	--color-border-hover: var(--grey-400);
-	--color-border-focus: var(--blue-500);
-
-	--color-primary: var(--blue-500);
-	--color-primary-hover: var(--blue-600);
-	--color-primary-active: var(--blue-700);
-	--color-primary-light: var(--blue-50);
-
-	--color-success: var(--green-500);
-	--color-success-hover: var(--green-600);
-
-	--color-warning: var(--amber-500);
-	--color-warning-hover: var(--amber-600);
-
-	--color-danger: var(--red-500);
-	--color-danger-hover: var(--red-600);
-
-	--color-info: var(--light-blue-500);
-	--color-info-hover: var(--light-blue-600);
-
-	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
-	--shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
-
-	--scrollbar-track: var(--grey-100);
-	--scrollbar-thumb: var(--grey-300);
-	--scrollbar-thumb-hover: var(--grey-400);
+	@include light-theme;
 }

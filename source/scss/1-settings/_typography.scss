@@ -40,15 +40,19 @@ $line-height-modules: (
 
 // Вес шрифта
 $font-weight: (
+	'thin': 100,
+	'light': 300,
 	'normal': 400,
 	'medium': 500,
 	'semibold': 600,
-	'bold': 700
+	'bold': 700,
+	'black': 900
 );
 
 // Семейства шрифтов
 $font-family: (
-	'header': (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif),
+	'heading': (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif),
 	'base': (system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif),
-	'mono': ('SF Mono', 'Menlo', 'Monaco', monospace)
+	'mono': ('SF Mono', 'Menlo', 'Monaco', monospace),
+	'accent': ('Georgia', serif),
 );

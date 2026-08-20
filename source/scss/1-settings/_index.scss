@@ -1,7 +1,7 @@
 // 1-settings/_index.scss
-@forward 'variables';
-@forward 'typography';
-@forward 'color-generator';
-@forward 'colors';
-@forward 'themes';
-@forward 'reset';
+@forward 'variables';      // layout-токены (spacing, breakpoints, grid...)
+@forward 'typography';     // font-size, line-height, font-weight, font-family
+@forward 'colors';         // палитра
+@forward 'color-generator'; // миксины генерации
+@forward 'themes';         // CSS-переменные (зависит от colors, typography)
+@forward 'reset';          // ← перенести в 3-generic!

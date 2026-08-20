@@ -1,5 +1,5 @@
 // ==========================================
-// 8. Базовые стили
+// Базовые стили
 // ==========================================
 
 @use 'sass:map';
@@ -20,7 +20,7 @@ body {
 
 	@include tools.adaptive(
 			padding-left,
-			4, // 16px (база)
+			4,
 			settings.$spacing-scale
 	);
 
@@ -35,7 +35,7 @@ body {
 .section {
 	@include tools.adaptive(
 			padding-top,
-			8, // 32px
+			8,
 			settings.$spacing-scale
 	);
 
@@ -53,7 +53,6 @@ hr {
 }
 
 // Debug
-
 .debug-spacing {
 	outline: 1px solid red;
 
