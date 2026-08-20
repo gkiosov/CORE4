@@ -85,15 +85,6 @@
 	@return $value;
 }
 
-@function color($name) {
-	$value: map.get(settings.$colors, $name);
-	@if $value == null {
-		@warn "color() called with unknown key: '#{$name}'. Available keys: #{map.keys(settings.$colors)}";
-		@return #000;
-	}
-	@return $value;
-}
-
 @function shadow($name) {
 	$value: map.get(settings.$shadows, $name);
 	@if $value == null {
