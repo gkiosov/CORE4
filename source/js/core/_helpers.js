@@ -29,7 +29,7 @@ export const isVisible = (el) => {
  * Получение уникального ID
  * Приоритет: crypto.randomUUID() → Date.now() + счётчик
  */
-export const generateId = (prefix = 'ds') => {
+export const generateId = (prefix = 'core4') => {
     const suffix = typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
         : `${Date.now()}-${++_idCounter}`;

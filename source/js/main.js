@@ -13,54 +13,66 @@ import { initRevealAnimations } from './utilities/_viewport.js';
 import { ThemeManager } from './modules/theme/_theme.js';
 import { initModals, Modal } from './modules/modal/_index.js';
 import { initAccordions, Accordion } from './modules/accordion/_accordion.js';
+import { initButtons, Button } from './modules/button/_index.js';
+import { initDropdowns, Dropdown } from './modules/dropdown/_index.js';
+//import { initLikeButtons, LikeButton } from './modules/like-button/_index.js';
 
 class App {
-	constructor() {
+	constructor(config = {}) {
 		this.modules = {};
-		this.isInitialized = false;
+		this.isInitialized = false; // ← добавлено
+
+		this.config = {
+			modules: {
+				theme: true,
+				modals: true,
+				accordions: true,
+				buttons: true,
+				dropdowns: true,
+				//likeButtons: true,
+				revealAnimations: true,
+				...config.modules
+			}
+		};
 	}
 
 	init() {
-		if (this.isInitialized) return;
+		if (this.isInitialized) return; // ← guard от двойного вызова
+		this.isInitialized = true;      // ← сразу ставим флаг
 
-		console.log('🚀 Инициализация дизайн-системы...');
+		const cfg = this.config.modules;
 
-		this.modules.theme = new ThemeManager();
-		this.modules.modals = initModals();
-		this.modules.accordions = initAccordions();
-
-		// Reveal-анимации при скролле
-		initRevealAnimations();
-
-		this.isInitialized = true;
-		console.log('✅ Дизайн-система инициализирована');
-	}
-
-	getModule(name) {
-		return this.modules[name] || null;
-	}
-
-	destroy() {
-		Object.values(this.modules).forEach(mod => {
-			if (mod && typeof mod.destroy === 'function') {
-				mod.destroy();
-			}
-		});
-		this.isInitialized = false;
+		if (cfg.theme) this.modules.theme = new ThemeManager();
+		if (cfg.modals) this.modules.modals = initModals();
+		if (cfg.accordions) this.modules.accordions = initAccordions();
+		if (cfg.buttons) this.modules.buttons = initButtons();
+		if (cfg.dropdowns) this.modules.dropdowns = initDropdowns();
+		//if (cfg.likeButtons) this.modules.likeButtons = initLikeButtons();
+		if (cfg.revealAnimations) initRevealAnimations();
 	}
 }
 
-const app = new App();
+const app = new App({
+	modules: {
+		theme: true,
+		modals: true,
+		accordions: true,
+		buttons: true,
+		dropdowns: true,
+		//likeButtons: false,
+		revealAnimations: true
+	}
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 	app.init();
 });
 
-window.DS = {
+window.CORE4 = {
 	app,
 	core,
 	utils: { dom, keyboard },
-	components: { ThemeManager, Modal, Accordion, FocusTrap }
+	components: { ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap }
 };
 
 if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {

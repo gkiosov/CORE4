@@ -56,5 +56,5 @@ export const CONFIG = {
         }
     },
 
-    THEME_KEY: 'core4-theme'
+    THEME_KEY: 'core4-Theme'
 };
