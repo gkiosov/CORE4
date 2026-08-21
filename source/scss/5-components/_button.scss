@@ -264,3 +264,61 @@ $button-variants: (
 		width: 100%;
 	}
 }
+
+// ==========================================
+// Группа кнопок (Button Group)
+// ==========================================
+
+.btn-group {
+	display: inline-flex;
+	vertical-align: middle;
+
+	// Убираем двойные границы между кнопками
+	.btn {
+		position: relative;
+		margin-left: -1px;
+		border-radius: 0;
+		z-index: 1;
+
+		&:hover,
+		&:focus-visible,
+		&.is-active {
+			z-index: 2;
+		}
+
+		&:first-child {
+			margin-left: 0;
+			border-top-left-radius: var(--radius-md);
+			border-bottom-left-radius: var(--radius-md);
+		}
+
+		&:last-child {
+			border-top-right-radius: var(--radius-md);
+			border-bottom-right-radius: var(--radius-md);
+		}
+	}
+
+	// Вертикальная группа
+	&--vertical {
+		flex-direction: column;
+
+		.btn {
+			margin-left: 0;
+			margin-top: -1px;
+			border-radius: 0;
+
+			&:first-child {
+				margin-top: 0;
+				border-top-left-radius: var(--radius-md);
+				border-top-right-radius: var(--radius-md);
+				border-bottom-left-radius: 0;
+			}
+
+			&:last-child {
+				border-bottom-left-radius: var(--radius-md);
+				border-bottom-right-radius: var(--radius-md);
+				border-top-right-radius: 0;
+			}
+		}
+	}
+}
