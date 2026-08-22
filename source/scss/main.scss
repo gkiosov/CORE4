@@ -10,6 +10,8 @@
 
 // 3. Generic (базовые стили)
 @use '3-generic/base';
+@use '3-generic/animations';
+@use '3-generic/fonts';
 @use '3-generic/typography';
 
 // 4. Objects
