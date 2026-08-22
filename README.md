@@ -1,128 +1,128 @@
 # 🎨 CORE4 Design System
 
-> **Модульная дизайн-система на SCSS и JavaScript с поддержкой тем, OKLCH-цветов и адаптивной сетки.**
+> **A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, and a responsive grid.**
 
-![Версия](https://img.shields.io/badge/Альфа-0.1.0-red.svg)
-![Статус сборки](https://img.shields.io/badge/Сборка-проходит-brightgreen)
-![Лицензия](https://img.shields.io/badge/Лицензия-MIT-green.svg)
-
----
-
-## 📋 Оглавление
-
-1. [Описание](#-описание)
-2. [Возможности](#-возможности)
-3. [Быстрый старт](#-быстрый-старт)
-4. [Структура проекта](#-структура-проекта)
-5. [Команды сборки](#-команды-сборки)
-6. [Документация](#-документация)
-7. [Как использовать](#-как-использовать)
-8. [Вклад в проект](#-вклад-в-проект)
-9. [Лицензия](#-лицензия)
+![Version](https://img.shields.io/badge/Alpha-0.1.0-red.svg)
+![Build Status](https://img.shields.io/badge/Build-passing-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 ---
 
-## 📖 Описание
+## 📋 Table of Contents
 
-**core4 Design System** — это модульная дизайн-система, построенная на:
-- **SCSS** с модульной архитектурой (ITCSS)
-- **JavaScript** с ES-модулями
-- **Webpack** для сборки
-- **OKLCH-цветах** (стандарт 2026)
-- **Логических свойствах** (поддержка RTL-языков)
-
-Система предназначена для быстрого создания адаптивных интерфейсов с единым визуальным ритмом (базовый модуль 4px).
-
----
-
-## ✨ Возможности
-
-- 🧱 **Модульная сетка** — 12-колоночная система на CSS Grid (аналог Bootstrap)
-- 🎨 **OKLCH-цвета** — перцептивно-равномерные цвета (стандарт 2026)
-- 🌓 **Тёмная/светлая тема** — системная + ручное переключение через `data-theme`
-- 📱 **Адаптивность** — 6 брейкпоинтов (`xs`, `sm`, `md`, `lg`, `xl`, `xxl`)
-- 🔮 **Динамические компоненты** — модалки, аккордеоны на чистом JS
-- ♿️ **Доступность** — управление с клавиатуры (Tab, Escape, Focus Trap)
-- 🧪 **Модульность** — SCSS- и JS-модули для переиспользования
-- 📦 **Готовая сборка** — Webpack + Babel + минификация
+1. [Overview](#-overview)
+2. [Features](#-features)
+3. [Quick Start](#-quick-start)
+4. [Project Structure](#-project-structure)
+5. [Build Commands](#-build-commands)
+6. [Documentation](#-documentation)
+7. [How to Use](#-how-to-use)
+8. [Contributing](#-contributing)
+9. [License](#-license)
 
 ---
 
-## 🚀 Быстрый старт
+## 📖 Overview
 
-### 1. Клонирование репозитория
+**core4 Design System** is a modular design system built on:
+- **SCSS** with a modular architecture (ITCSS)
+- **JavaScript** with ES modules
+- **Webpack** for bundling
+- **OKLCH colors** (2026 standard)
+- **Logical properties** (RTL language support)
+
+The system is designed for rapid creation of responsive interfaces with a unified visual rhythm (base unit of 4px).
+
+---
+
+## ✨ Features
+
+- 🧱 **Modular Grid** — 12-column system based on CSS Grid (Bootstrap analog)
+- 🎨 **OKLCH Colors** — perceptually uniform colors (2026 standard)
+- 🌓 **Dark/Light Theme** — system + manual switching via `data-theme`
+- 📱 **Responsiveness** — 6 breakpoints (`xs`, `sm`, `md`, `lg`, `xl`, `xxl`)
+- 🔮 **Dynamic Components** — modals, accordions in vanilla JS
+- ♿️ **Accessibility** — keyboard navigation (Tab, Escape, Focus Trap)
+- 🧪 **Modularity** — SCSS and JS modules for reuse
+- 📦 **Ready-to-use Build** — Webpack + Babel + minification
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/ваш-ник/core4.git
+git clone https://github.com/your-username/core4.git
 cd core4
 ```
 
-### 2. Установка зависимостей
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Запуск в режиме разработки
+### 3. Start development server
 
 ```bash
 npm run dev
 ```
 
-Открой `http://localhost:3000` — страница автоматически обновляется при изменениях.
+Open `http://localhost:3000` — the page auto-refreshes on changes.
 
-### 4. Сборка для продакшена
+### 4. Build for production
 
 ```bash
 npm run build
 ```
 
-Готовые файлы появятся в папке `build/`:
-- `build/css/main.min.css` — минифицированные стили
-- `build/js/main.min.js` — минифицированный скрипт
+Compiled files will appear in the `build/` folder:
+- `build/css/main.min.css` — minified styles
+- `build/js/main.min.js` — minified script
 
 ---
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```bash
 core4/
 ├── source/
 │   ├── scss/
-│   │   ├── 1-settings/        # Переменные, темы, сбросы
+│   │   ├── 1-settings/        # Variables, themes, resets
 │   │   │   ├── _variables.scss
 │   │   │   ├── _typography.scss
 │   │   │   ├── _colors.scss
 │   │   │   ├── _themes.scss
 │   │   │   ├── _reset.scss
 │   │   │   └── _index.scss
-│   │   ├── 2-tools/           # Функции и миксины
+│   │   ├── 2-tools/           # Functions and mixins
 │   │   │   ├── _functions.scss
 │   │   │   ├── _mixins.scss
 │   │   │   └── _index.scss
-│   │   ├── 3-generic/         # Базовые стили
+│   │   ├── 3-generic/         # Base styles
 │   │   │   ├── _base.scss
 │   │   │   ├── _typography.scss
 │   │   │   └── _index.scss
-│   │   ├── 4-objects/         # Сетка и утилиты
+│   │   ├── 4-objects/         # Grid and utilities
 │   │   │   ├── _grid.scss
 │   │   │   ├── _layout.scss
 │   │   │   ├── _utilities.scss
 │   │   │   └── _index.scss
-│   │   ├── 5-components/      # Компоненты
+│   │   ├── 5-components/      # Components
 │   │   │   ├── _button.scss
 │   │   │   ├── _card.scss
 │   │   │   ├── _modal.scss
 │   │   │   └── _index.scss
-│   │   └── main.scss          # Главный файл импорта
+│   │   └── main.scss          # Main import file
 │   │
 │   └── js/
-│       ├── core/              # Ядро (конфиги, хелперы)
+│       ├── core/              # Core (configs, helpers)
 │       │   ├── _config.js
 │       │   ├── _helpers.js
 │       │   ├── _events.js
 │       │   └── _index.js
-│       ├── modules/           # Модули
+│       ├── modules/           # Modules
 │       │   ├── theme/
 │       │   │   ├── _theme.js
 │       │   │   └── _index.js
@@ -132,172 +132,172 @@ core4/
 │       │   └── accordion/
 │       │       ├── _accordion.js
 │       │       └── _index.js
-│       ├── utilities/         # Утилиты
+│       ├── utilities/         # Utilities
 │       │   ├── _dom.js
 │       │   ├── _keyboard.js
 │       │   ├── _focus-trap.js
 │       │   └── _index.js
-│       └── main.js            # Точка входа
+│       └── main.js            # Entry point
 │
-├── build/                     # Сборка (генерируется)
+├── build/                     # Build output (generated)
 │   ├── css/
 │   │   └── main.min.css
 │   └── js/
 │       └── main.min.js
 │
-├── docs/                      # Документация
+├── docs/                      # Documentation
 │   └── SCSS-GUIDE.md
 │
-├── webpack.config.js          # Конфигурация Webpack
-├── package.json               # Зависимости
-├── .gitignore                 # Игнорируемые файлы
-└── README.md                  # Этот файл
+├── webpack.config.js          # Webpack configuration
+├── package.json               # Dependencies
+├── .gitignore                 # Ignored files
+└── README.md                  # This file
 ```
 
 ---
 
-## 🛠 Команды сборки
+## 🛠 Build Commands
 
-| Команда | Описание |
+| Command | Description |
 |:---|:---|
-| `npm run dev` | Запуск сервера разработки с Hot Reload |
-| `npm run build` | Сборка продакшен-версии (минификация) |
-| `npm run start` | То же, что `npm run dev` |
-| `npm run test` | Запуск тестов (Jest) |
-| `npm run test:watch` | Запуск тестов в режиме наблюдения |
+| `npm run dev` | Start development server with Hot Reload |
+| `npm run build` | Build production version (minified) |
+| `npm run start` | Same as `npm run dev` |
+| `npm run test` | Run tests (Jest) |
+| `npm run test:watch` | Run tests in watch mode |
 
 ---
 
-## 📚 Документация
+## 📚 Documentation
 
-- **[SCSS-документация](docs/SCSS-GUIDE.md)** — подробное описание всех функций, миксинов и компонентов.
+- **[SCSS Documentation](docs/SCSS-GUIDE.md)** — detailed description of all functions, mixins, and components.
 
-### Основные функции SCSS
+### Key SCSS Functions
 
 ```scss
 @use '1-settings' as settings;
 @use '2-tools' as tools;
 
-// Отступы
+// Spacing
 .element {
   padding: tools.spacing(4); // → 16px
   margin: tools.spacing(6);  // → 24px
 }
 
-// Адаптивность
+// Responsiveness
 .element {
   font-size: 14px;
-  
+
   @include tools.respond-to('md') {
     font-size: 18px;
   }
 }
 
-// Цвета
+// Colors
 .element {
   color: tools.color('primary');
   background: var(--color-background-secondary);
 }
 
-// Сетка
+// Grid
 <div class="row">
-  <div class="col-4">Колонка</div>
+  <div class="col-4">Column</div>
 </div>
 ```
 
 ---
 
-## 🎨 Как использовать
+## 🎨 How to Use
 
-### Подключение в HTML
+### Include in HTML
 
 ```html
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой проект</title>
-    
-    <!-- Подключаем стили -->
+    <title>My Project</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="build/css/main.min.css">
 </head>
 <body>
-    <!-- Контент -->
-    
-    <!-- Подключаем скрипты -->
+    <!-- Content -->
+
+    <!-- Scripts -->
     <script src="build/js/main.min.js"></script>
 </body>
 </html>
 ```
 
-### Пример компонента
+### Component Example
 
 ```html
-<!-- Кнопка -->
+<!-- Button -->
 <button class="btn btn--primary">Primary</button>
 
-<!-- Карточка -->
+<!-- Card -->
 <div class="card">
     <div class="card__image">
         <img src="image.jpg" alt="...">
     </div>
     <div class="card__content">
-        <h3 class="card__title">Заголовок</h3>
-        <p class="card__description">Описание</p>
-        <button class="btn btn--primary">Купить</button>
+        <h3 class="card__title">Title</h3>
+        <p class="card__description">Description</p>
+        <button class="btn btn--primary">Buy</button>
     </div>
 </div>
 
-<!-- Модальное окно -->
-<button data-modal-trigger="my-modal">Открыть</button>
+<!-- Modal -->
+<button data-modal-trigger="my-modal">Open</button>
 
 <div id="my-modal" class="modal" data-modal>
     <div class="modal__content">
         <div class="modal__header">
-            <h3>Заголовок</h3>
+            <h3>Title</h3>
             <button data-modal-close>×</button>
         </div>
         <div class="modal__body">
-            <p>Содержимое</p>
+            <p>Content</p>
         </div>
     </div>
 </div>
 ```
 
-### Переключение темы
+### Theme Switching
 
 ```javascript
-// Через JS
+// Via JS
 document.documentElement.setAttribute('data-theme', 'dark');
 
-// Или через кнопку (уже реализовано в ThemeManager)
+// Or via button (already implemented in ThemeManager)
 ```
 
 ---
 
-## 👥 Вклад в проект
+## 👥 Contributing
 
-1. Форкни репозиторий.
-2. Создай ветку для фичи: `git checkout -b feature/my-feature`.
-3. Внеси изменения и закоммить их: `git commit -m '✨ Добавил новую фичу'`.
-4. Отправь в свой форк: `git push origin feature/my-feature`.
-5. Создай Pull Request в основную ветку.
-
----
-
-## 📄 Лицензия
-
-Этот проект распространяется под лицензией MIT. Подробнее в файле [LICENSE](LICENSE).
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/my-feature`.
+3. Make changes and commit: `git commit -m '✨ Add new feature'`.
+4. Push to your fork: `git push origin feature/my-feature`.
+5. Create a Pull Request to the main branch.
 
 ---
 
-## 🤝 Контакты
+## 📄 License
 
-Если есть вопросы, пиши в [Issues](https://github.com/ваш-ник/core4/issues).
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Версия:** 0.1.0 Альфа  
-**Обновлено:** Август 2026  
-**Автор:** Георгий Киосов
+## 🤝 Contact
+
+If you have questions, open an [Issue](https://github.com/your-username/core4/issues).
+
+---
+
+**Version:** 0.1.0 Alpha  
+**Updated:** August 2026  
+**Author:** Georgiy Kiosov

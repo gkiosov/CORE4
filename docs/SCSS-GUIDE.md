@@ -1,29 +1,29 @@
-# 📘 SCSS-документация дизайн-системы
+# 📘 SCSS Design System Documentation
 
-> **Версия:** 0.1.0 Альфа  
-> **Обновлено:** Август 2026  
-> **Совместимость:** Dart Sass 1.80+
-
----
-
-## 📋 Содержание
-
-1. [Введение](#введение)
-2. [Модульная система](#-модульная-система-settings)
-3. [Функции (Tools)](#-функции-tools)
-4. [Миксины (Mixins)](#-миксины-mixins)
-5. [Цвета и темизация](#-цвета-и-темизация)
-6. [Сетка (Grid)](#-сетка-grid)
-7. [Компоненты](#-компоненты)
-8. [Быстрый старт](#-быстрый-старт)
+> **Version:** 0.1.0 Alpha  
+> **Updated:** August 2026  
+> **Compatibility:** Dart Sass 1.80+
 
 ---
 
-## Введение
+## 📋 Table of Contents
 
-Эта документация описывает SCSS-систему дизайн-системы. Все размеры и отступы кратны базовому модулю **4px**, что обеспечивает визуальный ритм и предсказуемость.
+1. [Introduction](#introduction)
+2. [Modular System (Settings)](#-modular-system-settings)
+3. [Functions (Tools)](#-functions-tools)
+4. [Mixins](#-mixins)
+5. [Colors & Theming](#-colors--theming)
+6. [Grid](#-grid)
+7. [Components](#-components)
+8. [Quick Start](#-quick-start)
 
-**Импорт системы:**
+---
+
+## Introduction
+
+This documentation describes the SCSS system of the design system. All sizes and spacing are multiples of the base unit **4px**, ensuring visual rhythm and predictability.
+
+**System import:**
 ```scss
 @use '1-settings' as settings;
 @use '2-tools' as tools;
@@ -31,17 +31,17 @@
 
 ---
 
-## 🧱 Модульная система (Settings)
+## 🧱 Modular System (Settings)
 
-### Базовый модуль
+### Base Unit
 
 ```scss
-$module: 4px; // Базовый модуль
+$module: 4px; // Base unit
 ```
 
-### Отступы (spacing)
+### Spacing
 
-| Ключ | Значение | Ключ | Значение |
+| Key | Value | Key | Value |
 | :--- | :--- | :--- | :--- |
 | `0` | 0 | `10` | 40px |
 | `1` | 4px | `11` | 44px |
@@ -54,7 +54,7 @@ $module: 4px; // Базовый модуль
 | `8` | 32px | | |
 | `9` | 36px | | |
 
-**Использование:**
+**Usage:**
 ```scss
 .element {
   padding: settings.spacing(4); // → 16px
@@ -63,9 +63,9 @@ $module: 4px; // Базовый модуль
 }
 ```
 
-### Брейкпоинты
+### Breakpoints
 
-| Breakpoint | Значение | Префикс |
+| Breakpoint | Value | Prefix |
 | :--- | :--- | :--- |
 | `xs` | 375px | `col-xs-*` |
 | `sm` | 576px | `col-sm-*` |
@@ -76,10 +76,10 @@ $module: 4px; // Базовый модуль
 
 ---
 
-## 🧪 Функции (Tools)
+## 🧪 Functions (Tools)
 
 ### `module($modules)`
-Преобразует количество модулей в пиксели.
+Converts the number of modules to pixels.
 
 ```scss
 @function module($modules) {
@@ -87,7 +87,7 @@ $module: 4px; // Базовый модуль
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   padding: tools.module(4); // → 16px
@@ -97,7 +97,7 @@ $module: 4px; // Базовый модуль
 ```
 
 ### `spacing($name)`
-Возвращает значение отступа по ключу.
+Returns a spacing value by key.
 
 ```scss
 @function spacing($name) {
@@ -106,7 +106,7 @@ $module: 4px; // Базовый модуль
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   padding: tools.spacing(4); // → 16px
@@ -114,14 +114,14 @@ $module: 4px; // Базовый модуль
   gap: tools.spacing(3);     // → 12px
 }
 
-// С кавычками тоже работает
+// Quoted keys also work
 .element {
   padding: tools.spacing('4'); // → 16px
 }
 ```
 
 ### `radius($name)`
-Возвращает значение скругления.
+Returns a border-radius value.
 
 ```scss
 @function radius($name) {
@@ -133,23 +133,23 @@ $module: 4px; // Базовый модуль
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .card {
   border-radius: tools.radius('md');  // → 8px
 }
 
 .btn {
-  border-radius: tools.radius('full'); // → 9999px (круг)
+  border-radius: tools.radius('full'); // → 9999px (pill)
 }
 ```
 
-**Допустимые ключи:** `'none'` (0), `'sm'` (4px), `'md'` (8px), `'lg'` (12px), `'xl'` (16px), `'full'` (9999px)
+**Valid keys:** `'none'` (0), `'sm'` (4px), `'md'` (8px), `'lg'` (12px), `'xl'` (16px), `'full'` (9999px)
 
 ### `font-size($name)`
-Возвращает размер шрифта.
+Returns a font size.
 
-| Ключ | Значение | Ключ | Значение |
+| Key | Value | Key | Value |
 | :--- |:---------| :--- | :--- |
 | `xs` | 16px     | `2xl` | 28px |
 | `sm` | 18px     | `3xl` | 32px |
@@ -158,7 +158,7 @@ $module: 4px; // Базовый модуль
 | `lg` | 20px     | `6xl` | 44px |
 | `xl` | 24px     | `7xl` | 48px |
 
-**Пример:**
+**Example:**
 ```scss
 h1 {
   font-size: tools.font-size('3xl'); // → 32px
@@ -170,9 +170,9 @@ p {
 ```
 
 ### `line-height($name)`
-Возвращает межстрочный интервал.
+Returns a line-height value.
 
-| Ключ | Значение | Ключ | Значение |
+| Key | Value | Key | Value |
 | :--- |:---------| :--- | :--- |
 | `xs` | 16px     | `2xl` | 32px |
 | `sm` | 18px     | `3xl` | 36px |
@@ -181,7 +181,7 @@ p {
 | `lg` | 24px     | `6xl` | 48px |
 | `xl` | 28px     | `7xl` | 52px |
 
-**Пример:**
+**Example:**
 ```scss
 p {
   line-height: tools.line-height('base'); // → 20px
@@ -189,40 +189,40 @@ p {
 ```
 
 ### `color($name, $shade: '500')`
-Универсальная функция для получения цвета. Работает с основными и семантическими цветами.
+Universal function for retrieving colors. Works with primary and semantic colors.
 
 ```scss
 @function color($name, $shade: '500') {
-  // Проверяет семантические цвета, затем основную палитру
+  // Checks semantic colors, then the main palette
 }
 ```
 
-**Примеры:**
+**Examples:**
 ```scss
-// Основной цвет
+// Primary color
 .btn--danger {
   background: tools.color('red', '500');
 }
 
-// Семантический цвет
+// Semantic color
 .btn--primary {
   background: tools.color('primary');
-  // или с оттенком
+  // or with a shade
   background: tools.color('primary', '300');
 }
 
-// С прозрачностью
+// With transparency
 .mark {
   background: rgba(tools.color('warning'), 0.2);
 }
 ```
 
-**Допустимые значения:**
-- **Основные:** `'red'`, `'blue'`, `'green'`, `'grey'`, и т.д.
-- **Семантические:** `'primary'`, `'success'`, `'warning'`, `'danger'`, `'info'`
+**Valid values:**
+- **Primary:** `'red'`, `'blue'`, `'green'`, `'grey'`, etc.
+- **Semantic:** `'primary'`, `'success'`, `'warning'`, `'danger'`, `'info'`
 
 ### `breakpoint($name)`
-Возвращает значение брейкпоинта.
+Returns a breakpoint value.
 
 ```scss
 @function breakpoint($name) {
@@ -230,7 +230,7 @@ p {
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .container {
   max-width: tools.breakpoint('xl'); // → 1200px
@@ -238,7 +238,7 @@ p {
 ```
 
 ### `clamp-fluid($min, $max)`
-Создаёт резиновое значение для адаптивной типографики.
+Creates a fluid value for responsive typography.
 
 ```scss
 @function clamp-fluid($min, $max) {
@@ -248,16 +248,16 @@ p {
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 h1 {
   font-size: tools.clamp-fluid(24px, 48px);
-  // От 24px на мобилках до 48px на десктопе
+  // From 24px on mobile to 48px on desktop
 }
 ```
 
 ### `vh($value, $type: 'svh')`
-Создаёт безопасное viewport-значение для мобильных устройств.
+Creates a safe viewport value for mobile devices.
 
 ```scss
 @function vh($value, $type: 'svh') {
@@ -265,7 +265,7 @@ h1 {
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .hero {
   min-height: tools.vh(100, 'svh'); // → 100svh
@@ -278,12 +278,12 @@ h1 {
 
 ---
 
-## 🛠 Миксины (Mixins)
+## 🛠 Mixins
 
-### Адаптивность
+### Responsiveness
 
 #### `respond-to($breakpoint)`
-Mobile-first. Применяет стили от указанного брейкпоинта и выше.
+Mobile-first. Applies styles from the specified breakpoint and up.
 
 ```scss
 @mixin respond-to($breakpoint) {
@@ -296,23 +296,23 @@ Mobile-first. Применяет стили от указанного брейк
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   font-size: 14px;
-  
+
   @include tools.respond-to('md') {
-    font-size: 18px; // На планшетах и выше
+    font-size: 18px; // On tablets and up
   }
-  
+
   @include tools.respond-to('lg') {
-    font-size: 20px; // На десктопе и выше
+    font-size: 20px; // On desktop and up
   }
 }
 ```
 
 #### `respond-below($breakpoint)`
-Desktop-first. Применяет стили до указанного брейкпоинта.
+Desktop-first. Applies styles below the specified breakpoint.
 
 ```scss
 @mixin respond-below($breakpoint) {
@@ -325,21 +325,21 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   font-size: 18px;
-  
+
   @include tools.respond-below('md') {
-    font-size: 14px; // На мобилках и планшетах
+    font-size: 14px; // On mobile and tablets
   }
 }
 ```
 
-### Отступы (логические свойства)
+### Spacing (Logical Properties)
 
 #### `margin-block($top, $bottom)`
-Устанавливает вертикальные внешние отступы.
+Sets vertical outer spacing.
 
 ```scss
 @mixin margin-block($top, $bottom: null) {
@@ -351,7 +351,7 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   @include tools.margin-block(4);       // → margin-block: 16px 16px;
@@ -360,7 +360,7 @@ Desktop-first. Применяет стили до указанного брей�
 ```
 
 #### `padding-block($top, $bottom)`
-Устанавливает вертикальные внутренние отступы.
+Sets vertical inner spacing.
 
 ```scss
 @mixin padding-block($top, $bottom: null) {
@@ -372,7 +372,7 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .card {
   @include tools.padding-block(4);      // → padding-block: 16px 16px;
@@ -381,7 +381,7 @@ Desktop-first. Применяет стили до указанного брей�
 ```
 
 #### `margin-inline($start, $end)`
-Устанавливает горизонтальные внешние отступы.
+Sets horizontal outer spacing.
 
 ```scss
 @mixin margin-inline($start, $end: null) {
@@ -393,7 +393,7 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .element {
   @include tools.margin-inline(6);      // → margin-inline: 24px 24px;
@@ -402,7 +402,7 @@ Desktop-first. Применяет стили до указанного брей�
 ```
 
 #### `padding-inline($start, $end)`
-Устанавливает горизонтальные внутренние отступы.
+Sets horizontal inner spacing.
 
 ```scss
 @mixin padding-inline($start, $end: null) {
@@ -414,7 +414,7 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .container {
   @include tools.padding-inline(6);     // → padding-inline: 24px 24px;
@@ -422,15 +422,15 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-### Адаптивные отступы
+### Adaptive Spacing
 
 #### `adaptive($property, $base, $scales)`
-Меняет отступ в зависимости от брейкпоинта.
+Changes spacing depending on the breakpoint.
 
 ```scss
 @mixin adaptive($property, $base, $scales) {
   #{$property}: module($base);
-  
+
   @each $breakpoint, $multiplier in $scales {
     @include respond-to($breakpoint) {
       #{$property}: module($base * $multiplier);
@@ -439,10 +439,10 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .section {
-  // padding: 32px на мобилках, 48px на планшетах, 64px на десктопе
+  // padding: 32px on mobile, 48px on tablet, 64px on desktop
   @include tools.adaptive(
     padding,
     8,
@@ -466,10 +466,10 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-### Сетка
+### Grid
 
 #### `make-row($gap: $grid-gap)`
-Создаёт строку с 12 колонками.
+Creates a row with 12 columns.
 
 ```scss
 @mixin make-row($gap: settings.$grid-gap) {
@@ -479,7 +479,7 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .products {
   @include tools.make-row(24px);
@@ -487,7 +487,7 @@ Desktop-first. Применяет стили до указанного брей�
 ```
 
 #### `make-col($span)`
-Задаёт ширину колонки (от 1 до 12).
+Sets column width (from 1 to 12).
 
 ```scss
 @mixin make-col($span) {
@@ -495,19 +495,19 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .sidebar {
-  @include tools.make-col(3); // 3 колонки из 12
+  @include tools.make-col(3); // 3 out of 12 columns
 }
 
 .content {
-  @include tools.make-col(9); // 9 колонок из 12
+  @include tools.make-col(9); // 9 out of 12 columns
 }
 ```
 
 #### `make-col-exact($start, $end)`
-Точное позиционирование колонки.
+Exact column positioning.
 
 ```scss
 @mixin make-col-exact($start, $end) {
@@ -515,36 +515,36 @@ Desktop-first. Применяет стили до указанного брей�
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .hero-text {
-  @include tools.make-col-exact(2, 8);  // Со 2-й по 8-ю
+  @include tools.make-col-exact(2, 8);  // From 2nd to 8th
 }
 
 .hero-image {
-  @include tools.make-col-exact(9, 13); // С 9-й по 13-ю (12 колонок + 1)
+  @include tools.make-col-exact(9, 13); // From 9th to 13th (12 columns + 1)
 }
 ```
 
-### Типографика
+### Typography
 
 #### `font($size, $weight: normal, $line-height: normal, $color: var(--color-text))`
-Устанавливает все свойства текста одной строкой.
+Sets all text properties in one line.
 
 ```scss
 @mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
   font-size: font-size($size);
   font-weight: map.get(settings.$font-weight, $weight);
-  
+
   @if $line-height != normal {
     line-height: line-height($line-height);
   }
-  
+
   color: $color;
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .card__title {
   @include tools.font('lg', 'semibold', 'tight', var(--color-text));
@@ -558,52 +558,52 @@ Desktop-first. Применяет стили до указанного брей�
 ```
 
 #### `heading($level: 1)`
-Стилизует заголовки H1-H6.
+Styles H1-H6 headings.
 
 ```scss
 @mixin heading($level: 1) {
   $sizes: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
   $line-heights: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
-  
+
   $size: map.get($sizes, $level);
   $lh: map.get($line-heights, $level);
-  
+
   @include font($size, 'bold', $lh);
   @include margin-block(0, 4);
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 h1 { @include tools.heading(1); } // → font-size: 48px; font-weight: 700; line-height: 52px;
 h2 { @include tools.heading(2); } // → font-size: 44px; font-weight: 700; line-height: 48px;
 h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line-height: 44px;
 ```
 
-### Темизация
+### Theming
 
 #### `theme-aware($property, $light-value, $dark-value)`
-Переключает значения свойства в зависимости от темы.
+Switches property values depending on the theme.
 
 ```scss
 @mixin theme-aware($property, $light-value, $dark-value) {
   #{$property}: $light-value;
-  
+
   @media (prefers-color-scheme: dark) {
     #{$property}: $dark-value;
   }
-  
+
   [data-theme="dark"] & {
     #{$property}: $dark-value;
   }
-  
+
   [data-theme="light"] & {
     #{$property}: $light-value;
   }
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .card {
   @include tools.theme-aware('background', #ffffff, #0f172a);
@@ -611,120 +611,120 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-### Компоненты и утилиты
+### Components & Utilities
 
 #### `@mixin hover($property: all, $duration: settings.$transition-base)`
-Добавляет секцию @media (hover: hover) для класса с описанием :hover и :focus-visible, а так же параметры анимации.
+Adds a `@media (hover: hover)` section for the class with `:hover` and `:focus-visible`, plus animation parameters.
 
 ```scss
 @mixin hover($property: all, $duration: settings.$transition-base, $timing: ease) {
-	// Transition выставляем ВСЕГДА (он не мешает на touch)
-	@if $property != none {
-		transition: $property $duration $timing;
-	}
+  // Transition is ALWAYS set (it doesn't interfere on touch)
+  @if $property != none {
+    transition: $property $duration $timing;
+  }
 
-	// Hover только для устройств с настоящим наведением
-	@media (hover: hover) {
-		&:hover {
-			@content;
-		}
-	}
+  // Hover only for devices with real hover
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
 
-	// Для клавиатуры — всегда показываем эффект
-	&:focus-visible {
-		@content;
-	}
+  // For keyboard — always show the effect
+  &:focus-visible {
+    @content;
+  }
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
-// Простая смена цвета (кнопка)
+// Simple color change (button)
 .btn--primary {
-	background: var(--color-primary);
-	color: var(--color-text-inverse);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
 
-	@include hover(background-color) {
-		background: var(--color-primary-hover);
-	}
+  @include hover(background-color) {
+    background: var(--color-primary-hover);
+  }
 }
 
-// Несколько свойств одновременно
+// Multiple properties at once
 .btn--secondary {
-	background: var(--color-bg-secondary);
-	color: var(--color-text);
-	border-color: var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border-color: var(--color-border);
 
-	// Перечисляем свойства, которые анимируем
-	@include hover((background-color, border-color, color)) {
-		background: var(--color-bg-hover);
-		border-color: var(--color-border-hover);
-		color: var(--color-text-hover);
-	}
+  // List the properties to animate
+  @include hover((background-color, border-color, color)) {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border-hover);
+    color: var(--color-text-hover);
+  }
 }
 
-// Анимация поднятия (карточка)
+// Lift animation (card)
 .card {
-	background: var(--color-surface);
-	box-shadow: tools.shadow('sm');
+  background: var(--color-surface);
+  box-shadow: tools.shadow('sm');
 
-	// Анимируем transform и box-shadow с кастомной длительностью
-	@include hover((transform, box-shadow), 0.25s, ease-out) {
-		transform: translateY(-4px);
-		box-shadow: tools.shadow('lg');
-	}
+  // Animate transform and box-shadow with custom duration
+  @include hover((transform, box-shadow), 0.25s, ease-out) {
+    transform: translateY(-4px);
+    box-shadow: tools.shadow('lg');
+  }
 }
 
-// Анимация масштаба (иконка/кнопка-иконка)
+// Scale animation (icon/icon button)
 .icon-btn {
-	background: transparent;
-	color: var(--color-text);
+  background: transparent;
+  color: var(--color-text);
 
-	@include hover((transform, color), 0.2s) {
-		transform: scale(1.1);
-		color: var(--color-primary);
-	}
+  @include hover((transform, color), 0.2s) {
+    transform: scale(1.1);
+    color: var(--color-primary);
+  }
 }
 
-// Смена цвета + подчёркивание (ссылка)
+// Color change + underline (link)
 .link {
-	color: var(--color-primary);
-	text-decoration: none;
-	position: relative;
+  color: var(--color-primary);
+  text-decoration: none;
+  position: relative;
 
-	@include hover((color, width), 0.3s) {
-		color: var(--color-primary-hover);
+  @include hover((color, width), 0.3s) {
+    color: var(--color-primary-hover);
 
-		// Если хочешь анимировать псевдоэлемент — делай это внутри
-		&:after {
-			width: 100%;
-		}
-	}
+    // If you want to animate a pseudo-element — do it inside
+    &:after {
+      width: 100%;
+    }
+  }
 
-	&:after {
-		content: '';
-		position: absolute;
-		bottom: -2px;
-		left: 0;
-		width: 0;
-		height: 2px;
-		background: currentColor;
-		transition: width 0.3s ease; // дублируем для плавности псевдо
-	}
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 0.3s ease; // duplicate for smooth pseudo-element
+  }
 }
 
-// Без анимации (мгновенный скачок)
+// No animation (instant snap)
 .tag {
-	background: var(--color-bg);
+  background: var(--color-bg);
 
-	@include hover(none) {
-		background: var(--color-bg-hover);
-	}
+  @include hover(none) {
+    background: var(--color-bg-hover);
+  }
 }
 ```
 
 #### `focus-ring($color: var(--color-border-focus), $offset: 2px)`
-Добавляет стили для фокуса при навигации с клавиатуры.
+Adds focus styles for keyboard navigation.
 
 ```scss
 @mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
@@ -735,10 +735,10 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .btn {
-	@include tools.focus-ring;
+  @include tools.focus-ring;
 }
 
 .input {
@@ -747,7 +747,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 ```
 
 #### `custom-scrollbar($width: 8px, $radius: 4px)`
-Создаёт кастомный скроллбар.
+Creates a custom scrollbar.
 
 ```scss
 @mixin custom-scrollbar($width: 8px, $radius: 4px) {
@@ -755,15 +755,15 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
     width: $width;
     height: $width;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: var(--scrollbar-track);
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: var(--scrollbar-thumb);
     border-radius: $radius;
-    
+
     &:hover {
       background: var(--scrollbar-thumb-hover);
     }
@@ -771,7 +771,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .modal__content {
   @include tools.custom-scrollbar(6px, 6px);
@@ -779,7 +779,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 ```
 
 #### `truncate($lines: 1)`
-Обрезает текст и добавляет многоточие.
+Truncates text and adds an ellipsis.
 
 ```scss
 @mixin truncate($lines: 1) {
@@ -796,19 +796,19 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .card__title {
-  @include tools.truncate(1); // Одна строка
+  @include tools.truncate(1); // One line
 }
 
 .card__description {
-  @include tools.truncate(3); // Три строки
+  @include tools.truncate(3); // Three lines
 }
 ```
 
 #### `center($position: absolute)`
-Центрирует элемент абсолютно.
+Centers an element absolutely.
 
 ```scss
 @mixin center($position: absolute) {
@@ -819,7 +819,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .loader {
   @include tools.center;
@@ -831,7 +831,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 ```
 
 #### `overlay($opacity: 0.5, $z-index: z-index('overlay'))`
-Создаёт затемнение для модалок.
+Creates an overlay for modals.
 
 ```scss
 @mixin overlay($opacity: 0.5, $z-index: z-index('overlay')) {
@@ -842,7 +842,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-**Пример:**
+**Example:**
 ```scss
 .modal {
   &__overlay {
@@ -853,18 +853,18 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 
 ---
 
-## 🌓 Цвета и темизация
+## 🌓 Colors & Theming
 
-### Доступные цвета
+### Available Colors
 
-| Группа | Цвета |
+| Group | Colors |
 | :--- | :--- |
-| **Основные** | red, pink, purple, deep-purple, indigo, blue, light-blue, cyan, teal, green, light-green, lime, yellow, amber, orange, deep-orange, brown, blue-grey, grey |
-| **Семантические** | primary (blue), success (green), warning (amber), danger (red), info (light-blue) |
+| **Primary** | red, pink, purple, deep-purple, indigo, blue, light-blue, cyan, teal, green, light-green, lime, yellow, amber, orange, deep-orange, brown, blue-grey, grey |
+| **Semantic** | primary (blue), success (green), warning (amber), danger (red), info (light-blue) |
 
-### CSS-переменные
+### CSS Variables
 
-Все цвета доступны через CSS-переменные:
+All colors are available via CSS variables:
 
 ```css
 :root {
@@ -875,7 +875,7 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-### Использование в компонентах
+### Usage in Components
 
 ```scss
 .element {
@@ -885,70 +885,70 @@ h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line
 }
 ```
 
-### Переключение темы
+### Theme Switching
 
 ```html
-<!-- Светлая тема -->
+<!-- Light theme -->
 <html data-theme="light">
 
-<!-- Тёмная тема -->
+<!-- Dark theme -->
 <html data-theme="dark">
 ```
 
-**JavaScript для переключения:**
+**JavaScript for switching:**
 ```javascript
 document.documentElement.setAttribute('data-theme', 'dark');
 ```
 
 ---
 
-## 🎨 Сетка (Grid)
+## 🎨 Grid
 
-### Базовая сетка
+### Basic Grid
 
 ```html
 <div class="row">
-  <div class="col-4">Колонка 1</div>
-  <div class="col-4">Колонка 2</div>
-  <div class="col-4">Колонка 3</div>
+  <div class="col-4">Column 1</div>
+  <div class="col-4">Column 2</div>
+  <div class="col-4">Column 3</div>
 </div>
 ```
 
-### Адаптивные колонки
+### Responsive Columns
 
 ```html
 <div class="row">
   <div class="col-12 col-md-6 col-lg-4">
-    <!-- На мобилке: 1 колонка -->
-    <!-- На планшете: 2 колонки -->
-    <!-- На десктопе: 3 колонки -->
+    <!-- Mobile: 1 column -->
+    <!-- Tablet: 2 columns -->
+    <!-- Desktop: 3 columns -->
   </div>
 </div>
 ```
 
-### Доступные префиксы
+### Available Prefixes
 
-| Префикс | Брейкпоинт |
+| Prefix | Breakpoint |
 | :--- | :--- |
-| `col-` | Все экраны |
+| `col-` | All screens |
 | `col-sm-` | ≥576px |
 | `col-md-` | ≥768px |
 | `col-lg-` | ≥992px |
 | `col-xl-` | ≥1200px |
 | `col-xxl-` | ≥1400px |
 
-### Точное позиционирование
+### Exact Positioning
 
 ```html
 <div class="row">
   <div class="col-start-3 col-end-9">
-    <!-- Начинается с колонки 3, заканчивается на 9 -->
-    <!-- Занимает колонки 3, 4, 5, 6, 7, 8 -->
+    <!-- Starts at column 3, ends at 9 -->
+    <!-- Occupies columns 3, 4, 5, 6, 7, 8 -->
   </div>
 </div>
 ```
 
-### Gap (отступы между колонками)
+### Gap (spacing between columns)
 
 ```html
 <div class="row gap-4">  <!-- 16px gap -->
@@ -956,22 +956,22 @@ document.documentElement.setAttribute('data-theme', 'dark');
 <div class="row gap-8">  <!-- 32px gap -->
 ```
 
-### Выравнивание в сетке
+### Alignment in Grid
 
 ```html
 <div class="row justify-center align-center">
-  <div class="col-4">Центрированный контент</div>
+  <div class="col-4">Centered content</div>
 </div>
 ```
 
 ---
 
-## 🧩 Компоненты
+## 🧩 Components
 
-### Кнопки (`.btn`)
+### Buttons (`.btn`)
 
 ```html
-<!-- Варианты -->
+<!-- Variants -->
 <button class="btn btn--primary">Primary</button>
 <button class="btn btn--secondary">Secondary</button>
 <button class="btn btn--success">Success</button>
@@ -981,119 +981,119 @@ document.documentElement.setAttribute('data-theme', 'dark');
 <button class="btn btn--outline">Outline</button>
 <button class="btn btn--ghost">Ghost</button>
 
-<!-- Размеры -->
+<!-- Sizes -->
 <button class="btn btn--sm">Small</button>
 <button class="btn btn--lg">Large</button>
 
-<!-- Состояния -->
+<!-- States -->
 <button class="btn btn--disabled" disabled>Disabled</button>
 <button class="btn btn--loading">Loading</button>
 ```
 
-### Карточки (`.card`)
+### Cards (`.card`)
 
 ```html
 <div class="card">
   <div class="card__image">
-    <img src="image.jpg" alt="Описание">
+    <img src="image.jpg" alt="Description">
   </div>
   <div class="card__content">
-    <h3 class="card__title">Заголовок</h3>
-    <p class="card__description">Описание карточки</p>
+    <h3 class="card__title">Title</h3>
+    <p class="card__description">Card description</p>
     <div class="card__footer">
-      <span class="card__price">49 990 ₽</span>
-      <button class="btn btn--primary">В корзину</button>
+      <span class="card__price">49,990 ₽</span>
+      <button class="btn btn--primary">Add to cart</button>
     </div>
   </div>
 </div>
 
-<!-- Выделенная карточка -->
+<!-- Featured card -->
 <div class="card card--featured">...</div>
 
-<!-- Маленькая карточка -->
+<!-- Small card -->
 <div class="card card--small">...</div>
 ```
 
-### Модальные окна (`.modal`)
+### Modals (`.modal`)
 
 ```html
-<!-- Модалка -->
+<!-- Modal -->
 <div id="my-modal" class="modal" data-modal>
   <div class="modal__content">
     <div class="modal__header">
-      <h3 class="modal__title">Заголовок</h3>
+      <h3 class="modal__title">Title</h3>
       <button class="modal__close" data-modal-close>×</button>
     </div>
     <div class="modal__body">
-      <p>Содержимое модального окна</p>
+      <p>Modal window content</p>
     </div>
     <div class="modal__footer">
-      <button class="btn btn--secondary">Отмена</button>
-      <button class="btn btn--primary">Подтвердить</button>
+      <button class="btn btn--secondary">Cancel</button>
+      <button class="btn btn--primary">Confirm</button>
     </div>
   </div>
 </div>
 
-<!-- Триггер -->
-<button data-modal-trigger="my-modal">Открыть модалку</button>
+<!-- Trigger -->
+<button data-modal-trigger="my-modal">Open modal</button>
 ```
 
-**Размеры модалки:**
+**Modal sizes:**
 ```html
 <div class="modal__content modal__content--sm">  <!-- 400px -->
 <div class="modal__content modal__content--lg">  <!-- 800px -->
 <div class="modal__content modal__content--xl">  <!-- 1140px -->
-<div class="modal__content modal__content--full"> <!-- На весь экран -->
+<div class="modal__content modal__content--full"> <!-- Full screen -->
 ```
 
 ---
 
-## ✅ Быстрый старт
+## ✅ Quick Start
 
-### Подключение в проекте
+### Include in a Project
 
 ```scss
-// 1. Импорт всей системы
+// 1. Import the entire system
 @use '1-settings' as settings;
 @use '2-tools' as tools;
 
-// 2. Использование отступов
+// 2. Use spacing
 .element {
   padding: tools.spacing(4);
   margin: tools.spacing(6);
 }
 
-// 3. Использование сетки
+// 3. Use grid
 .grid {
   @include tools.make-row;
 }
 
-// 4. Использование цветов
+// 4. Use colors
 .element {
   color: tools.color('primary');
   background: var(--color-background-secondary);
 }
 
-// 5. Использование адаптивности
+// 5. Use responsiveness
 .element {
   font-size: tools.font-size('base');
-  
+
   @include tools.respond-to('md') {
     font-size: tools.font-size('lg');
   }
 }
 ```
 
-### Использование в HTML
+### Usage in HTML
 
 ```html
-<!-- Контейнер -->
+<!-- Container -->
 <div class="container">
-  <!-- Строка -->
+  <!-- Row -->
   <div class="row">
-    <!-- Колонки -->
+    <!-- Columns -->
     <div class="col-md-6 col-lg-4">
-      <!-- Контент -->
+      <!-- Content -->
     </div>
   </div>
 </div>
@@ -1101,14 +1101,14 @@ document.documentElement.setAttribute('data-theme', 'dark');
 
 ---
 
-## 📚 Дополнительные ресурсы
+## 📚 Additional Resources
 
-- [OKLCH Color Picker](https://oklch.com/) — визуальный инструмент для цветов
-- [CSS Color Level 4](https://www.w3.org/TR/css-color-4/) — спецификация
-- [Logical Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties) — логические свойства в CSS
+- [OKLCH Color Picker](https://oklch.com/) — visual tool for colors
+- [CSS Color Level 4](https://www.w3.org/TR/css-color-4/) — specification
+- [Logical Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties) — logical properties in CSS
 
 ---
 
-**Версия:** 1.0.0  
-**Обновлено:** Август 2026  
-**Автор:** core4 Design System
+**Version:** 1.0.0  
+**Updated:** August 2026  
+**Author:** core4 Design System

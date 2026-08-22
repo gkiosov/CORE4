@@ -1,110 +1,115 @@
-# Документация JavaScript-дизайн системы
+# JavaScript Design System Documentation
 
-> Версия: 0.1.0  
-> Модульная клиентская архитектура на чистом JavaScript (ES6+).
+> Version: 0.1.0  
+> Modular client-side architecture in vanilla JavaScript (ES6+).
 
 ---
 
-## Содержание
+## Table of Contents
 
-1. [Общая информация](#1-общая-информация)
-2. [Архитектура](#2-архитектура)
-3. [Ядро (Core)](#3-ядро-core)
-4. [Утилиты (Utilities)](#4-утилиты-utilities)
-5. [Компоненты (Modules)](#5-компоненты-modules)
+1. [General Information](#1-general-information)
+2. [Architecture](#2-architecture)
+3. [Core](#3-core)
+4. [Utilities](#4-utilities)
+5. [Components (Modules)](#5-components-modules)
    - [Accordion](#accordion)
-6. [Инициализация и глобальный API](#6-инициализация-и-глобальный-api)
-7. [HTML data-атрибуты](#7-html-data-атрибуты)
-8. [Примеры использования](#8-примеры-использования)
+   - [Button](#button)
+   - [Dropdown](#dropdown)
+   - [LikeButton](#likebutton)
+6. [Initialization, Configuration & Build Optimization](#6-initialization-configuration--build-optimization)
+7. [HTML data-attributes](#7-html-data-attributes)
+8. [Usage Examples](#8-usage-examples)
+9. [CMS Integration](#9-cms-integration)
+10. [Optimization Checklist](#10-optimization-checklist)
 
 ---
 
-## 1. Общая информация
+## 1. General Information
 
-Дизайн-система построена по принципу **ITCSS** для стилей и **модульной архитектуры** для скриптов. Каждый компонент самоинициализируется по `data-*` атрибутам в HTML. Система не зависит от внешних фреймворков.
+The design system is built on the **ITCSS** principle for styles and a **modular architecture** for scripts. Each component self-initializes via `data-*` attributes in HTML. The system has no external framework dependencies.
 
-### Стек
-- **SCSS** — модульная типографика, OKLCH-палитра, CSS-переменные тем
-- **JavaScript (ES6+)** — классы, модули, `IntersectionObserver`
-- **Webpack 5** — сборка, минификация, dev-server
+### Stack
+- **SCSS** — modular typography, OKLCH palette, CSS variable themes
+- **JavaScript (ES6+)** — classes, modules, `IntersectionObserver`
+- **Webpack 5** — bundling, minification, dev-server
 
 ---
 
-## 2. Архитектура
+## 2. Architecture
 
 ```
 source/js/
-├── main.js                 # Точка входа, класс App
+├── main.js                 # Entry point, App class
 ├── core/
-│   ├── _index.js           # Экспорт ядра
-│   ├── _config.js          # Единый конфиг (селекторы, клавиши, состояния)
-│   ├── _events.js          # Кастомные события (CustomEvent)
-│   └── _helpers.js         # Утилиты: debounce, throttle, generateId и др.
+│   ├── _index.js           # Core exports
+│   ├── _config.js          # Unified config (selectors, keys, states)
+│   ├── _events.js          # Custom events (CustomEvent)
+│   └── _helpers.js         # Utilities: debounce, throttle, generateId, etc.
 ├── utilities/
-│   ├── _dom.js             # DOM-манипуляции (qs, qsa, addClass и др.)
-│   ├── _keyboard.js        # Проверка клавиш (Escape, Enter, Tab, Arrows)
-│   ├── _focus-trap.js      # Ловушка фокуса для модалок
-│   └── _viewport.js        # IntersectionObserver: reveal-анимации
+│   ├── _dom.js             # DOM manipulations (qs, qsa, addClass, etc.)
+│   ├── _keyboard.js        # Key checks (Escape, Enter, Tab, Arrows)
+│   ├── _focus-trap.js      # Focus trap for modals
+│   └── _viewport.js        # IntersectionObserver: reveal animations
 └── modules/
     ├── accordion/
-    │   └── _accordion.js   # Класс Accordion + initAccordions()
+    │   └── _accordion.js   # Accordion class + initAccordions()
     ├── modal/
-    │   ├── _index.js       # Инициализация модалок
-    │   └── _modal.js       # Класс Modal
+    │   ├── _index.js       # Modal initialization
+    │   └── _modal.js       # Modal class
     └── theme/
-        └── _theme.js       # Класс ThemeManager
+        └── _theme.js       # ThemeManager class
 ```
 
-### Принципы
-1. **Каждый модуль сам находит себя** в DOM по `data-*` атрибутам.
-2. **Модули не зависят друг от друга напрямую** — только через `core` и `utilities`.
-3. **Event delegation** вместо навешивания слушателей на каждый элемент.
+### Principles
+1. **Every module finds itself** in the DOM via `data-*` attributes.
+2. **Modules do not depend on each other directly** — only through `core` and `utilities`.
+3. **Event delegation** instead of attaching listeners to every element.
 4. **Accessibility first** — `aria-*`, `role`, `tabindex`, focus-trap.
 
 ---
 
-## 3. Ядро (Core)
+## 3. Core
 
 ### 3.1. CONFIG
 
-Единый источник истины для селекторов, классов состояний, клавиш и анимаций.
+Single source of truth for selectors, state classes, keys, and animations.
 
 ```js
 import { CONFIG } from './core/_index.js';
 
-// Примеры использования:
+// Usage examples:
 CONFIG.SELECTORS.MODAL        // '[data-modal]'
 CONFIG.STATE.OPEN             // 'is-open'
 CONFIG.KEYBOARD.ESC           // 'Escape'
 CONFIG.ANIMATION.DURATION.MEDIUM // 300
 ```
 
-| Ключ | Описание                                                                      |
+| Key | Description                                                                      |
 |------|-------------------------------------------------------------------------------|
-| `PREFIX` | Префикс `'core4'` для ID и классов                                            |
-| `STATE` | Классы состояний: `ACTIVE`, `OPEN`, `CLOSED`, `HIDDEN`, `LOADING`, `DISABLED` |
-| `ATTR` | Data-атрибуты: `THEME`, `MODAL`, `ACCORDION` и др.                            |
-| `SELECTORS` | CSS-селекторы для автоинициализации                                           |
-| `KEYBOARD` | Коды клавиш для обработчиков                                                  |
-| `ANIMATION` | Длительности и easing-функции                                                 |
-| `THEME_KEY` | Ключ для `localStorage` (`'core4-theme'`)                                     |
+| `PREFIX` | Prefix `'core4'` for IDs and classes                                            |
+| `STATE` | State classes: `ACTIVE`, `OPEN`, `CLOSED`, `HIDDEN`, `LOADING`, `DISABLED` |
+| `ATTR` | Data-attributes: `THEME`, `MODAL`, `ACCORDION`, etc.                            |
+| `SELECTORS` | CSS selectors for auto-initialization                                           |
+| `KEYBOARD` | Key codes for handlers                                                  |
+| `ANIMATION` | Durations and easing functions                                                 |
+| `THEME_KEY` | Key for `localStorage` (`'core4-theme'`)                                     |
 
 ### 3.2. EventManager
 
-Диспатч и подписка на кастомные события.
+Dispatch and subscribe to custom events.
 
 ```js
 import { EventManager } from './core/_index.js';
 
-// Отправка события
+// Dispatch event
 EventManager.dispatch(element, 'modal:opened', { trigger: button });
 
-// Подписка
+// Subscribe
 EventManager.on(element, 'modal:opened', (e) => {
     console.log(e.detail.trigger);
 });
 
-// Одноразовая подписка
+// One-time subscription
 EventManager.once(element, 'theme:changed', callback);
 ```
 
@@ -114,197 +119,558 @@ EventManager.once(element, 'theme:changed', callback);
 import { debounce, throttle, generateId, deepClone, isVisible, isPlainObject, getNestedValue } from './core/_index.js';
 ```
 
-| Функция | Описание | Пример |
+| Function | Description | Example |
 |---------|----------|--------|
-| `generateId(prefix)` | Уникальный ID с `crypto.randomUUID()` | `generateId('btn') // 'btn-a1b2...'` |
-| `debounce(fn, delay)` | Дебаунс | `debounce(resizeHandler, 200)` |
-| `throttle(fn, delay)` | Троттлинг | `throttle(scrollHandler, 100)` |
-| `deepClone(obj)` | Глубокое клонирование через `structuredClone` | `deepClone(config)` |
-| `isVisible(el)` | Видим ли элемент (не `display:none`, не `opacity:0`) | `isVisible(card)` |
-| `isPlainObject(val)` | Является ли значение plain object | `isPlainObject({}) // true` |
-| `getNestedValue(obj, path, fallback)` | Безопасный доступ по пути | `getNestedValue(user, 'profile.name')` |
+| `generateId(prefix)` | Unique ID with `crypto.randomUUID()` | `generateId('btn') // 'btn-a1b2...'` |
+| `debounce(fn, delay)` | Debounce | `debounce(resizeHandler, 200)` |
+| `throttle(fn, delay)` | Throttle | `throttle(scrollHandler, 100)` |
+| `deepClone(obj)` | Deep clone via `structuredClone` | `deepClone(config)` |
+| `isVisible(el)` | Is element visible (not `display:none`, not `opacity:0`) | `isVisible(card)` |
+| `isPlainObject(val)` | Is value a plain object | `isPlainObject({}) // true` |
+| `getNestedValue(obj, path, fallback)` | Safe path access | `getNestedValue(user, 'profile.name')` |
 
 ---
 
-## 4. Утилиты (Utilities)
+## 4. Utilities
 
 ### 4.1. DOM (`_dom.js`)
 
-Безопасные обёртки над нативными методами.
+Safe wrappers over native methods.
 
 ```js
 import { qs, qsa, addClass, removeClass, toggleClass, createElement, setAttr, getAttr } from './utilities/_dom.js';
 ```
 
-| Функция | Описание |
+| Function | Description |
 |---------|----------|
-| `qs(selector, context)` | `querySelector` с fallback на `document` |
+| `qs(selector, context)` | `querySelector` with fallback to `document` |
 | `qsa(selector, context)` | `querySelectorAll` → `Array` |
-| `addClass(el, className)` | Добавить класс |
-| `removeClass(el, className)` | Удалить класс |
-| `toggleClass(el, className, condition)` | Тоггл с условием |
-| `createElement(tag, classes, attrs, children)` | Создание элемента |
-| `setAttr / getAttr / removeAttr` | Работа с атрибутами |
+| `addClass(el, className)` | Add class |
+| `removeClass(el, className)` | Remove class |
+| `toggleClass(el, className, condition)` | Toggle with condition |
+| `createElement(tag, classes, attrs, children)` | Create element |
+| `setAttr / getAttr / removeAttr` | Attribute operations |
 
 ### 4.2. Keyboard (`_keyboard.js`)
 
 ```js
 import { Keyboard } from './utilities/_keyboard.js';
 
-Keyboard.isEscape(e)   // true если Escape
-Keyboard.isEnter(e)    // true если Enter
-Keyboard.isTab(e)      // true если Tab
-Keyboard.isArrow(e)    // true если любая стрелка
+Keyboard.isEscape(e)   // true if Escape
+Keyboard.isEnter(e)    // true if Enter
+Keyboard.isTab(e)      // true if Tab
+Keyboard.isArrow(e)    // true if any arrow
 ```
 
 ### 4.3. FocusTrap (`_focus-trap.js`)
 
-Ловушка фокуса для модалок и dropdown. Циклическая навигация по `Tab` и `Shift+Tab`.
+Focus trap for modals and dropdowns. Cyclic navigation via `Tab` and `Shift+Tab`.
 
 ```js
 import { FocusTrap } from './utilities/_focus-trap.js';
 
 const trap = new FocusTrap(modalElement);
-trap.activate();   // Запоминает текущий фокус, переводит на первый элемент
-trap.deactivate(); // Возвращает фокус на исходный элемент
-trap.focusFirst(); // Фокус на первый фокусируемый элемент
-trap.focusLast();  // Фокус на последний
+trap.activate();   // Saves current focus, moves to first element
+trap.deactivate(); // Returns focus to original element
+trap.focusFirst(); // Focus first focusable element
+trap.focusLast();  // Focus last
 ```
 
 ### 4.4. Viewport (`_viewport.js`)
 
-Reveal-анимации и отслеживание видимости элементов.
+Reveal animations and visibility tracking.
 
 ```js
 import { onViewportEnter, onViewportLeave, onViewportChange, initRevealAnimations } from './utilities/_viewport.js';
 ```
 
-| Функция | Описание |
+| Function | Description |
 |---------|----------|
-| `onViewportEnter(el, callback, options)` | Сработает при появлении во viewport |
-| `onViewportLeave(el, callback, options)` | Сработает при исчезновении |
-| `onViewportChange(el, callback, options)` | Сработает при появлении и исчезновении |
-| `initRevealAnimations(selector)` | Автоинициализация `[data-reveal]` |
+| `onViewportEnter(el, callback, options)` | Fires on viewport entry |
+| `onViewportLeave(el, callback, options)` | Fires on viewport exit |
+| `onViewportChange(el, callback, options)` | Fires on entry and exit |
+| `initRevealAnimations(selector)` | Auto-init `[data-reveal]` |
 
-#### Параметры `initRevealAnimations`
+#### `initRevealAnimations` Parameters
 
-| Data-атрибут | Значение по умолчанию | Описание |
+| Data-attribute | Default | Description |
 |-------------|----------------------|----------|
-| `data-reveal` | — | Активирует анимацию |
-| `data-reveal-direction` | `up` | Направление появления: `up`, `down`, `left`, `right` |
-| `data-reveal-duration` | `600` | Длительность в ms |
-| `data-reveal-delay` | `0` | Задержка в ms |
-| `data-reveal-once` | `true` | `true` — остаётся видимым; `false` — скрывается при выходе |
-| `data-reveal-exit-edge` | `any` | За какой край уходит: `any`, `top`, `bottom`, `left`, `right` |
+| `data-reveal` | — | Activates animation |
+| `data-reveal-direction` | `up` | Direction: `up`, `down`, `left`, `right` |
+| `data-reveal-duration` | `600` | Duration in ms |
+| `data-reveal-delay` | `0` | Delay in ms |
+| `data-reveal-once` | `true` | `true` — stays visible; `false` — hides on exit |
+| `data-reveal-exit-edge` | `any` | Exit edge: `any`, `top`, `bottom`, `left`, `right` |
 
 ---
 
-## 5. Компоненты (Modules)
+## 5. Components (Modules)
 
 ### Accordion
 
-Модуль управления аккордеонами. Поддерживает режимы `single` и `multiple`, reveal-анимацию через `height`, управление с клавиатуры, кнопки "Открыть все" / "Закрыть все".
+Accordion management module. Supports `single` and `multiple` modes, reveal animation via `height`, keyboard controls, "Expand All" / "Collapse All" buttons.
 
-#### Импорт
+#### Import
 
 ```js
 import { Accordion, initAccordions } from './modules/accordion/_accordion.js';
 ```
 
-#### HTML-структура
+#### HTML Structure
 
 ```html
 <div class="accordion" data-accordion>
-  <!-- Кнопки управления (опционально) -->
-  <button type="button" data-accordion-expand>Открыть все</button>
-  <button type="button" data-accordion-collapse>Закрыть все</button>
+  <!-- Control buttons (optional) -->
+  <button type="button" data-accordion-expand>Expand All</button>
+  <button type="button" data-accordion-collapse>Collapse All</button>
 
   <div class="accordion__item" data-accordion-item>
     <button class="accordion__header" data-accordion-header>
-      Заголовок 1
+      Header 1
     </button>
     <div class="accordion__content" data-accordion-content>
-      <div class="accordion__inner">Содержимое 1</div>
+      <div class="accordion__inner">Content 1</div>
     </div>
   </div>
 
   <div class="accordion__item" data-accordion-item>
     <button class="accordion__header" data-accordion-header>
-      Заголовок 2
+      Header 2
     </button>
     <div class="accordion__content" data-accordion-content>
-      <div class="accordion__inner">Содержимое 2</div>
+      <div class="accordion__inner">Content 2</div>
     </div>
   </div>
 </div>
 ```
 
-#### Data-атрибуты
+#### Data-attributes
 
-| Атрибут | Значение | Описание |
+| Attribute | Value | Description |
 |---------|----------|----------|
-| `data-accordion` | — | Инициализирует аккордеон |
-| `data-accordion-multiple` | `true` / `false` | Режим: несколько открытых элементов |
-| `data-accordion-item` | — | Элемент аккордеона |
-| `data-accordion-header` | — | Кнопка-заголовок |
-| `data-accordion-content` | — | Раскрывающийся контент |
-| `data-accordion-expand` | — | Кнопка "Открыть все" |
-| `data-accordion-collapse` | — | Кнопка "Закрыть все" |
+| `data-accordion` | — | Initializes accordion |
+| `data-accordion-multiple` | `true` / `false` | Mode: multiple open items |
+| `data-accordion-item` | — | Accordion item |
+| `data-accordion-header` | — | Header button |
+| `data-accordion-content` | — | Expandable content |
+| `data-accordion-expand` | — | "Expand All" button |
+| `data-accordion-collapse` | — | "Collapse All" button |
 
-#### Конструктор
+#### Constructor
 
 ```js
 const accordion = new Accordion(element, {
-    openClass: 'is-open',   // Класс открытого состояния
-    multiple: false         // true — несколько открытых
+    openClass: 'is-open',   // Open state class
+    multiple: false         // true — multiple open
 });
 ```
 
-#### Методы экземпляра
+#### Instance Methods
 
-| Метод | Описание |
+| Method | Description |
 |-------|----------|
-| `open(index)` | Открыть элемент по индексу |
-| `close(index, instant)` | Закрыть элемент. `instant: true` — без анимации |
-| `toggle(index)` | Переключить состояние |
-| `closeAll(instant)` | Закрыть все элементы |
-| `expandAll()` | Открыть все элементы (игнорирует `multiple`) |
-| `collapseAll(instant)` | Закрыть все элементы |
-| `destroy()` | Уничтожить экземпляр, отписаться от событий |
+| `open(index)` | Open item by index |
+| `close(index, instant)` | Close item. `instant: true` — no animation |
+| `toggle(index)` | Toggle state |
+| `closeAll(instant)` | Close all items |
+| `expandAll()` | Open all items (ignores `multiple`) |
+| `collapseAll(instant)` | Close all items |
+| `destroy()` | Destroy instance, unsubscribe from events |
 
-#### События
+#### Events
 
-| Событие | Detail | Описание |
+| Event | Detail | Description |
 |---------|--------|----------|
-| `accordion:opened` | `{ index }` | Элемент открыт |
-| `accordion:closed` | `{ index }` | Элемент закрыт |
+| `accordion:opened` | `{ index }` | Item opened |
+| `accordion:closed` | `{ index }` | Item closed |
 
 ```js
 accordion.element.addEventListener('accordion:opened', (e) => {
-    console.log('Открыт элемент:', e.detail.index);
+    console.log('Opened item:', e.detail.index);
 });
 ```
 
-#### CSS-классы
+#### CSS Classes
 
-| Класс | Описание |
+| Class | Description |
 |-------|----------|
-| `.accordion__item` | Контейнер элемента |
-| `.accordion__item.is-open` | Открытое состояние |
-| `.accordion__header` | Кнопка-заголовок |
-| `.accordion__content` | Анимируемый контент (`height: 0 → scrollHeight`) |
-| `.accordion__inner` | Внутренний wrapper для padding |
+| `.accordion__item` | Item container |
+| `.accordion__item.is-open` | Open state |
+| `.accordion__header` | Header button |
+| `.accordion__content` | Animated content (`height: 0 → scrollHeight`) |
+| `.accordion__inner` | Inner wrapper for padding |
 
 ---
 
-## 6. Инициализация, конфигурация и оптимизация сборки
+### Button
 
-### 6.1. Конфигурируемая инициализация
+Button management module. Supports three modes: **default** (regular), **async** (with loading/success/error), and **toggle** (switch).
 
-Класс `App` поддерживает условное включение модулей. Это позволяет собирать **разные бандлы** для разных проектов, не таща лишний код.
+#### Import
 
 ```js
-// main.js для лэндинга (только сетка + типографика + reveal)
+import { Button, initButtons } from './modules/button/_index.js';
+```
+
+#### HTML Structure
+
+**Async button (with feedback):**
+```html
+<button 
+  class="btn btn--primary" 
+  data-button="async"
+  data-loading-text="Saving..."
+  data-success-text="Saved!"
+  data-error-text="Save error"
+  data-reset-delay="2000"
+>
+  Save
+</button>
+```
+
+**Toggle button (switch):**
+```html
+<button 
+  class="btn btn--secondary" 
+  data-button="toggle"
+  aria-pressed="false"
+>
+  <span>🔔</span> Notifications
+</button>
+```
+
+**Regular button (no JS):**
+```html
+<button class="btn btn--primary">Submit</button>
+```
+
+#### Data-attributes
+
+| Attribute | Value | Description |
+|---------|----------|----------|
+| `data-button` | `async` / `toggle` | Button type |
+| `data-loading-text` | `"Loading..."` | Text during loading |
+| `data-success-text` | `"Done!"` | Text on success |
+| `data-error-text` | `"Error"` | Text on error |
+| `data-reset-delay` | `2000` | Reset delay in ms |
+
+#### Constructor
+
+```js
+const btn = new Button(element, {
+    loadingClass: 'is-loading',
+    successClass: 'is-success',
+    errorClass: 'is-error',
+    resetDelay: 2000
+});
+```
+
+#### Instance Methods
+
+| Method | Description |
+|-------|----------|
+| `setLoading()` | Disables button, shows spinner |
+| `setSuccess(text?)` | Sets success state |
+| `setError(text?)` | Sets error state |
+| `reset()` | Resets to original state |
+| `toggle(force?)` | Toggles toggle state |
+| `setText(text)` | Changes button text |
+| `destroy()` | Destroys instance |
+
+#### Events
+
+| Event | Detail | Description |
+|---------|--------|----------|
+| `button:click` | `{ button, originalEvent }` | Button click |
+| `button:success` | `{ button }` | Successful completion |
+| `button:error` | `{ button }` | Error |
+| `button:toggle` | `{ button, active }` | Toggle switch |
+
+#### State CSS Classes
+
+| Class | Description |
+|-------|----------|
+| `.is-loading` | Button disabled, spinner |
+| `.is-success` | Success state (green) |
+| `.is-error` | Error state (red) |
+| `.is-active` | Toggle active |
+
+#### Example: Form with API
+
+```js
+import { initButtons } from './modules/button/_index.js';
+
+initButtons();
+
+// Handle specific button
+document.querySelector('#save-btn').addEventListener('button:click', async (e) => {
+  const btn = e.detail.button;
+
+  try {
+    await fetch('/api/save', { method: 'POST', body: formData });
+    btn.setSuccess();
+  } catch (err) {
+    btn.setError('Failed to save');
+  }
+});
+```
+
+---
+
+### Button Group
+
+Button grouping with elimination of double borders. Supports horizontal and vertical layouts.
+
+#### HTML
+
+```html
+<!-- Horizontal group -->
+<div class="btn-group">
+  <button class="btn btn--secondary">Left</button>
+  <button class="btn btn--secondary">Center</button>
+  <button class="btn btn--secondary">Right</button>
+</div>
+
+<!-- Vertical group -->
+<div class="btn-group btn-group--vertical">
+  <button class="btn btn--secondary">Top</button>
+  <button class="btn btn--secondary">Center</button>
+  <button class="btn btn--secondary">Bottom</button>
+</div>
+```
+
+#### CSS Classes
+
+| Class | Description |
+|-------|----------|
+| `.btn-group` | Horizontal group |
+| `.btn-group--vertical` | Vertical group |
+
+---
+
+### Dropdown
+
+Dropdown menu with keyboard navigation, positioning, and closing on Escape / click outside.
+
+#### Import
+
+```js
+import { Dropdown, initDropdowns } from './modules/dropdown/_dropdown.js';
+```
+
+#### HTML
+
+```html
+<div class="dropdown" data-dropdown>
+  <button class="btn btn--secondary dropdown__trigger" 
+          data-dropdown-trigger 
+          aria-haspopup="true" 
+          aria-expanded="false">
+    Actions
+  </button>
+  <div class="dropdown__menu" data-dropdown-menu>
+    <button class="dropdown__item">✏️ Edit</button>
+    <button class="dropdown__item">📋 Copy</button>
+    <div class="dropdown__item dropdown__item--divider"></div>
+    <button class="dropdown__item dropdown__item--danger">🗑️ Delete</button>
+  </div>
+</div>
+```
+
+#### Data-attributes
+
+| Attribute | Value | Description |
+|---------|----------|----------|
+| `data-dropdown` | — | Initializes dropdown |
+| `data-dropdown-trigger` | — | Open button |
+| `data-dropdown-menu` | — | Menu container |
+| `data-dropdown-placement` | `bottom-start` | Position: `top-start`, `top-end`, `bottom-start`, `bottom-end`, `left`, `right` |
+
+#### Methods
+
+| Method | Description |
+|-------|----------|
+| `open()` | Open menu (with auto-positioning) |
+| `close()` | Close menu |
+| `toggle()` | Toggle |
+
+#### Auto-positioning (auto-flip)
+
+By default, dropdown automatically checks if the menu fits in the viewport. If not — it flips direction:
+
+| Set | If no space | Result |
+|--------|-----------------|-----------|
+| `bottom-start` | No space below | `top-start` |
+| `bottom-end` | No space below | `top-end` |
+| `top-start` | No space above | `bottom-start` |
+| `left` | No space on left | `right` |
+| `right` | No space on right | `left` |
+
+**Disable auto-flip:**
+```js
+new Dropdown(el, { autoFlip: false });
+```
+
+#### Keyboard
+
+| Key | Action |
+|---------|----------|
+| `Enter`, `Space`, `ArrowDown` | Open menu and focus first item |
+| `ArrowUp` / `ArrowDown` | Navigate items |
+| `Home` / `End` | First / last item |
+| `Escape` | Close menu, return focus to trigger |
+| `Enter` on item | Select, close |
+
+#### Events
+
+| Event | Detail | Description |
+|---------|--------|----------|
+| `dropdown:opened` | `{ dropdown }` | Menu opened |
+| `dropdown:closed` | `{ dropdown }` | Menu closed |
+| `dropdown:select` | `{ item, index, dropdown }` | Item selected |
+
+#### CSS Classes
+
+| Class | Description |
+|-------|----------|
+| `.dropdown` | Container |
+| `.dropdown.is-open` | Open state |
+| `.dropdown__trigger` | Trigger button |
+| `.dropdown__menu` | Menu |
+| `.dropdown__menu--{placement}` | Positioning |
+| `.dropdown__item` | Menu item |
+| `.dropdown__item--danger` | Danger action (red) |
+| `.dropdown__item--divider` | Divider |
+
+#### Split Button
+
+```html
+<div class="btn-group">
+  <button class="btn btn--primary">Save</button>
+  <div class="dropdown" data-dropdown style="display:inline-flex">
+    <button class="btn btn--primary dropdown__trigger" data-dropdown-trigger>▼</button>
+    <div class="dropdown__menu" data-dropdown-menu>
+      <button class="dropdown__item">💾 Save As...</button>
+      <button class="dropdown__item">📥 Export</button>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+### LikeButton
+
+A standalone "Like" button component with a counter. Supports optimistic UI updates, server submission, and rollback on error.
+
+#### Import
+
+```js
+import { LikeButton, initLikeButtons } from './modules/like-button/_index.js';
+```
+
+#### HTML
+
+```html
+<button 
+  class="btn btn--ghost" 
+  data-like-button
+  data-like-count="42"
+  data-post-id="123"
+  aria-pressed="false"
+>
+  <span data-like-icon>❤️</span> <span data-like-count>42</span>
+</button>
+```
+
+#### Data-attributes
+
+| Attribute | Description |
+|---------|----------|
+| `data-like-button` | Initializes component |
+| `data-like-count` | Initial counter value |
+| `data-post-id` | Post ID for API request |
+| `data-like-endpoint` | URL endpoint (optional, can be set in JS) |
+
+#### Constructor
+
+```js
+const like = new LikeButton(element, {
+    activeClass: 'is-active',
+    endpoint: '/api/posts/:id/like', // :id is replaced with postId
+    postId: '123',
+    optimistic: true // optimistic UI update
+});
+```
+
+#### Methods
+
+| Method | Description |
+|-------|----------|
+| `setLiked(boolean, count?)` | Programmatically set state |
+| `getState()` | Get `{ liked, count }` |
+
+#### Events
+
+| Event | Detail | Description |
+|---------|--------|----------|
+| `like:click` | `{ button, willBeLiked, postId }` | Button click |
+| `like:success` | `{ button, liked, count }` | Successful request |
+| `like:error` | `{ button, error }` | Request error |
+
+#### Example with API
+
+```js
+import { initLikeButtons } from './modules/like-button/_index.js';
+
+initLikeButtons();
+
+// Global handling (if endpoint is not set in constructor)
+document.querySelectorAll('[data-like-button]').forEach(el => {
+    el.addEventListener('like:click', async (e) => {
+        const { button, willBeLiked, postId } = e.detail;
+
+        try {
+            const res = await fetch(`/api/posts/${postId}/like`, {
+                method: willBeLiked ? 'POST' : 'DELETE'
+            });
+            if (!res.ok) throw new Error(res.statusText);
+
+            const data = await res.json();
+            button.setLiked(willBeLiked, data.count);
+        } catch (err) {
+            // Rollback happens automatically if optimistic: true
+            console.error('Like error:', err);
+        }
+    });
+});
+```
+
+#### CSS
+
+```scss
+[data-like-button] {
+  [data-like-icon] {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  &.is-active [data-like-icon] {
+    color: #dc2626; // red heart
+  }
+}
+```
+
+---
+
+## 6. Initialization, Configuration & Build Optimization
+
+### 6.1. Configurable Initialization
+
+The `App` class supports conditional module enabling. This allows building **different bundles** for different projects without pulling in unnecessary code.
+
+```js
+// main.js for a landing page (grid + typography + reveal only)
 import '../scss/landing.scss';
 
 import { ThemeManager } from './modules/theme/_theme.js';
@@ -353,33 +719,33 @@ const app = new App({
 	modules: {
 		theme: true,
 		revealAnimations: true
-		// всё остальное false по умолчанию
+		// everything else false by default
 	}
 });
 
 document.addEventListener('DOMContentLoaded', () => app.init());
 ```
 
-| Параметр | Тип | По умолчанию | Описание |
+| Parameter | Type | Default | Description |
 |----------|-----|--------------|----------|
-| `modules.theme` | `boolean` | `true` | Тема |
-| `modules.modals` | `boolean` | `true` | Модалки |
-| `modules.accordions` | `boolean` | `true` | Аккордеоны |
-| `modules.buttons` | `boolean` | `true` | Кнопки |
-| `modules.dropdowns` | `boolean` | `true` | Dropdown |
-| `modules.likeButtons` | `boolean` | `true` | Лайки |
-| `modules.revealAnimations` | `boolean` | `true` | Reveal-анимации |
+| `modules.theme` | `boolean` | `true` | Theme |
+| `modules.modals` | `boolean` | `true` | Modals |
+| `modules.accordions` | `boolean` | `true` | Accordions |
+| `modules.buttons` | `boolean` | `true` | Buttons |
+| `modules.dropdowns` | `boolean` | `true` | Dropdowns |
+| `modules.likeButtons` | `boolean` | `true` | Likes |
+| `modules.revealAnimations` | `boolean` | `true` | Reveal animations |
 
-**Правило:** если модуль выключен (`false`) — его JS **не импортируется** → webpack не включает его в бандл.
+**Rule:** if a module is disabled (`false`) — its JS **is not imported** → webpack does not include it in the bundle.
 
 ---
 
-### 6.2. Tree shaking
+### 6.2. Tree Shaking
 
-Webpack 5 автоматически удаляет неиспользуемый код при условии:
+Webpack 5 automatically removes unused code provided:
 
-1. **ES6 modules** (`import` / `export`) — у вас уже так
-2. **`"sideEffects": false`** в `package.json` (кроме SCSS/CSS)
+1. **ES6 modules** (`import` / `export`) — you already have this
+2. **`"sideEffects": false`** in `package.json` (except SCSS/CSS)
 
 ```json
 // package.json
@@ -391,19 +757,19 @@ Webpack 5 автоматически удаляет неиспользуемый
 }
 ```
 
-**Что это даёт:**
-- Если `initModals()` не вызывается — весь `modules/modal/` выкидывается из бандла
-- Если `Accordion` не импортируется — класс не попадает в сборку
-- CSS тоже tree-shake'ится: неимпортированные SCSS-файлы не генерируют CSS
+**What this gives:**
+- If `initModals()` is not called — the entire `modules/modal/` is dropped from the bundle
+- If `Accordion` is not imported — the class does not end up in the build
+- CSS is also tree-shaken: unimported SCSS files do not generate CSS
 
 ---
 
-### 6.3. Code splitting (динамические импорты)
+### 6.3. Code Splitting (Dynamic Imports)
 
-Для тяжёлых модулей, которые нужны не сразу:
+For heavy modules that are not needed immediately:
 
 ```js
-// Ленивая загрузка модалок только если есть data-modal
+// Lazy-load modals only if [data-modal] exists
 async function loadModals() {
 	const { initModals } = await import(
 		/* webpackChunkName: "modals" */
@@ -412,17 +778,17 @@ async function loadModals() {
 	return initModals();
 }
 
-// В App.init():
+// In App.init():
 if (document.querySelector('[data-modal]')) {
 	this.modules.modals = await loadModals();
 }
 ```
 
-Webpack создаст отдельный чанк `modals.js` (~2-5 KB gzipped), который загрузится асинхронно.
+Webpack will create a separate chunk `modals.js` (~2-5 KB gzipped), loaded asynchronously.
 
 ---
 
-### 6.4. Многопроектная структура
+### 6.4. Multi-project Structure
 
 ```
 /source
@@ -437,16 +803,16 @@ Webpack создаст отдельный чанк `modals.js` (~2-5 KB gzipped)
 
 /projects
   /landing
-    main.scss      ← только grid + типографика + reveal
-    main.js        ← только theme + reveal
+    main.scss      ← grid + typography + reveal only
+    main.js        ← theme + reveal only
     webpack.config.js
   /dashboard
-    main.scss      ← все компоненты
-    main.js        ← все модули
+    main.scss      ← all components
+    main.js        ← all modules
     webpack.config.js
   /blog
-    main.scss      ← кнопки + like + dropdown
-    main.js        ← кнопки + like + dropdown + reveal
+    main.scss      ← buttons + like + dropdown
+    main.js        ← buttons + like + dropdown + reveal
     webpack.config.js
 ```
 
@@ -460,7 +826,7 @@ Webpack создаст отдельный чанк `modals.js` (~2-5 KB gzipped)
 @use '../../source/scss/4-objects/grid';
 @use '../../source/scss/4-objects/layout';
 @use '../../source/scss/4-objects/utilities';
-// НЕ импортируем: button, card, modal, accordion, dropdown...
+// Do NOT import: button, card, modal, accordion, dropdown...
 ```
 
 **`projects/landing/main.js`:**
@@ -516,7 +882,7 @@ module.exports = {
 };
 ```
 
-Собрать лэндинг:
+Build landing:
 
 ```bash
 cd projects/landing
@@ -525,107 +891,121 @@ npx webpack --config webpack.config.js
 
 ---
 
-### 6.5. Глобальный API
+### 6.5. Global API
 
 ```js
 import { app } from './main.js';
 
-// Получить модуль
+// Get module
 const accordions = app.getModule('accordions');
 const modals = app.getModule('modals');
 const theme = app.getModule('theme');
 
-// Глобальный доступ (для отладки)
-window.CORE4.app           // Экземпляр App
+// Global access (for debugging)
+window.CORE4.app           // App instance
 window.CORE4.core          // CONFIG, EventManager, helpers
 window.CORE4.utils         // dom, keyboard, viewport
 window.CORE4.components    // ThemeManager, Modal, Accordion, Button, Dropdown, LikeButton, FocusTrap
 ```
 
-| Метод | Описание |
+| Method | Description |
 |-------|----------|
-| `app.init()` | Инициализация включённых модулей |
-| `app.getModule(name)` | Получить модуль по имени |
-| `app.destroy()` | Уничтожить все модули и очистить события |
+| `app.init()` | Initialize enabled modules |
+| `app.getModule(name)` | Get module by name |
+| `app.destroy()` | Destroy all modules and clear events |
 
 ---
 
-## 7. HTML data-атрибуты
+## 7. HTML data-attributes
 
-### Сводная таблица всех data-атрибутов
+### Summary Table of All data-attributes
 
-| Атрибут | Компонент | Описание |
+| Attribute | Component | Description |
 |---------|-----------|----------|
-| `data-accordion` | Accordion | Инициализация |
-| `data-accordion-multiple` | Accordion | Режим multiple |
-| `data-accordion-item` | Accordion | Элемент |
-| `data-accordion-header` | Accordion | Заголовок |
-| `data-accordion-content` | Accordion | Контент |
-| `data-accordion-expand` | Accordion | Кнопка "Открыть все" |
-| `data-accordion-collapse` | Accordion | Кнопка "Закрыть все" |
-| `data-modal` | Modal | Инициализация модалки |
-| `data-modal-trigger` | Modal | Кнопка открытия (`value = id модалки`) |
-| `data-modal-close` | Modal | Кнопка закрытия внутри модалки |
-| `data-modal-overlay` | Modal | Оверлей для клика вне окна |
-| `data-theme` | Theme | Атрибут на `<html>` для переключения темы |
-| `data-reveal` | Viewport | Анимация появления при скролле |
-| `data-reveal-direction` | Viewport | Направление |
-| `data-reveal-duration` | Viewport | Длительность |
-| `data-reveal-delay` | Viewport | Задержка |
-| `data-reveal-once` | Viewport | Один раз или циклично |
-| `data-reveal-exit-edge` | Viewport | Край выхода |
+| `data-accordion` | Accordion | Initialization |
+| `data-accordion-multiple` | Accordion | Multiple mode |
+| `data-accordion-item` | Accordion | Item |
+| `data-accordion-header` | Accordion | Header |
+| `data-accordion-content` | Accordion | Content |
+| `data-accordion-expand` | Accordion | "Expand All" button |
+| `data-accordion-collapse` | Accordion | "Collapse All" button |
+| `data-modal` | Modal | Modal initialization |
+| `data-modal-trigger` | Modal | Open button (`value = modal id`) |
+| `data-modal-close` | Modal | Close button inside modal |
+| `data-modal-overlay` | Modal | Overlay for click-outside |
+| `data-theme` | Theme | Attribute on `<html>` for theme switching |
+| `data-reveal` | Viewport | Scroll-triggered reveal animation |
+| `data-reveal-direction` | Viewport | Direction |
+| `data-reveal-duration` | Viewport | Duration |
+| `data-reveal-delay` | Viewport | Delay |
+| `data-reveal-once` | Viewport | Once or cyclic |
+| `data-reveal-exit-edge` | Viewport | Exit edge |
+| `data-button` | Button | Type: `async` or `toggle` |
+| `data-loading-text` | Button | Loading text |
+| `data-success-text` | Button | Success text |
+| `data-error-text` | Button | Error text |
+| `data-reset-delay` | Button | Reset delay |
+| `data-dropdown` | Dropdown | Dropdown initialization |
+| `data-dropdown-trigger` | Dropdown | Open button |
+| `data-dropdown-menu` | Dropdown | Menu container |
+| `data-dropdown-placement` | Dropdown | Menu position |
+| `data-like-button` | LikeButton | Initialization |
+| `data-like-count` | LikeButton | Initial counter value |
+| `data-like-icon` | LikeButton | Icon (for animation) |
+| `data-post-id` | LikeButton | Post ID |
+| `data-like-endpoint` | LikeButton | API URL |
 
 ---
 
-## 8. Примеры использования
+## 8. Usage Examples
 
-### 8.1. Accordion — базовый
+### 8.1. Accordion — Basic
 
 ```html
 <div data-accordion>
   <div data-accordion-item>
-    <button data-accordion-header>Вопрос 1</button>
+    <button data-accordion-header>Question 1</button>
     <div data-accordion-content>
-      <div class="accordion__inner">Ответ 1</div>
+      <div class="accordion__inner">Answer 1</div>
     </div>
   </div>
   <div data-accordion-item>
-    <button data-accordion-header>Вопрос 2</button>
+    <button data-accordion-header>Question 2</button>
     <div data-accordion-content>
-      <div class="accordion__inner">Ответ 2</div>
+      <div class="accordion__inner">Answer 2</div>
     </div>
   </div>
 </div>
 ```
 
-### 8.2. Accordion — multiple (несколько открытых)
+### 8.2. Accordion — Multiple (several open)
 
 ```html
 <div data-accordion data-accordion-multiple="true">
-  <!-- элементы -->
+  <!-- items -->
 </div>
 ```
 
-### 8.3. Accordion — с кнопками управления
+### 8.3. Accordion — with control buttons
 
 ```html
 <div data-accordion>
-  <button data-accordion-expand>Открыть все</button>
-  <button data-accordion-collapse>Закрыть все</button>
-  <!-- элементы -->
+  <button data-accordion-expand>Expand All</button>
+  <button data-accordion-collapse>Collapse All</button>
+  <!-- items -->
 </div>
 ```
 
-### 8.4. Reveal-анимация — базовая
+### 8.4. Reveal Animation — Basic
 
 ```html
 <section data-reveal>
-  <h2>Заголовок</h2>
-  <p>Появится при скролле</p>
+  <h2>Heading</h2>
+  <p>Appears on scroll</p>
 </section>
 ```
 
-### 8.5. Reveal — направление, задержка, цикличность
+### 8.5. Reveal — Direction, Delay, Cyclicity
 
 ```html
 <div data-reveal
@@ -634,460 +1014,52 @@ window.CORE4.components    // ThemeManager, Modal, Accordion, Button, Dropdown, 
      data-reveal-duration="800"
      data-reveal-once="false"
      data-reveal-exit-edge="bottom">
-  Блок, который выезжает слева, скрывается только при уходе за нижний край
+  Block that slides in from the left, hides only when exiting bottom edge
 </div>
 ```
 
-### 8.6. Программное управление аккордеоном
+### 8.6. Programmatic Accordion Control
 
 ```js
-// Получить первый аккордеон
+// Get first accordion
 const accordion = app.getModule('accordions')[0];
 
-// Открыть третий элемент
+// Open third item
 accordion.open(2);
 
-// Закрыть все мгновенно
+// Close all instantly
 accordion.collapseAll(true);
 
-// Открыть все (даже в single-режиме)
+// Open all (even in single mode)
 accordion.expandAll();
 
-// Подписка на событие
+// Subscribe to event
 accordion.element.addEventListener('accordion:opened', (e) => {
-    console.log('Открыт элемент с индексом:', e.detail.index);
+    console.log('Opened item index:', e.detail.index);
 });
 ```
 
-### 8.7. Программное управление темой
+### 8.7. Programmatic Theme Control
 
 ```js
 const theme = app.getModule('theme');
 
-theme.toggleTheme();           // Переключить светлую/тёмную
-theme.setTheme('dark');        // Установить тёмную
-theme.setTheme('light');       // Установить светлую
-theme.setTheme('system');      // Следовать за системной темой
+theme.toggleTheme();           // Toggle light/dark
+theme.setTheme('dark');        // Set dark
+theme.setTheme('light');       // Set light
+theme.setTheme('system');      // Follow system theme
 
-// Подписка на смену темы
+// Subscribe to theme change
 document.documentElement.addEventListener('theme:changed', (e) => {
-    console.log('Новая тема:', e.detail.theme);
+    console.log('New theme:', e.detail.theme);
 });
 ```
 
 ---
 
-## Лицензия
+## 9. CMS Integration
 
-MIT
-
-
----
-
-## 5. Компоненты (Modules) — дополнение
-
-### Button
-
-Модуль управления кнопками. Поддерживает три режима: **default** (обычная), **async** (с loading/success/error) и **toggle** (переключатель).
-
-#### Импорт
-
-```js
-import { Button, initButtons } from './modules/button/_index.js';
-```
-
-#### HTML-структура
-
-**Async-кнопка (с обратной связью):**
-```html
-<button 
-  class="btn btn--primary" 
-  data-button="async"
-  data-loading-text="Сохраняем..."
-  data-success-text="Сохранено!"
-  data-error-text="Ошибка сохранения"
-  data-reset-delay="2000"
->
-  Сохранить
-</button>
-```
-
-**Toggle-кнопка (переключатель):**
-```html
-<button 
-  class="btn btn--secondary" 
-  data-button="toggle"
-  aria-pressed="false"
->
-  <span>🔔</span> Уведомления
-</button>
-```
-
-**Обычная кнопка (без JS):**
-```html
-<button class="btn btn--primary">Отправить</button>
-```
-
-#### Data-атрибуты
-
-| Атрибут | Значение | Описание |
-|---------|----------|----------|
-| `data-button` | `async` / `toggle` | Тип кнопки |
-| `data-loading-text` | `"Загрузка..."` | Текст при загрузке |
-| `data-success-text` | `"Готово!"` | Текст при успехе |
-| `data-error-text` | `"Ошибка"` | Текст при ошибке |
-| `data-reset-delay` | `2000` | Задержка сброса в ms |
-
-#### Конструктор
-
-```js
-const btn = new Button(element, {
-    loadingClass: 'is-loading',
-    successClass: 'is-success',
-    errorClass: 'is-error',
-    resetDelay: 2000
-});
-```
-
-#### Методы экземпляра
-
-| Метод | Описание |
-|-------|----------|
-| `setLoading()` | Блокирует кнопку, показывает спиннер |
-| `setSuccess(text?)` | Устанавливает success-состояние |
-| `setError(text?)` | Устанавливает error-состояние |
-| `reset()` | Сбрасывает в исходное состояние |
-| `toggle(force?)` | Переключает toggle-состояние |
-| `setText(text)` | Меняет текст кнопки |
-| `destroy()` | Уничтожает экземпляр |
-
-#### События
-
-| Событие | Detail | Описание |
-|---------|--------|----------|
-| `button:click` | `{ button, originalEvent }` | Клик по кнопке |
-| `button:success` | `{ button }` | Успешное завершение |
-| `button:error` | `{ button }` | Ошибка |
-| `button:toggle` | `{ button, active }` | Переключение toggle |
-
-#### CSS-классы состояний
-
-| Класс | Описание |
-|-------|----------|
-| `.is-loading` | Кнопка заблокирована, спиннер |
-| `.is-success` | Успешное состояние (зелёный) |
-| `.is-error` | Состояние ошибки (красный) |
-| `.is-active` | Toggle-активно |
-
-#### Пример: форма с API
-
-```js
-import { initButtons } from './modules/button/_index.js';
-
-initButtons();
-
-// Обработка конкретной кнопки
-document.querySelector('#save-btn').addEventListener('button:click', async (e) => {
-  const btn = e.detail.button;
-
-  try {
-    await fetch('/api/save', { method: 'POST', body: formData });
-    btn.setSuccess();
-  } catch (err) {
-    btn.setError('Не удалось сохранить');
-  }
-});
-```
-
----
-
-## 7. HTML data-атрибуты — дополнение
-
-| Атрибут | Компонент | Описание |
-|---------|-----------|----------|
-| `data-button` | Button | Тип: `async` или `toggle` |
-| `data-loading-text` | Button | Текст загрузки |
-| `data-success-text` | Button | Текст успеха |
-| `data-error-text` | Button | Текст ошибки |
-| `data-reset-delay` | Button | Задержка сброса |
-
-
----
-
-### Button Group
-
-Группировка кнопок с устранением двойных границ. Поддерживает горизонтальное и вертикальное расположение.
-
-#### HTML
-
-```html
-<!-- Горизонтальная группа -->
-<div class="btn-group">
-  <button class="btn btn--secondary">Слева</button>
-  <button class="btn btn--secondary">Центр</button>
-  <button class="btn btn--secondary">Справа</button>
-</div>
-
-<!-- Вертикальная группа -->
-<div class="btn-group btn-group--vertical">
-  <button class="btn btn--secondary">Вверх</button>
-  <button class="btn btn--secondary">Центр</button>
-  <button class="btn btn--secondary">Вниз</button>
-</div>
-```
-
-#### CSS-классы
-
-| Класс | Описание |
-|-------|----------|
-| `.btn-group` | Горизонтальная группа |
-| `.btn-group--vertical` | Вертикальная группа |
-
----
-
-### Dropdown
-
-Выпадающее меню с клавиатурной навигацией, позиционированием и закрытием по Escape/клику вне.
-
-#### Импорт
-
-```js
-import { Dropdown, initDropdowns } from './modules/dropdown/_dropdown.js';
-```
-
-#### HTML
-
-```html
-<div class="dropdown" data-dropdown>
-  <button class="btn btn--secondary dropdown__trigger" 
-          data-dropdown-trigger 
-          aria-haspopup="true" 
-          aria-expanded="false">
-    Действия
-  </button>
-  <div class="dropdown__menu" data-dropdown-menu>
-    <button class="dropdown__item">✏️ Редактировать</button>
-    <button class="dropdown__item">📋 Копировать</button>
-    <div class="dropdown__item dropdown__item--divider"></div>
-    <button class="dropdown__item dropdown__item--danger">🗑️ Удалить</button>
-  </div>
-</div>
-```
-
-#### Data-атрибуты
-
-| Атрибут | Значение | Описание |
-|---------|----------|----------|
-| `data-dropdown` | — | Инициализирует dropdown |
-| `data-dropdown-trigger` | — | Кнопка открытия |
-| `data-dropdown-menu` | — | Контейнер меню |
-| `data-dropdown-placement` | `bottom-start` | Позиция: `top-start`, `top-end`, `bottom-start`, `bottom-end`, `left`, `right` |
-
-#### Методы
-
-| Метод | Описание |
-|-------|----------|
-| `open()` | Открыть меню (с авто-позиционированием) |
-| `close()` | Закрыть меню |
-| `toggle()` | Переключить |
-
-#### Авто-позиционирование (auto-flip)
-
-По умолчанию dropdown автоматически проверяет, влезает ли меню в viewport. Если нет — меняет направление:
-
-| Задано | Если не влезает | Результат |
-|--------|-----------------|-----------|
-| `bottom-start` | Нет места снизу | `top-start` |
-| `bottom-end` | Нет места снизу | `top-end` |
-| `top-start` | Нет места сверху | `bottom-start` |
-| `left` | Нет места слева | `right` |
-| `right` | Нет места справа | `left` |
-
-**Отключить авто-flip:**
-```js
-new Dropdown(el, { autoFlip: false });
-```
-
-#### Клавиатура
-
-| Клавиша | Действие |
-|---------|----------|
-| `Enter`, `Space`, `ArrowDown` | Открыть меню и сфокусировать первый пункт |
-| `ArrowUp` / `ArrowDown` | Навигация по пунктам |
-| `Home` / `End` | Первый / последний пункт |
-| `Escape` | Закрыть меню, вернуть фокус на триггер |
-| `Enter` на пункте | Выбор, закрытие |
-
-#### События
-
-| Событие | Detail | Описание |
-|---------|--------|----------|
-| `dropdown:opened` | `{ dropdown }` | Меню открыто |
-| `dropdown:closed` | `{ dropdown }` | Меню закрыто |
-| `dropdown:select` | `{ item, index, dropdown }` | Выбран пункт |
-
-#### CSS-классы
-
-| Класс | Описание |
-|-------|----------|
-| `.dropdown` | Контейнер |
-| `.dropdown.is-open` | Открытое состояние |
-| `.dropdown__trigger` | Кнопка-триггер |
-| `.dropdown__menu` | Меню |
-| `.dropdown__menu--{placement}` | Позиционирование |
-| `.dropdown__item` | Пункт меню |
-| `.dropdown__item--danger` | Опасное действие (красный) |
-| `.dropdown__item--divider` | Разделитель |
-
-#### Split Button
-
-```html
-<div class="btn-group">
-  <button class="btn btn--primary">Сохранить</button>
-  <div class="dropdown" data-dropdown style="display:inline-flex">
-    <button class="btn btn--primary dropdown__trigger" data-dropdown-trigger>▼</button>
-    <div class="dropdown__menu" data-dropdown-menu>
-      <button class="dropdown__item">💾 Сохранить как...</button>
-      <button class="dropdown__item">📥 Экспорт</button>
-    </div>
-  </div>
-</div>
-```
-
----
-
-## 7. HTML data-атрибуты — дополнение
-
-| Атрибут | Компонент | Описание |
-|---------|-----------|----------|
-| `data-dropdown` | Dropdown | Инициализация dropdown |
-| `data-dropdown-trigger` | Dropdown | Кнопка открытия |
-| `data-dropdown-menu` | Dropdown | Контейнер меню |
-| `data-dropdown-placement` | Dropdown | Позиция меню |
-
-
----
-
-### LikeButton
-
-Отдельный компонент для кнопки «Нравится» с счётчиком. Поддерживает оптимистичное обновление UI, отправку на сервер и откат при ошибке.
-
-#### Импорт
-
-```js
-import { LikeButton, initLikeButtons } from './modules/like-button/_index.js';
-```
-
-#### HTML
-
-```html
-<button 
-  class="btn btn--ghost" 
-  data-like-button
-  data-like-count="42"
-  data-post-id="123"
-  aria-pressed="false"
->
-  <span data-like-icon>❤️</span> <span data-like-count>42</span>
-</button>
-```
-
-#### Data-атрибуты
-
-| Атрибут | Описание |
-|---------|----------|
-| `data-like-button` | Инициализирует компонент |
-| `data-like-count` | Начальное значение счётчика |
-| `data-post-id` | ID поста для API-запроса |
-| `data-like-endpoint` | URL endpoint (опционально, можно задать в JS) |
-
-#### Конструктор
-
-```js
-const like = new LikeButton(element, {
-    activeClass: 'is-active',
-    endpoint: '/api/posts/:id/like', // :id заменяется на postId
-    postId: '123',
-    optimistic: true // оптимистичное обновление UI
-});
-```
-
-#### Методы
-
-| Метод | Описание |
-|-------|----------|
-| `setLiked(boolean, count?)` | Программно установить состояние |
-| `getState()` | Получить `{ liked, count }` |
-
-#### События
-
-| Событие | Detail | Описание |
-|---------|--------|----------|
-| `like:click` | `{ button, willBeLiked, postId }` | Клик по кнопке |
-| `like:success` | `{ button, liked, count }` | Успешный запрос |
-| `like:error` | `{ button, error }` | Ошибка запроса |
-
-#### Пример с API
-
-```js
-import { initLikeButtons } from './modules/like-button/_index.js';
-
-initLikeButtons();
-
-// Глобальная обработка (если endpoint не задан в конструкторе)
-document.querySelectorAll('[data-like-button]').forEach(el => {
-    el.addEventListener('like:click', async (e) => {
-        const { button, willBeLiked, postId } = e.detail;
-
-        try {
-            const res = await fetch(`/api/posts/${postId}/like`, {
-                method: willBeLiked ? 'POST' : 'DELETE'
-            });
-            if (!res.ok) throw new Error(res.statusText);
-
-            const data = await res.json();
-            button.setLiked(willBeLiked, data.count);
-        } catch (err) {
-            // Откат произойдёт автоматически если optimistic: true
-            console.error('Ошибка лайка:', err);
-        }
-    });
-});
-```
-
-#### CSS
-
-```scss
-[data-like-button] {
-  [data-like-icon] {
-    display: inline-block;
-    transition: transform 0.2s ease;
-  }
-
-  &.is-active [data-like-icon] {
-    color: #dc2626; // красное сердце
-  }
-}
-```
-
----
-
-## 7. HTML data-атрибуты — дополнение
-
-| Атрибут | Компонент | Описание |
-|---------|-----------|----------|
-| `data-like-button` | LikeButton | Инициализация |
-| `data-like-count` | LikeButton | Начальное значение счётчика |
-| `data-like-icon` | LikeButton | Иконка (для анимации) |
-| `data-post-id` | LikeButton | ID поста |
-| `data-like-endpoint` | LikeButton | URL API |
-
-
----
-
-## 9. Интеграция с CMS
-
-Система независима от CMS — работает с любым HTML. Внедрение — через подключение готовых бандлов.
+The system is CMS-independent — works with any HTML. Integration is via ready-made bundles.
 
 ### 9.1. WordPress
 
@@ -1100,7 +1072,7 @@ function core4_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'core4_enqueue_assets');
 ```
 
-### 9.2. Шаблон с data-атрибутами
+### 9.2. Template with data-attributes
 
 ```php
 // template-parts/content.php
@@ -1120,24 +1092,30 @@ add_action('wp_enqueue_scripts', 'core4_enqueue_assets');
 </div>
 ```
 
-### 9.3. Возможные конфликты
+### 9.3. Possible Conflicts
 
-| Проблема | Решение |
+| Problem | Solution |
 |----------|---------|
-| CMS-стили перебивают ваши | Оборачивать в `.core4-container` и усиливать специфичность |
-| jQuery конфликтует с `window.$` | Использовать `window.CORE4` вместо `$` |
-| Нет webpack в CMS | Собирать локально, загружать готовые бандлы |
+| CMS styles override yours | Wrap in `.core4-container` and increase specificity |
+| jQuery conflicts with `window.$` | Use `window.CORE4` instead of `$` |
+| No webpack in CMS | Build locally, upload ready bundles |
 
 ---
 
-## 10. Чеклист оптимизации
+## 10. Optimization Checklist
 
-| Что проверить | Как |
+| What to check | How |
 |---------------|-----|
-| Неиспользуемые SCSS-модули | Не импортировать в `main.scss` |
-| Неиспользуемые JS-модули | `false` в конфиге App + не импортировать |
-| Tree shaking | `"sideEffects": ["*.scss", "*.css"]` в `package.json` |
-| Code splitting | `import()` для тяжёлых модулей |
-| Многопроектность | Отдельные `main.js`/`main.scss` в `projects/` |
-| Шрифты | Только нужные веса в `@font-face` |
-| Иконки | SVG-спрайт только с используемыми иконками |
+| Unused SCSS modules | Do not import in `main.scss` |
+| Unused JS modules | `false` in App config + do not import |
+| Tree shaking | `"sideEffects": ["*.scss", "*.css"]` in `package.json` |
+| Code splitting | `import()` for heavy modules |
+| Multi-project | Separate `main.js`/`main.scss` in `projects/` |
+| Fonts | Only needed weights in `@font-face` |
+| Icons | SVG sprite with only used icons |
+
+---
+
+## License
+
+MIT
