@@ -72,7 +72,7 @@ window.CORE4 = {
 	app,
 	core,
 	utils: { dom, keyboard },
-	components: { ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap }
+	components: { ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap } // LikeButtons
 };
 
 if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
