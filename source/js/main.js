@@ -76,7 +76,7 @@ window.CORE4 = {
 };
 
 if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
-	console.log('🔧 Доступны глобальные переменные:', Object.keys(window.DS));
+	console.log('🔧 Доступны глобальные переменные:', Object.keys(window.CORE4));
 }
 
 export default app;
