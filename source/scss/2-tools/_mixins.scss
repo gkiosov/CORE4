@@ -152,9 +152,9 @@
 // 6. Компоненты и утилиты
 // ==========================================
 
-@mixin hover($property: all, $duration: settings.$transition-base, $timing: ease) {
+@mixin hover($property: all, $duration: settings.$transition-base) {
 	@if $property != none {
-		transition: $property $duration $timing;
+		transition: $property $duration;
 	}
 
 	@media (hover: hover) {
