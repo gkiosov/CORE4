@@ -1,13 +1,13 @@
 {
   "name": "CORE4",
   "version": "0.1.0",
-  "description": "Дизайн-система",
+  "description": "A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, and a responsive grid.",
   "main": "source/js/main.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack serve",
+    "build": "cross-env NODE_ENV=production webpack",
     "dev": "cross-env NODE_ENV=development webpack serve",
     "start": "npm run dev",
-    "watch": "webpack --watch",
+    "watch": "cross-env NODE_ENV=development webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -42,5 +42,9 @@
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true
-  }
+  },
+  "sideEffects": [
+    "*.scss",
+    "*.css"
+  ]
 }
