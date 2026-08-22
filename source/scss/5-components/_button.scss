@@ -48,12 +48,15 @@ $button-variants: (
 	border: 0;
 	border-radius: tools.radius('md');
 	cursor: pointer;
-	display: inline-flex;
+	display: flex;
+	font-size: tools.font-size('sm');
 	font-weight: map.get(settings.$font-weight, 'medium');
-	gap: tools.spacing(4);
+	gap: tools.spacing(1);
+	height: tools.module(10);
 	justify-content: center;
+	line-height: tools.line-height('lg');
+	padding: tools.spacing(2) tools.spacing(5);
 	text-decoration: none;
-	user-select: none;
 
 	// Переходы только по нужным свойствам (не all)
 	transition: background-color settings.$transition-base,
@@ -62,34 +65,39 @@ $button-variants: (
 	box-shadow settings.$transition-base,
 	transform settings.$transition-base;
 
-	// Базовые отступы
-	padding: tools.spacing(3) tools.spacing(6);
-	font-size: tools.font-size('sm'); // 14px
+	user-select: none;
 
 	@include tools.focus-ring;
 
+	/*
 	@include tools.respond-to('md') {
-		padding: tools.spacing(4) tools.spacing(8);
-		font-size: tools.font-size('base'); // 16px
+		padding: tools.spacing(2) tools.spacing(4);
+		font-size: tools.font-size('sm'); // 14px
 	}
 
 	@include tools.respond-to('lg') {
-		padding: tools.spacing(4) tools.spacing(10);
-		font-size: tools.font-size('md'); // 18px
+		padding: tools.spacing(2) tools.spacing(4);
+		font-size: tools.font-size('sm'); // 14px
 	}
+	*/
 
 	// ================================
 	// Размеры
 	// ================================
 
 	&--sm {
-		padding: tools.spacing(2) tools.spacing(4);
+		border-radius: tools.radius('sm');
 		font-size: tools.font-size('xs'); // 12px
+		height: tools.module(6);
+		line-height: tools.line-height('xs');
+		padding: tools.spacing(1) tools.spacing(2);
 
+		/*
 		@include tools.respond-to('md') {
 			padding: tools.spacing(3) tools.spacing(6);
 			font-size: tools.font-size('sm'); // 14px
 		}
+		*/
 	}
 
 	&--lg {
@@ -127,71 +135,6 @@ $button-variants: (
 					background-color: map.get($props, active);
 				}
 			}
-		}
-	}
-
-	// ================================
-	// Secondary (особый случай — есть border)
-	// ================================
-
-	&--secondary {
-		background-color: var(--color-background-secondary);
-		color: var(--color-text);
-
-		@include tools.hover((background-color)) {
-			background-color: var(--color-background-hover);
-		}
-	}
-
-	// ================================
-	// Success
-	// ================================
-
-	&--success {
-		background-color: var(--color-success);
-		color: var(--color-text-inverse);
-
-		@include tools.hover((background-color)) {
-			background-color: var(--color-success-hover);
-		}
-	}
-
-	// ================================
-	// Danger
-	// ================================
-
-	&--danger {
-		background-color: var(--color-danger);
-		color: var(--color-text-inverse);
-
-		@include tools.hover((background-color)) {
-			background-color: var(--color-danger-hover);
-		}
-	}
-
-	// ================================
-	// Warning
-	// ================================
-
-	&--warning {
-		background-color: var(--color-warning);
-		color: var(--color-text-inverse);
-
-		@include tools.hover((background-color)) {
-			background-color: var(--color-warning-hover);
-		}
-	}
-
-	// ================================
-	// Info
-	// ================================
-
-	&--info {
-		background: var(--color-info);
-		color: var(--color-text-inverse);
-
-		@include tools.hover((background-color)) {
-			background-color: var(--color-info-hover);
 		}
 	}
 
