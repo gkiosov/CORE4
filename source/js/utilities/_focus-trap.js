@@ -36,6 +36,7 @@ export class FocusTrap {
     }
 
     activate() {
+        this.updateFocusableElements();
         this.focusedElement = document.activeElement;
         document.addEventListener('keydown', this.handleKeydown);
     }
