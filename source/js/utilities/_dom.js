@@ -1,11 +1,11 @@
 // ==========================================
-// DOM-утилиты
+// DOM Utilities
 // ==========================================
 
 import { isElement } from '../core/_helpers.js';
 
 /**
- * Безопасный querySelector
+ * Safe querySelector
  */
 export const qs = (selector, context = document) => {
     if (!selector) return null;
@@ -13,7 +13,7 @@ export const qs = (selector, context = document) => {
 };
 
 /**
- * Безопасный querySelectorAll
+ * Safe querySelectorAll — returns an Array
  */
 export const qsa = (selector, context = document) => {
     if (!selector) return [];
@@ -21,7 +21,7 @@ export const qsa = (selector, context = document) => {
 };
 
 /**
- * Создание элемента
+ * Create an element with classes, attributes and children
  */
 export const createElement = (tag, classes = '', attrs = {}, children = []) => {
     const el = document.createElement(tag);
@@ -46,7 +46,7 @@ export const createElement = (tag, classes = '', attrs = {}, children = []) => {
 };
 
 /**
- * Управление классами элемента
+ * Toggle a single class with an optional condition
  */
 export const toggleClass = (el, className, condition) => {
     if (!isElement(el)) return;
@@ -59,22 +59,45 @@ export const toggleClass = (el, className, condition) => {
     }
 };
 
-export const addClass = (el, className) => toggleClass(el, className, true);
-export const removeClass = (el, className) => toggleClass(el, className, false);
+/**
+ * Add one or more classes to an element
+ */
+export const addClass = (el, ...classNames) => {
+    if (!isElement(el)) return;
+    classNames.forEach(className => {
+        if (className) el.classList.add(className);
+    });
+};
 
 /**
- * Управление атрибутами
+ * Remove one or more classes from an element
+ */
+export const removeClass = (el, ...classNames) => {
+    if (!isElement(el)) return;
+    classNames.forEach(className => {
+        if (className) el.classList.remove(className);
+    });
+};
+
+/**
+ * Set an attribute on an element
  */
 export const setAttr = (el, name, value) => {
     if (!isElement(el)) return;
     el.setAttribute(name, value);
 };
 
+/**
+ * Get an attribute value from an element
+ */
 export const getAttr = (el, name) => {
     if (!isElement(el)) return null;
     return el.getAttribute(name);
 };
 
+/**
+ * Remove an attribute from an element
+ */
 export const removeAttr = (el, name) => {
     if (!isElement(el)) return;
     el.removeAttribute(name);
