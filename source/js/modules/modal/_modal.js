@@ -20,7 +20,7 @@ export class Modal {
 	/**
 	 * @param {Element} element   – modal root element
 	 * @param {Object} options
-	 * @param {string} options.openClass              – CSS class applied when open
+	 * @param {string} options.openClass               – CSS class applied when open
 	 * @param {boolean} options.closeOnOutsideClick    – close on overlay click
 	 * @param {boolean} options.closeOnEscape          – close on Escape key
 	 * @param {boolean} options.focusOnOpen            – auto-focus first element
