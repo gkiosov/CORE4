@@ -12,7 +12,6 @@
 import { CONFIG, EventManager, generateId, throttle } from '../../core/_index.js';
 import { qs, qsa, addClass, removeClass } from '../../utilities/_dom.js';
 import { FocusTrap } from '../../utilities/_focus-trap.js';
-import { Keyboard } from '../../utilities/_keyboard.js';
 
 export class Modal {
 	/** Tracks how many modals are currently open (for nested modals). */
