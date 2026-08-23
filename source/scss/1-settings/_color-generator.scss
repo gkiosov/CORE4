@@ -1,5 +1,8 @@
 // ==========================================
-// Генератор CSS-переменных и утилит из палитры
+// CSS Variable and Utility Generator from Palette
+// ==========================================
+// Provides mixins that iterate over the color map
+// to generate CSS custom properties and atomic utility classes.
 // ==========================================
 
 @use 'sass:map';
@@ -7,8 +10,11 @@
 @use 'colors' as colors;
 
 // ==========================================
-// Миксин для генерации CSS-переменных
+// Mixin: Generate CSS color variables
 // ==========================================
+// @param {Map} $color-map  – map of color names to shade maps
+// @param {String} $prefix  – optional prefix for variable names
+// @output CSS custom properties: --{prefix}{color}-{shade}
 
 @mixin generate-color-variables($color-map: colors.$colors, $prefix: '') {
 	@each $color-name, $shades in $color-map {
@@ -16,17 +22,21 @@
 			--#{$prefix}#{$color-name}-#{$shade}: #{$value};
 		}
 
-		// Алиас для основного цвета (500)
+		// Alias for the main shade (500)
 		--#{$prefix}#{$color-name}: var(--#{$prefix}#{$color-name}-500);
 	}
 }
 
 // ==========================================
-// Миксин для генерации утилитарных классов
+// Mixin: Generate color utility classes
 // ==========================================
+// Generates .text-{color}-{shade}, .bg-{color}-{shade},
+// and .border-{color}-{shade} atomic classes.
+// @param {Map} $color-map  – map of color names to shade maps
+// @output Utility classes using CSS variables
 
 @mixin generate-color-utilities($color-map: colors.$colors) {
-	// Текст
+	// Text color utilities
 	@each $color-name, $shades in $color-map {
 		@each $shade, $value in $shades {
 			.text-#{$color-name}-#{$shade} {
@@ -34,13 +44,13 @@
 			}
 		}
 
-		// Алиас для 500
+		// Alias for shade 500
 		.text-#{$color-name} {
 			color: var(--#{$color-name}-500);
 		}
 	}
 
-	// Фон
+	// Background color utilities
 	@each $color-name, $shades in $color-map {
 		@each $shade, $value in $shades {
 			.bg-#{$color-name}-#{$shade} {
@@ -53,7 +63,7 @@
 		}
 	}
 
-	// Границы
+	// Border color utilities
 	@each $color-name, $shades in $color-map {
 		@each $shade, $value in $shades {
 			.border-#{$color-name}-#{$shade} {

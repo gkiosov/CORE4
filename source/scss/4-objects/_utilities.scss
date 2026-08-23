@@ -1,5 +1,9 @@
 // ==========================================
-// 12. Утилитарные классы
+// Utility Classes
+// ==========================================
+// Atomic utility classes generated from design tokens.
+// Includes display, flexbox, spacing, text, color, border,
+// shadow, position, sizing, overflow, and interaction utilities.
 // ==========================================
 
 @use 'sass:map';
@@ -8,9 +12,9 @@
 @use '../1-settings/color-generator' as color-generator;
 @use '../2-tools/index' as tools;
 
-// ================================
+// ==========================================
 // 1. Display
-// ================================
+// ==========================================
 
 .d-block { display: block; }
 .d-inline { display: inline; }
@@ -28,9 +32,9 @@
 	}
 }
 
-// ================================
+// ==========================================
 // 2. Flexbox
-// ================================
+// ==========================================
 
 .flex-row { flex-direction: row; }
 .flex-column { flex-direction: column; }
@@ -52,11 +56,11 @@
 .align-end { align-items: flex-end; }
 .align-stretch { align-items: stretch; }
 
-// ================================
+// ==========================================
 // 3. Spacing (margin, padding)
-// ================================
+// ==========================================
 
-// 3.1. Margin (логический)
+// 3.1. Logical margin (block/inline)
 
 @each $name, $modules in settings.$spacing-modules {
 	// margin-block-start: top
@@ -80,7 +84,7 @@
 	}
 }
 
-// 3.2. Padding (логический)
+// 3.2. Logical padding (block/inline)
 
 @each $name, $modules in settings.$spacing-modules {
 	// padding-block-start: top
@@ -104,9 +108,8 @@
 	}
 }
 
-// 3.3. Универсальные утилиты (для быстрых правок)
+// 3.3. Universal utilities (all sides)
 
-// Все стороны сразу
 @each $name, $modules in settings.$spacing-modules {
 	.u-m-#{$name} {
 		@include tools.margin-block($modules);
@@ -119,16 +122,15 @@
 	}
 }
 
-// ================================
+// ==========================================
 // 4. Text
-// ================================
+// ==========================================
 
-// Генерация классов .text-* с font-size и line-height
+// Font size + automatic line-height pairing
 @each $name, $modules in settings.$font-size-modules {
 	.text-#{$name} {
 		font-size: tools.module($modules);
 
-		// Автоматический line-height из соответствующей карты
 		$line-height-modules: map.get(settings.$line-height-modules, $name);
 		@if $line-height-modules {
 			line-height: tools.module($line-height-modules);
@@ -136,14 +138,14 @@
 	}
 }
 
-// Отдельные утилиты для line-height (если нужно переопределить)
+// Individual line-height overrides
 @each $name, $modules in settings.$line-height-modules {
 	.leading-#{$name} {
 		line-height: tools.module($modules);
 	}
 }
 
-// Генерация классов для font-weight
+// Font weights
 @each $name, $value in settings.$font-weight {
 	.fw-#{$name} { font-weight: $value; }
 }
@@ -157,23 +159,23 @@
 .text-capitalize { text-transform: capitalize; }
 .text-truncate { @include tools.truncate(1); }
 
-// ================================
-// 4. Text colors (семантические)
-// ================================
+// ==========================================
+// 5. Text Colors (Semantic)
+// ==========================================
 
 .text-primary   { color: var(--color-primary); }
 .text-success   { color: var(--color-success); }
 .text-warning   { color: var(--color-warning); }
 .text-danger    { color: var(--color-danger); }
-.text-error     { color: var(--color-error); } // или добавь --color-error в тему
+.text-error     { color: var(--color-error); }
 .text-info      { color: var(--color-info); }
 .text-neutral   { color: var(--color-neutral); }
 .text-muted     { color: var(--color-text-secondary); }
 .text-inverse   { color: var(--color-text-inverse); }
 
-// ================================
-// 5. Colors (background)
-// ================================
+// ==========================================
+// 6. Background Colors
+// ==========================================
 
 .bg-surface   { background: var(--color-background); }
 .bg-primary   { background: var(--color-primary); }
@@ -182,13 +184,13 @@
 .bg-danger    { background: var(--color-danger); }
 .bg-error     { background: var(--color-error); }
 .bg-info      { background: var(--color-info); }
-.bg-neutral   { color: var(--color-neutral); }
+.bg-neutral   { background: var(--color-neutral); }
 .bg-muted     { background: var(--color-background-secondary); }
 .bg-inverse   { background: var(--color-background-inverse); }
 
-// ================================
-// 6. Border & Radius
-// ================================
+// ==========================================
+// 7. Border & Radius
+// ==========================================
 
 .border { border: 1px solid var(--color-border); }
 .border-0 { border: 0; }
@@ -205,18 +207,18 @@
 	}
 }
 
-// ================================
-// 7. Shadows
-// ================================
+// ==========================================
+// 8. Shadows
+// ==========================================
 
 @each $name, $value in settings.$shadows {
 	.shadow-#{$name} { box-shadow: $value; }
 }
 .shadow-none { box-shadow: none; }
 
-// ================================
-// 8. Position & Z-index
-// ================================
+// ==========================================
+// 9. Position & Z-Index
+// ==========================================
 
 .position-relative { position: relative; }
 .position-absolute { position: absolute; }
@@ -227,9 +229,9 @@
 	.z-#{$name} { z-index: $value; }
 }
 
-// ================================
-// 9. Width / Height
-// ================================
+// ==========================================
+// 10. Width / Height
+// ==========================================
 
 .w-full { width: 100%; }
 .w-auto { width: auto; }
@@ -243,9 +245,9 @@
 .min-h-screen { min-height: 100vh; }
 .min-h-screen-svh { min-height: 100svh; }
 
-// ================================
-// 10. Overflow
-// ================================
+// ==========================================
+// 11. Overflow
+// ==========================================
 
 .overflow-hidden { overflow: hidden; }
 .overflow-auto { overflow: auto; }
@@ -253,24 +255,24 @@
 .overflow-x-hidden { overflow-x: hidden; }
 .overflow-y-auto { overflow-y: auto; }
 
-// ================================
-// 11. Cursor
-// ================================
+// ==========================================
+// 12. Cursor
+// ==========================================
 
 .cursor-pointer { cursor: pointer; }
 .cursor-default { cursor: default; }
 .cursor-not-allowed { cursor: not-allowed; }
 
-// ================================
-// 12. User Select
-// ================================
+// ==========================================
+// 13. User Select
+// ==========================================
 
 .select-none { user-select: none; }
 .select-text { user-select: text; }
 
-// ================================
-// 13. Pointer Events
-// ================================
+// ==========================================
+// 14. Pointer Events
+// ==========================================
 
 .pointer-events-none { pointer-events: none; }
 .pointer-events-auto { pointer-events: auto; }

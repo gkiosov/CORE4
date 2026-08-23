@@ -1,10 +1,15 @@
 // ==========================================
-// Цветовая палитра (SCSS-карта)
+// Color Palette (SCSS maps)
+// ==========================================
+// Complete OKLCH color palette.
+// Each color contains shades 50–900 and accent variants (a100–a700).
 // ==========================================
 
 @use 'sass:map';
 
-// Основная палитра (все цвета)
+// ------------------------------------------
+// Base palette (all colors)
+// ------------------------------------------
 
 $colors: (
 	'red': (
@@ -302,7 +307,11 @@ $colors: (
 );
 
 
-// Семантические цвета (привязка к ролям)
+// ------------------------------------------
+// Semantic colors (role mapping)
+// ------------------------------------------
+// Maps design roles to specific palette colors.
+// Used by color() and semantic-color() functions.
 
 $semantic-colors: (
 	'primary': map.get($colors, 'blue'),

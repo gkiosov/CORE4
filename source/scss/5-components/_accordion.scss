@@ -1,9 +1,18 @@
-@use 'sass:map';
+// ==========================================
+// Accordion
+// ==========================================
+// Collapsible content panels with animated height transition.
+// State classes (.is-open) are toggled by JavaScript.
+// ==========================================
 
+@use 'sass:map';
 @use '../1-settings/index' as settings;
 @use '../2-tools/index' as tools;
 
 .accordion {
+	// ------------------------------------------
+	// Header (trigger button)
+	// ------------------------------------------
 	&__header {
 		all: unset;
 		display: flex;
@@ -16,12 +25,14 @@
 		font-size: tools.font-size('base');
 		color: var(--color-text);
 
+		// Chevron indicator
 		&::after {
 			content: '▼';
 			font-size: 0.75em;
 			transition: transform 0.35s ease;
 		}
 
+		// Rotate chevron when open
 		.accordion__item.is-open &::after {
 			transform: rotate(180deg);
 		}
@@ -32,12 +43,18 @@
 		}
 	}
 
+	// ------------------------------------------
+	// Content (collapsible panel)
+	// ------------------------------------------
 	&__content {
 		height: 0;
 		overflow: hidden;
 		transition: height 0.35s ease;
 	}
 
+	// ------------------------------------------
+	// Inner content (padding container)
+	// ------------------------------------------
 	&__inner {
 		padding: 0 tools.spacing(6) tools.spacing(4);
 		color: var(--color-text-secondary);

@@ -1,4 +1,9 @@
+// ==========================================
 // 1-settings/_themes.scss
+// ==========================================
+// Theme mixins and CSS custom property application.
+// Generates color variables, font variables, and theme-aware properties.
+// ==========================================
 
 @use 'sass:map';
 @use 'colors' as colors;
@@ -6,8 +11,9 @@
 @use 'typography' as typo;
 
 // ==========================================
-// 1. Светлая тема (миксин)
+// 1. Light Theme (mixin)
 // ==========================================
+// Defines all CSS custom properties for the light color scheme.
 
 @mixin light-theme {
 	--color-background: var(--grey-50);
@@ -60,8 +66,9 @@
 }
 
 // ==========================================
-// 2. Тёмная тема (миксин)
+// 2. Dark Theme (mixin)
 // ==========================================
+// Defines all CSS custom properties for the dark color scheme.
 
 @mixin dark-theme {
 	--color-background: var(--grey-900);
@@ -109,33 +116,33 @@
 }
 
 // ==========================================
-// 3. Применение
+// 3. Application
 // ==========================================
 
 :root {
-	// Генерация палитры
+	// Generate palette CSS variables (e.g. --red-500, --blue-100)
 	@include color-generator.generate-color-variables(colors.$colors);
 
-	// Шрифты из typography
+	// Font family variables from typography settings
 	--font-family-base: #{map.get(typo.$font-family, 'base')};
 	--font-family-heading: #{map.get(typo.$font-family, 'heading')};
 	--font-family-mono: #{map.get(typo.$font-family, 'mono')};
 	--font-family-accent: #{map.get(typo.$font-family, 'accent')};
 
-	// Тема по умолчанию (светлая)
+	// Default theme (light)
 	@include light-theme;
 
 	--theme-transition: 0.2s ease;
 }
 
-// Системная тёмная тема
+// System dark theme preference
 @media (prefers-color-scheme: dark) {
 	:root {
 		@include dark-theme;
 	}
 }
 
-// Ручное переключение
+// Manual theme switching via data-attribute
 :root[data-theme="dark"] {
 	@include dark-theme;
 }

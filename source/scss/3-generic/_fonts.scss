@@ -1,72 +1,57 @@
+// ==========================================
+// Font Loading
+// ==========================================
+// Self-hosted @font-face declarations.
+// Only active fonts are compiled into the output.
+// ==========================================
+
 @use 'sass:map';
 @use 'sass:list';
 
-// ==========================================
-// 1. Реестр всех доступных шрифтов
-// ==========================================
+// ------------------------------------------
+// 1. Registry of all available fonts
+// ------------------------------------------
+// Key: font family name
+// Value: folder path relative to assets/fonts/
 
-// Ключ: имя шрифта
-// Значение: путь к папке относительно assets/fonts/
 $font-registry: (
 	'InterTight': 'InterTight',
 	'JetBrains-Mono': 'JetBrains-Mono',
 );
 
-// ==========================================
-// 2. Список активных шрифтов (для сборки)
-// ==========================================
+// ------------------------------------------
+// 2. Active fonts (for the build)
+// ------------------------------------------
+// Declare which fonts from the registry should be loaded.
 
-// Укажи здесь, какие шрифты нужны в проекте
 $active-fonts: ('InterTight', 'JetBrains-Mono');
 
-// ==========================================
-// 3. Мапа начертаний для каждого шрифта
-// ==========================================
+// ------------------------------------------
+// 3. Weight map for each font
+// ------------------------------------------
+// Each entry: (file: 'filename', weight: 400, style: normal)
+// Commented-out entries are available but not loaded.
 
 $font-weights: (
 	'InterTight': (
-		//(file: 'InterTight-Thin', weight: 100, style: normal),
-		//(file: 'InterTight-ThinItalic', weight: 100, style: italic),
-		//(file: 'InterTight-ExtraLight', weight: 200, style: normal),
-		//(file: 'InterTight-ExtraLightItalic', weight: 200, style: italic),
 		(file: 'InterTight-Light', weight: 300, style: normal),
-		//(file: 'InterTight-LightItalic', weight: 300, style: italic),
 		(file: 'InterTight-Regular', weight: 400, style: normal),
-		//(file: 'InterTight-Italic', weight: 400, style: italic),
 		(file: 'InterTight-Medium', weight: 500, style: normal),
-		//(file: 'InterTight-MediumItalic', weight: 500, style: italic),
 		(file: 'InterTight-SemiBold', weight: 600, style: normal),
-		//(file: 'InterTight-SemiBoldItalic', weight: 600, style: italic),
 		(file: 'InterTight-Bold', weight: 700, style: normal),
-		//(file: 'InterTight-BoldItalic', weight: 700, style: italic),
-		//(file: 'InterTight-ExtraBold', weight: 800, style: normal),
-		//(file: 'InterTight-ExtraBoldItalic', weight: 800, style: italic),
-		//(file: 'InterTight-Black', weight: 900, style: normal),
-		//(file: 'InterTight-BlackItalic', weight: 900, style: italic),
 	),
 	'JetBrains-Mono': (
-		//(file: 'JetBrainsMono-Thin', weight: 100, style: normal),
-		//(file: 'JetBrainsMono-ThinItalic', weight: 100, style: italic),
-		//(file: 'JetBrainsMono-ExtraLight', weight: 200, style: normal),
-		//(file: 'JetBrainsMono-ExtraLightItalic', weight: 200, style: italic),
 		(file: 'JetBrainsMono-Light', weight: 300, style: normal),
-		//(file: 'JetBrainsMono-LightItalic', weight: 300, style: italic),
 		(file: 'JetBrainsMono-Regular', weight: 400, style: normal),
-		//(file: 'JetBrainsMono-Italic', weight: 400, style: italic),
 		(file: 'JetBrainsMono-Medium', weight: 500, style: normal),
-		//(file: 'JetBrainsMono-MediumItalic', weight: 500, style: italic),
 		(file: 'JetBrainsMono-SemiBold', weight: 600, style: normal),
-		//(file: 'JetBrainsMono-SemiBoldItalic', weight: 600, style: italic),
 		(file: 'JetBrainsMono-Bold', weight: 700, style: normal),
-		//(file: 'JetBrainsMono-BoldItalic', weight: 700, style: italic),
-		//(file: 'JetBrainsMono-ExtraBold', weight: 800, style: normal),
-		//(file: 'JetBrainsMono-ExtraBoldItalic', weight: 800, style: italic),
 	),
 );
 
-// ==========================================
-// 4. Генерация @font-face только для активных
-// ==========================================
+// ------------------------------------------
+// 4. Generate @font-face for active fonts only
+// ------------------------------------------
 
 @each $font-name in $active-fonts {
 	$folder: map.get($font-registry, $font-name);

@@ -1,5 +1,8 @@
 // ==========================================
-// Кнопки
+// Buttons
+// ==========================================
+// Multi-variant button system with semantic colors,
+// sizes, outline/ghost styles, and loading state.
 // ==========================================
 
 @use 'sass:map';
@@ -7,7 +10,7 @@
 @use '../2-tools/index' as tools;
 
 // ==========================================
-// Конфигурация цветовых вариантов
+// Color Variant Configuration
 // ==========================================
 
 $button-variants: (
@@ -40,7 +43,7 @@ $button-variants: (
 );
 
 // ==========================================
-// Базовый блок
+// Base Block
 // ==========================================
 
 .btn {
@@ -58,7 +61,7 @@ $button-variants: (
 	padding: tools.spacing(2) tools.spacing(5);
 	text-decoration: none;
 
-	// Переходы только по нужным свойствам (не all)
+	// Targeted transitions (avoid 'all' for performance)
 	transition: background-color settings.$transition-base,
 	border-color settings.$transition-base,
 	color settings.$transition-base,
@@ -69,21 +72,9 @@ $button-variants: (
 
 	@include tools.focus-ring;
 
-	/*
-	@include tools.respond-to('md') {
-		padding: tools.spacing(2) tools.spacing(4);
-		font-size: tools.font-size('sm'); // 14px
-	}
-
-	@include tools.respond-to('lg') {
-		padding: tools.spacing(2) tools.spacing(4);
-		font-size: tools.font-size('sm'); // 14px
-	}
-	*/
-
-	// ================================
-	// Размеры
-	// ================================
+	// ==========================================
+	// Sizes
+	// ==========================================
 
 	&--sm {
 		border-radius: tools.radius('sm');
@@ -91,13 +82,6 @@ $button-variants: (
 		height: tools.module(6);
 		line-height: tools.line-height('xs');
 		padding: tools.spacing(1) tools.spacing(2);
-
-		/*
-		@include tools.respond-to('md') {
-			padding: tools.spacing(3) tools.spacing(6);
-			font-size: tools.font-size('sm'); // 14px
-		}
-		*/
 	}
 
 	&--lg {
@@ -115,21 +99,21 @@ $button-variants: (
 		}
 	}
 
-	// ================================
-	// Варианты (генерация из мапы)
-	// ================================
+	// ==========================================
+	// Variants (generated from map)
+	// ==========================================
 
 	@each $name, $props in $button-variants {
 		&--#{$name} {
 			background-color: map.get($props, bg);
 			color: map.get($props, color);
 
-			// Hover через миксин с @media (hover: hover)
+			// Hover with touch-device safety
 			@include tools.hover((background-color)) {
 				background-color: map.get($props, hover);
 			}
 
-			// Active — всегда, без медиа-запроса
+			// Active state (always applied)
 			@if map.has-key($props, active) {
 				&:active {
 					background-color: map.get($props, active);
@@ -138,9 +122,9 @@ $button-variants: (
 		}
 	}
 
-	// ================================
+	// ==========================================
 	// Outline
-	// ================================
+	// ==========================================
 
 	&--outline {
 		background: transparent;
@@ -158,9 +142,9 @@ $button-variants: (
 		}
 	}
 
-	// ================================
+	// ==========================================
 	// Ghost
-	// ================================
+	// ==========================================
 
 	&--ghost {
 		background: transparent;
@@ -170,9 +154,9 @@ $button-variants: (
 		}
 	}
 
-	// ================================
-	// Состояния
-	// ================================
+	// ==========================================
+	// States
+	// ==========================================
 
 	&--disabled,
 	&:disabled {
@@ -183,10 +167,10 @@ $button-variants: (
 
 	&--loading {
 		position: relative;
-		color: transparent; // ← без !important
+		color: transparent;
 		pointer-events: none;
 
-		// Повышаем специфичность, если где-то перебивается цвет
+		// Increase specificity if color is overridden
 		&.btn {
 			color: transparent;
 		}
@@ -209,14 +193,14 @@ $button-variants: (
 }
 
 // ==========================================
-// Группа кнопок (Button Group)
+// Button Group
 // ==========================================
 
 .btn-group {
 	display: inline-flex;
 	vertical-align: middle;
 
-	// Убираем двойные границы между кнопками
+	// Remove double borders between adjacent buttons
 	.btn {
 		position: relative;
 		margin-left: -1px;
@@ -241,7 +225,7 @@ $button-variants: (
 		}
 	}
 
-	// Вертикальная группа
+	// Vertical orientation
 	&--vertical {
 		flex-direction: column;
 

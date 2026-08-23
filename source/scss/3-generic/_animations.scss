@@ -1,4 +1,10 @@
-// Reveal-анимации (начальное состояние задаёт JS)
+// ==========================================
+// Reveal Animations
+// ==========================================
+// Scroll-triggered entrance animations.
+// Initial state is set by JS (opacity: 0, transform: translateY(20px)).
+// The .is-visible class is toggled via IntersectionObserver.
+// ==========================================
 
 [data-reveal] {
 	transition: opacity 0.6s ease, transform 0.6s ease;

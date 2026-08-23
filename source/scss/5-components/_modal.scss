@@ -1,5 +1,8 @@
 // ==========================================
-// 15. Модальные окна
+// Modals — TODO
+// ==========================================
+// Overlay dialog with centered content, size variants,
+// and scrollable body. Open state toggled by JS.
 // ==========================================
 
 @use '../1-settings/index' as settings;
@@ -18,6 +21,7 @@
 	transition: all settings.$transition-slow;
 	background: var(--overlay-dark, rgba(0, 0, 0, 0.6));
 
+	// Open state
 	&--open {
 		opacity: 1;
 		visibility: visible;
@@ -27,6 +31,9 @@
 		}
 	}
 
+	// ------------------------------------------
+	// Content
+	// ------------------------------------------
 	&__content {
 		position: relative;
 		background: var(--color-background);
@@ -42,10 +49,11 @@
 		@include tools.custom-scrollbar;
 		@include tools.adaptive(
 				padding,
-				6, // 24px
+				6, // 24px base
 				settings.$spacing-scale
 		);
 
+		// Size variants
 		&--sm { max-width: 400px; }
 		&--lg { max-width: 800px; }
 		&--xl { max-width: 1140px; }
@@ -60,6 +68,9 @@
 		}
 	}
 
+	// ------------------------------------------
+	// Header
+	// ------------------------------------------
 	&__header {
 		display: flex;
 		align-items: center;
@@ -88,10 +99,16 @@
 		}
 	}
 
+	// ------------------------------------------
+	// Body
+	// ------------------------------------------
 	&__body {
 		padding: tools.spacing(2) 0;
 	}
 
+	// ------------------------------------------
+	// Footer
+	// ------------------------------------------
 	&__footer {
 		display: flex;
 		align-items: center;

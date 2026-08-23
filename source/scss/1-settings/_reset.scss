@@ -1,12 +1,26 @@
 // ==========================================
-// 5. Современный reset (2026)
+// Modern CSS Reset (2026)
 // ==========================================
+// A minimal, opinionated reset based on best practices.
+// Uses :where() to keep specificity low.
+// Respects prefers-reduced-motion and system themes.
+// ==========================================
+
+// ------------------------------------------
+// Universal box-sizing and margin reset
+// ------------------------------------------
 
 :where(*, *::before, *::after) {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
+
+// ------------------------------------------
+// Root defaults
+// ------------------------------------------
+// scrollbar-gutter: stable prevents layout shift when scrollbar appears.
+// Custom viewport units for JS-based height calculations.
 
 :root {
 	scrollbar-gutter: stable;
@@ -16,6 +30,12 @@
 	--lvh: 1lvh;
 }
 
+// ------------------------------------------
+// HTML base
+// ------------------------------------------
+// clip instead of hidden to avoid clipping sticky positioned children.
+// Smooth scrolling only when motion is not reduced.
+
 html {
 	overflow-x: clip;
 	-webkit-text-size-adjust: 100%;
@@ -24,6 +44,12 @@ html {
 		scroll-behavior: smooth;
 	}
 }
+
+// ------------------------------------------
+// Body
+// ------------------------------------------
+// min-height uses svh/dvh for correct mobile viewport sizing.
+// Theme transition for background and text color.
 
 body {
 	min-height: 100svh;
@@ -39,6 +65,10 @@ body {
 	transition: background-color var(--theme-transition), color var(--theme-transition);
 }
 
+// ------------------------------------------
+// Media elements
+// ------------------------------------------
+
 :where(img, picture, video, canvas, svg) {
 	display: block;
 	max-width: 100%;
@@ -48,6 +78,12 @@ body {
 :where(svg) {
 	vertical-align: middle;
 }
+
+// ------------------------------------------
+// Links
+// ------------------------------------------
+// Unstyled links (with class) keep no underline;
+// plain links get underline for accessibility.
 
 :where(a) {
 	color: var(--color-text-link);
@@ -63,15 +99,27 @@ body {
 	}
 }
 
+// ------------------------------------------
+// Lists
+// ------------------------------------------
+
 :where(ul, ol) {
 	list-style: none;
 }
+
+// ------------------------------------------
+// Tables
+// ------------------------------------------
 
 :where(table) {
 	border-collapse: collapse;
 	border-spacing: 0;
 	width: 100%;
 }
+
+// ------------------------------------------
+// Form elements
+// ------------------------------------------
 
 :where(input, button, textarea, select) {
 	font: inherit;
@@ -99,10 +147,19 @@ body {
 	padding: 0;
 }
 
+// ------------------------------------------
+// Focus styles
+// ------------------------------------------
+// Visible focus ring using CSS custom properties for theming.
+
 :focus-visible {
 	outline: 2px solid var(--color-border-focus);
 	outline-offset: 2px;
 }
+
+// ------------------------------------------
+// Accessibility helpers
+// ------------------------------------------
 
 .visually-hidden:not(:focus):not(:active) {
 	position: absolute !important;
@@ -116,6 +173,10 @@ body {
 	border: 0 !important;
 }
 
+// ------------------------------------------
+// Reduced motion
+// ------------------------------------------
+
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -126,6 +187,11 @@ body {
 		scroll-behavior: auto !important;
 	}
 }
+
+// ------------------------------------------
+// Scrollbar styling
+// ------------------------------------------
+// Themed scrollbars using CSS variables.
 
 ::-webkit-scrollbar {
 	width: 8px;

@@ -1,13 +1,15 @@
 // ==========================================
-// 1. Модульная система
+// 1. Modular System
 // ==========================================
+// Base unit for the entire design system.
+// All spacing, sizing, and radius values are multiples of this unit.
 
-// Базовый модуль (4px)
 $module: 4px;
 
 // ==========================================
-// 2. Брейкпоинты (адаптив)
+// 2. Breakpoints (Responsive)
 // ==========================================
+// Mobile-first breakpoints used by respond-to() mixin.
 
 $breakpoints: (
 	'xs': 375px,
@@ -19,8 +21,10 @@ $breakpoints: (
 );
 
 // ==========================================
-// 3. Отступы (в модулях)
+// 3. Spacing (in modules)
 // ==========================================
+// Named spacing scale. Values are module multipliers.
+// Example: spacing('4') → 4 × 4px = 16px
 
 $spacing-modules: (
 	'0': 0,
@@ -43,8 +47,9 @@ $spacing-modules: (
 );
 
 // ==========================================
-// 4. Скругления (в модулях)
+// 4. Border Radius (in modules)
 // ==========================================
+// Named radius scale. 'full' produces a pill shape.
 
 $radius-modules: (
 	'none': 0,
@@ -57,8 +62,9 @@ $radius-modules: (
 );
 
 // ==========================================
-// 5. Тени (в пикселях)
+// 5. Shadows (in pixels)
 // ==========================================
+// Elevation shadows from subtle to pronounced.
 
 $shadows: (
 	'sm': 0 1px 3px rgba(0, 0, 0, .06),
@@ -69,8 +75,9 @@ $shadows: (
 );
 
 // ==========================================
-// 6. Z-index слои
+// 6. Z-Index Layers
 // ==========================================
+// Centralized z-index scale to prevent stacking conflicts.
 
 $z-index: (
 	'base': 1,
@@ -83,11 +90,12 @@ $z-index: (
 );
 
 // ==========================================
-// 7. Сетка
+// 7. Grid
 // ==========================================
+// 12-column grid configuration with responsive container widths.
 
 $grid-columns: 12;
-$grid-gap: $module * 4; // 16px (базовый gap)
+$grid-gap: $module * 4; // 16px (default gap)
 
 $container-max-widths: (
 	'sm': 540px,
@@ -98,18 +106,20 @@ $container-max-widths: (
 );
 
 // ==========================================
-// 8. Анимации
+// 8. Transitions & Animations
 // ==========================================
+// Standardized transition durations for consistent motion.
 
 $transition-base: .2s ease;
 $transition-slow: .4s ease;
 $transition-fast: .1s ease;
 
 // ==========================================
-// 9. Шкалы адаптации (множители для брейкпоинтов)
+// 9. Adaptive Scales (multipliers for breakpoints)
 // ==========================================
+// Used by adaptive() mixin to scale values at larger viewports.
 
-// Для отступов
+// For spacing
 $spacing-scale: (
 	'sm': 1.25,  // ×1.25 (4px → 5px, 16px → 20px)
 	'md': 1.5,   // ×1.5  (4px → 6px, 16px → 24px)
@@ -117,7 +127,7 @@ $spacing-scale: (
 	'xl': 2      // ×2    (4px → 8px, 16px → 32px)
 );
 
-// Для скруглений
+// For border radius
 $radius-scale: (
 	'md': 1.5,
 	'lg': 2,

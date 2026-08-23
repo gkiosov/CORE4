@@ -1,5 +1,8 @@
 // ==========================================
-// Типографика (семантическая)
+// Semantic Typography
+// ==========================================
+// Base styles for headings, paragraphs, lists,
+// blockquotes, code, and inline text elements.
 // ==========================================
 
 @use 'sass:color';
@@ -7,7 +10,11 @@
 @use '../1-settings/index' as settings;
 @use '../2-tools/index' as tools;
 
-// Заголовки
+// ------------------------------------------
+// Headings
+// ------------------------------------------
+// h1–h6 and corresponding .h1–.h6 classes.
+
 h1, .h1 { @include tools.heading(1); }
 h2, .h2 { @include tools.heading(2); }
 h3, .h3 { @include tools.heading(3); }
@@ -15,7 +22,10 @@ h4, .h4 { @include tools.heading(4); }
 h5, .h5 { @include tools.heading(5); }
 h6, .h6 { @include tools.heading(6); }
 
-// Параграфы
+// ------------------------------------------
+// Paragraphs
+// ------------------------------------------
+
 p {
 	line-height: tools.line-height('md');
 	@include tools.margin-block(4);
@@ -25,7 +35,10 @@ p {
 	}
 }
 
-// Списки
+// ------------------------------------------
+// Lists
+// ------------------------------------------
+
 ul, ol {
 	padding-left: tools.spacing(6);
 	margin-bottom: tools.spacing(4);
@@ -46,7 +59,10 @@ li {
 	}
 }
 
-// Цитаты
+// ------------------------------------------
+// Blockquotes
+// ------------------------------------------
+
 blockquote {
 	padding-left: tools.spacing(4);
 	border-left: 4px solid var(--color-border);
@@ -59,7 +75,11 @@ blockquote {
 	}
 }
 
-// Код
+// ------------------------------------------
+// Code
+// ------------------------------------------
+// Inline <code> and block <pre> with syntax highlighting base.
+
 code, pre {
 	font-family: map.get(settings.$font-family, 'mono');
 	background: var(--color-background-secondary);
@@ -81,13 +101,19 @@ pre {
 	}
 }
 
-// Мелкий текст
+// ------------------------------------------
+// Small text
+// ------------------------------------------
+
 small, .small {
 	font-size: tools.font-size('sm');
 	color: var(--color-text-secondary);
 }
 
-// Выделение
+// ------------------------------------------
+// Highlight / Mark
+// ------------------------------------------
+
 mark {
 	background: color.change(tools.color('warning'), $alpha: 0.2);
 	padding: 0 tools.spacing(1);

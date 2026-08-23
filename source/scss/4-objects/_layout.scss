@@ -1,11 +1,17 @@
 // ==========================================
-// 11. Базовые лейауты
+// Base Layouts
+// ==========================================
+// High-level layout patterns: sidebar, 3-column,
+// page wrapper, fullscreen section, and alternate backgrounds.
 // ==========================================
 
 @use '../1-settings/index' as settings;
 @use '../2-tools/index' as tools;
 
-// Сайдбар + контент
+// ------------------------------------------
+// Sidebar + Content
+// ------------------------------------------
+
 .layout-sidebar {
 	display: grid;
 	gap: tools.spacing(4);
@@ -20,7 +26,10 @@
 	}
 }
 
-// 3 колонки
+// ------------------------------------------
+// 3 Columns
+// ------------------------------------------
+
 .layout-3cols {
 	display: grid;
 	gap: tools.spacing(4);
@@ -35,7 +44,10 @@
 	}
 }
 
-// Страница (header + main + footer)
+// ------------------------------------------
+// Page (header + main + footer)
+// ------------------------------------------
+
 .layout-page {
 	display: grid;
 	grid-template-rows: auto 1fr auto;
@@ -43,7 +55,10 @@
 	min-height: 100dvh;
 }
 
-// Полноэкранный блок
+// ------------------------------------------
+// Fullscreen block
+// ------------------------------------------
+
 .fullscreen {
 	min-height: 100svh;
 	min-height: 100dvh;
@@ -53,7 +68,10 @@
 	padding: tools.spacing(8);
 }
 
-// Альтернативный фон
+// ------------------------------------------
+// Alternate background section
+// ------------------------------------------
+
 .section-alt {
 	background: var(--color-background-secondary);
 }

@@ -1,5 +1,8 @@
 // ==========================================
-// Функции (модульная система)
+// Functions (Modular System)
+// ==========================================
+// Utility functions for converting module-based values to pixels,
+// accessing design tokens, and working with OKLCH colors.
 // ==========================================
 
 @use 'sass:color';
@@ -9,10 +12,17 @@
 @use '../1-settings/index' as settings;
 
 // ==========================================
-// 1. Базовые функции для модулей
+// 1. Base Module Functions
 // ==========================================
 
-// Получение значения в пикселях из модулей
+// ------------------------------------------
+// module()
+// ------------------------------------------
+// Converts a module count to pixels.
+// @param {Number} $modules  – number of base modules (1 module = 4px)
+// @return {Number}          – value in pixels
+// @example module(4) → 16px
+
 @function module($modules) {
 	@if $modules == null {
 		@warn "module() received null value!";
@@ -21,11 +31,16 @@
 	@return $modules * settings.$module;
 }
 
-// Получение отступа в пикселях из модулей
-// 2-tools/_functions.scss
+// ------------------------------------------
+// spacing()
+// ------------------------------------------
+// Gets a spacing value in pixels from a named key.
+// @param {String|Number} $name  – spacing key (e.g. '4') or numeric module count
+// @return {Number}              – value in pixels
+// @example spacing('4') → 16px
 
 @function spacing($name) {
-	// Если $name — число, преобразуем в строку
+	// If $name is a number, convert it to a string for map lookup
 	@if meta.type-of($name) == 'number' {
 		$name: meta.inspect($name);
 	}
@@ -39,7 +54,13 @@
 	@return module($modules);
 }
 
-// Получение радиуса в пикселях из модулей
+// ------------------------------------------
+// radius()
+// ------------------------------------------
+// Gets a border radius value in pixels from a named key.
+// @param {String} $name  – radius key (e.g. 'md', 'full')
+// @return {Number}       – value in pixels (or 9999px for 'full')
+
 @function radius($name) {
 	$modules: map.get(settings.$radius-modules, $name);
 	@if $modules == null {
@@ -52,7 +73,13 @@
 	@return module($modules);
 }
 
-// Получение размера шрифта в пикселях из модулей
+// ------------------------------------------
+// font-size()
+// ------------------------------------------
+// Gets a font size in pixels from a named key.
+// @param {String} $name  – font size key
+// @return {Number}       – value in pixels
+
 @function font-size($name) {
 	$modules: map.get(settings.$font-size-modules, $name);
 	@if $modules == null {
@@ -62,7 +89,13 @@
 	@return module($modules);
 }
 
-// Получение line-height в пикселях из модулей
+// ------------------------------------------
+// line-height()
+// ------------------------------------------
+// Gets a line height in pixels from a named key.
+// @param {String} $name  – line height key
+// @return {Number}       – value in pixels
+
 @function line-height($name) {
 	$modules: map.get(settings.$line-height-modules, $name);
 	@if $modules == null {
@@ -73,8 +106,14 @@
 }
 
 // ==========================================
-// 2. Функции для доступа к данным
+// 2. Data Access Functions
 // ==========================================
+
+// ------------------------------------------
+// breakpoint()
+// ------------------------------------------
+// @param {String} $name  – breakpoint key
+// @return {Number}       – breakpoint width in pixels
 
 @function breakpoint($name) {
 	$value: map.get(settings.$breakpoints, $name);
@@ -85,6 +124,12 @@
 	@return $value;
 }
 
+// ------------------------------------------
+// shadow()
+// ------------------------------------------
+// @param {String} $name  – shadow key
+// @return {List}         – box-shadow value
+
 @function shadow($name) {
 	$value: map.get(settings.$shadows, $name);
 	@if $value == null {
@@ -93,6 +138,12 @@
 	}
 	@return $value;
 }
+
+// ------------------------------------------
+// z-index()
+// ------------------------------------------
+// @param {String} $name  – z-index layer key
+// @return {Number}       – z-index value
 
 @function z-index($name) {
 	$value: map.get(settings.$z-index, $name);
@@ -104,16 +155,35 @@
 }
 
 // ==========================================
-// 3. Адаптивные функции
+// 3. Adaptive Functions
 // ==========================================
+
+// ------------------------------------------
+// adaptive-module()
+// ------------------------------------------
+// Scales a base module count by a multiplier.
+// @param {Number} $base         – base module count
+// @param {Number} $multiplier   – scale factor (default: 1)
+// @return {Number}              – scaled pixel value
 
 @function adaptive-module($base, $multiplier: 1) {
 	@return module($base * $multiplier);
 }
 
 // ==========================================
-// 4. Clamp-fluid (плавная адаптация)
+// 4. Clamp-Fluid (Smooth Scaling)
 // ==========================================
+
+// ------------------------------------------
+// clamp-fluid()
+// ------------------------------------------
+// Creates a fluid value that scales smoothly between breakpoints.
+// @param {Number} $min        – minimum value
+// @param {Number} $max        – maximum value
+// @param {Number} $min-width  – viewport width at minimum (default: 375px)
+// @param {Number} $max-width  – viewport width at maximum (default: 1400px)
+// @return {Number}            – clamp() expression
+// @example clamp-fluid(16px, 24px) → clamp(16px, 12.8px + 0.89vw, 24px)
 
 @function clamp-fluid($min, $max, $min-width: 375px, $max-width: 1400px) {
 	@if type-of($min) != 'number' or type-of($max) != 'number' {
@@ -126,8 +196,17 @@
 }
 
 // ==========================================
-// 5. Viewport-безопасные единицы
+// 5. Viewport-Safe Units
 // ==========================================
+
+// ------------------------------------------
+// vh()
+// ------------------------------------------
+// Returns a viewport height value using safe units (svh, dvh, lvh).
+// Prevents mobile browser toolbar issues.
+// @param {Number} $value  – raw vh value
+// @param {String} $type   – unit type: 'svh' | 'dvh' | 'lvh' | 'vh'
+// @return {Number}        – calc() expression
 
 @function vh($value, $type: 'svh') {
 	@if type-of($value) != 'number' {
@@ -146,10 +225,17 @@
 }
 
 // ==========================================
-// 6. Вспомогательные функции для отладки
+// 6. Debug Helper Functions
 // ==========================================
 
-// Проверка наличия ключа в карте
+// ------------------------------------------
+// has-key()
+// ------------------------------------------
+// Checks if a key exists in a map.
+// @param {Map} $map    – target map
+// @param {*} $key      – key to check
+// @return {Boolean}    – true if key exists
+
 @function has-key($map, $key) {
 	@if $map == null or $key == null {
 		@return false;
@@ -157,7 +243,13 @@
 	@return map.has-key($map, $key);
 }
 
-// Получение списка всех ключей карты (для отладки)
+// ------------------------------------------
+// list-keys()
+// ------------------------------------------
+// Returns all keys from a map for debugging.
+// @param {Map} $map  – target map
+// @return {List}     – list of keys
+
 @function list-keys($map) {
 	@if $map == null {
 		@return null;
@@ -166,15 +258,25 @@
 }
 
 // ==========================================
-// 7. Функции для работы с цветами (OKLCH)
+// 7. Color Functions (OKLCH)
 // ==========================================
 
-// Получение цвета по имени и оттенку с опциональной прозрачностью
+// ------------------------------------------
+// color()
+// ------------------------------------------
+// Retrieves a color by name and shade with optional alpha transparency.
+// Checks semantic colors first, then falls back to the base palette.
+// @param {String} $name   – color name or semantic role
+// @param {String} $shade  – shade key (default: '500')
+// @param {Number} $alpha  – opacity 0–1 (default: 1)
+// @return {Color}         – OKLCH color value
+// @example color('primary', '500', 0.5)
+
 @function color($name, $shade: '500', $alpha: 1) {
 	$result: null;
 	$base-color: null;
 
-	// 1. Проверяем семантические цвета
+	// 1. Check semantic color roles
 	$semantic-map: map.get(settings.$semantic-colors, $name);
 	@if $semantic-map != null {
 		$base-color: map.get($semantic-map, $shade);
@@ -187,7 +289,7 @@
 		@warn "Shade '#{$shade}' not found for semantic color '#{$name}'";
 	}
 
-	// 2. Проверяем основную палитру
+	// 2. Check base palette
 	$color-map: map.get(settings.$colors, $name);
 	@if $color-map != null {
 		$base-color: map.get($color-map, $shade);
@@ -209,7 +311,15 @@
 	@return $result;
 }
 
-// Явная функция для семантических цветов с прозрачностью
+// ------------------------------------------
+// semantic-color()
+// ------------------------------------------
+// Explicit function for semantic colors with alpha.
+// @param {String} $role   – semantic role (primary, success, etc.)
+// @param {String} $shade  – shade key (default: '500')
+// @param {Number} $alpha  – opacity 0–1 (default: 1)
+// @return {Color}         – OKLCH color value
+
 @function semantic-color($role, $shade: '500', $alpha: 1) {
 	$color-map: map.get(settings.$semantic-colors, $role);
 
@@ -232,17 +342,40 @@
 	@return $base-color;
 }
 
-// Универсальная функция для работы с прозрачностью
+// ------------------------------------------
+// color-alpha()
+// ------------------------------------------
+// Universal shorthand for colors with transparency.
+// @param {String} $name   – color name
+// @param {String} $shade  – shade key (default: '500')
+// @param {Number} $alpha  – opacity (default: 0.5)
+// @return {Color}         – OKLCH color with alpha
+
 @function color-alpha($name, $shade: '500', $alpha: 0.5) {
 	@return color($name, $shade, $alpha);
 }
 
-// Функция для получения CSS-переменной цвета
+// ------------------------------------------
+// color-var()
+// ------------------------------------------
+// Returns a CSS custom property reference for a palette color.
+// @param {String} $name   – color name
+// @param {String} $shade  – shade key (default: '500')
+// @return {String}        – var() expression
+
 @function color-var($name, $shade: '500') {
 	@return var(--#{$name}-#{$shade});
 }
 
-// Функция для получения CSS-переменной семантического цвета
+// ------------------------------------------
+// semantic-color-var()
+// ------------------------------------------
+// Returns a CSS custom property reference for a semantic color.
+// Note: semantic colors are defined as theme variables, not palette variables.
+// @param {String} $role   – semantic role
+// @param {String} $shade  – shade key (default: '500')
+// @return {String}        – var() expression
+
 @function semantic-color-var($role, $shade: '500') {
 	@return var(--#{$role}-#{$shade});
 }

@@ -1,14 +1,21 @@
 // ==========================================
-// Главный файл — импорт всех частей
+// Main entry point — imports all ITCSS layers
+// ==========================================
+// ITCSS architecture:
+// 1. Settings    – variables, tokens, themes
+// 2. Tools       – functions, mixins
+// 3. Generic     – reset, base, typography
+// 4. Objects     – grid, layout, utilities
+// 5. Components  – UI components
 // ==========================================
 
-// 1. Settings (с явным namespace)
+// 1. Settings (with explicit namespace)
 @use '1-settings/index' as settings;
 
-// 2. Tools (с явным namespace)
+// 2. Tools (with explicit namespace)
 @use '2-tools/index' as tools;
 
-// 3. Generic (базовые стили)
+// 3. Generic (base styles)
 @use '3-generic/base';
 @use '3-generic/animations';
 @use '3-generic/fonts';
@@ -25,5 +32,5 @@
 @use '5-components/card';
 @use '5-components/modal';
 
-// 6. Глобальные стили (опционально)
+// 6. Global styles (optional)
 // @use '6-global/animations';

@@ -1,7 +1,13 @@
-// 1-settings/_index.scss
-@forward 'variables';      // layout-токены (spacing, breakpoints, grid...)
-@forward 'typography';     // font-size, line-height, font-weight, font-family
-@forward 'colors';         // палитра
-@forward 'color-generator'; // миксины генерации
-@forward 'themes';         // CSS-переменные (зависит от colors, typography)
-@forward 'reset';          // ← перенести в 3-generic!
+// ==========================================
+// 1-settings — Design tokens and configuration
+// ==========================================
+// This layer contains all variables, maps, and theme definitions.
+// No CSS output should be generated from this layer alone.
+// ==========================================
+
+@forward 'variables';        // Layout tokens (spacing, breakpoints, grid, shadows, z-index)
+@forward 'typography';       // Font sizes, line heights, weights, families
+@forward 'colors';           // OKLCH color palette maps
+@forward 'color-generator';  // Mixins for generating CSS variables and utility classes
+@forward 'themes';           // CSS custom properties for light/dark themes
+@forward 'reset';            // Modern CSS reset (TODO: consider moving to 3-generic)

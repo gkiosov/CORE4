@@ -1,4 +1,10 @@
-// 4-objects/_index.scss
+// ==========================================
+// 4-objects — Grid, layout, and utilities
+// ==========================================
+// Non-cosmetic design patterns: grid system,
+// layout primitives, and atomic utility classes.
+// ==========================================
+
 @forward 'grid';
 @forward 'layout';
 @forward 'utilities';

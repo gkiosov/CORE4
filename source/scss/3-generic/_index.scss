@@ -1,3 +1,9 @@
-// 3-generic/_index.scss
+// ==========================================
+// 3-generic — Reset, base styles, and typography
+// ==========================================
+// This layer provides the foundation:
+// normalize/reset, font loading, base element styles.
+// ==========================================
+
 @forward 'base';
 @forward 'typography';

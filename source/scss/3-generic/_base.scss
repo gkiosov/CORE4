@@ -1,10 +1,18 @@
 // ==========================================
-// Базовые стили
+// Base Styles
+// ==========================================
+// Fundamental layout primitives: body defaults,
+// container, sections, and debug helpers.
 // ==========================================
 
 @use 'sass:map';
 @use '../1-settings/index' as settings;
 @use '../2-tools/index' as tools;
+
+// ------------------------------------------
+// Body
+// ------------------------------------------
+// Applies the base font stack and sizing from design tokens.
 
 body {
 	font-family: map.get(settings.$font-family, 'base');
@@ -12,39 +20,51 @@ body {
 	line-height: tools.line-height('base');
 }
 
-// Контейнер
+// ------------------------------------------
+// Container
+// ------------------------------------------
+// Centered content wrapper with responsive horizontal padding.
+
 .container {
 	width: 100%;
 	max-width: map.get(settings.$container-max-widths, 'xl');
 	margin: 0 auto;
 
 	@include tools.adaptive(
-			padding-left,
-			4,
-			settings.$spacing-scale
+		padding-left,
+		4,
+		settings.$spacing-scale
 	);
 
 	@include tools.adaptive(
-			padding-right,
-			4,
-			settings.$spacing-scale
+		padding-right,
+		4,
+		settings.$spacing-scale
 	);
 }
 
-// Секции
+// ------------------------------------------
+// Sections
+// ------------------------------------------
+// Vertical padding blocks for page sections.
+
 .section {
 	@include tools.adaptive(
-			padding-top,
-			8,
-			settings.$spacing-scale
+		padding-top,
+		8,
+		settings.$spacing-scale
 	);
 
 	@include tools.adaptive(
-			padding-bottom,
-			8,
-			settings.$spacing-scale
+		padding-bottom,
+		8,
+		settings.$spacing-scale
 	);
 }
+
+// ------------------------------------------
+// Horizontal rule
+// ------------------------------------------
 
 hr {
 	border: 0;
@@ -52,7 +72,11 @@ hr {
 	margin: tools.spacing(6) 0;
 }
 
-// Debug
+// ------------------------------------------
+// Debug: Spacing visualization
+// ------------------------------------------
+// Visual guides for checking spacing alignment during development.
+
 .debug-spacing {
 	outline: 1px solid red;
 

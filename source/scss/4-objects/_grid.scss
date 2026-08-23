@@ -1,43 +1,46 @@
 // ==========================================
-// 10. Grid-сетка (12 колонок)
+// Grid System (12 Columns)
+// ==========================================
+// CSS Grid-based 12-column layout with responsive
+// breakpoints, auto-placement, and alignment utilities.
 // ==========================================
 
 @use '../1-settings/index' as settings;
 @use '../2-tools/index' as tools;
 
 // ==========================================
-// 1. Row (строка)
+// 1. Row
 // ==========================================
 
 .row {
 	@include tools.make-row;
 
-	// На мобилках все колонки в столбик
+	// Stack all columns vertically on mobile
 	@include tools.respond-below('sm') {
 		grid-template-columns: 1fr;
 		gap: tools.spacing(3);
 	}
 
-	// Адаптивный gap
+	// Adaptive gap: 16px → 24px → 32px
 	@include tools.adaptive(
-		gap,
-		4, // 16px (база)
-		(
-			'md': 1.5,  // 24px
-			'lg': 2     // 32px
-		)
+			gap,
+			4, // 16px base
+			(
+				'md': 1.5,  // 24px
+				'lg': 2     // 32px
+			)
 	);
 }
 
 // ==========================================
-// 2. Базовые колонки (col-1...col-12)
+// 2. Base Columns (col-1...col-12)
 // ==========================================
 
 @for $i from 1 through settings.$grid-columns {
 	.col-#{$i} {
 		@include tools.make-col($i);
 
-		// На мобилках все колонки на всю ширину
+		// Full width on mobile
 		@include tools.respond-below('sm') {
 			grid-column: span 1;
 		}
@@ -45,7 +48,7 @@
 }
 
 // ==========================================
-// 3. Адаптивные колонки (col-sm-*, col-md-*, etc.)
+// 3. Responsive Columns (col-sm-*, col-md-*, etc.)
 // ==========================================
 
 @each $breakpoint, $value in settings.$breakpoints {
@@ -59,7 +62,7 @@
 }
 
 // ==========================================
-// 4. Точное позиционирование (col-start-*, col-end-*)
+// 4. Exact Positioning (col-start-*, col-end-*)
 // ==========================================
 
 @for $i from 1 through settings.$grid-columns + 1 {
@@ -73,27 +76,27 @@
 }
 
 // ==========================================
-// 5. Дополнительные утилиты
+// 5. Additional Utilities
 // ==========================================
 
-// Колонка на всю ширину
+// Full-width column
 .col-full {
 	grid-column: 1 / -1;
 }
 
-// Колонка с авто-шириной
+// Auto-width column
 .col-auto {
 	grid-column: auto;
 }
 
-// Отступы между колонками (кастомные)
+// Custom gap utilities
 @each $name, $modules in settings.$spacing-modules {
 	.gap-#{$name} {
 		gap: tools.module($modules);
 	}
 }
 
-// Выравнивание в grid
+// Justify content
 .justify-start { justify-content: start; }
 .justify-center { justify-content: center; }
 .justify-end { justify-content: end; }
@@ -101,18 +104,19 @@
 .justify-around { justify-content: space-around; }
 .justify-evenly { justify-content: space-evenly; }
 
+// Align content
 .align-start { align-content: start; }
 .align-center { align-content: center; }
 .align-end { align-content: end; }
 .align-stretch { align-content: stretch; }
 
-// Выравнивание отдельных элементов
+// Align self
 .self-start { align-self: start; }
 .self-center { align-self: center; }
 .self-end { align-self: end; }
 .self-stretch { align-self: stretch; }
 
-// Порядок элементов
+// Order
 @for $i from 1 through 12 {
 	.order-#{$i} {
 		order: $i;

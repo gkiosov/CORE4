@@ -1,5 +1,8 @@
 // ==========================================
-// Миксины
+// Mixins
+// ==========================================
+// Reusable Sass mixins for responsiveness, typography,
+// theming, spacing, and component patterns.
 // ==========================================
 
 @use 'sass:color';
@@ -9,10 +12,16 @@
 @use 'functions' as functions;
 
 // ==========================================
-// 1. Адаптивность (медиа-запросы)
+// 1. Responsiveness (Media Queries)
 // ==========================================
 
-// Мобильные-first
+// ------------------------------------------
+// respond-to()
+// ------------------------------------------
+// Mobile-first media query.
+// @param {String} $breakpoint  – breakpoint key from $breakpoints
+// @content                      – styles to apply above the breakpoint
+
 @mixin respond-to($breakpoint) {
 	$value: map.get(settings.$breakpoints, $breakpoint);
 	@if $value {
@@ -24,7 +33,13 @@
 	}
 }
 
-// Десктоп-first
+// ------------------------------------------
+// respond-below()
+// ------------------------------------------
+// Desktop-first media query.
+// @param {String} $breakpoint  – breakpoint key
+// @content                      – styles to apply below the breakpoint
+
 @mixin respond-below($breakpoint) {
 	$value: map.get(settings.$breakpoints, $breakpoint);
 	@if $value {
@@ -36,7 +51,14 @@
 	}
 }
 
-// Интервал
+// ------------------------------------------
+// respond-between()
+// ------------------------------------------
+// Range media query between two breakpoints.
+// @param {String} $min  – lower breakpoint key
+// @param {String} $max  – upper breakpoint key
+// @content               – styles to apply within the range
+
 @mixin respond-between($min, $max) {
 	$min-value: map.get(settings.$breakpoints, $min);
 	$max-value: map.get(settings.$breakpoints, $max);
@@ -50,8 +72,19 @@
 }
 
 // ==========================================
-// 2. Адаптивные значения (ступенчатые)
+// 2. Adaptive Values (Stepped)
 // ==========================================
+
+// ------------------------------------------
+// adaptive()
+// ------------------------------------------
+// Applies a property with a base value, then scales it
+// at each breakpoint using the provided multipliers.
+// @param {String} $property  – CSS property name
+// @param {Number} $base      – base module count
+// @param {Map} $scales       – breakpoint → multiplier map
+// @example
+//   @include adaptive(padding, 4, ('md': 1.5, 'lg': 2));
 
 @mixin adaptive($property, $base, $scales) {
 	#{$property}: functions.module($base);
@@ -64,8 +97,14 @@
 }
 
 // ==========================================
-// 3. Сетка (Grid)
+// 3. Grid
 // ==========================================
+
+// ------------------------------------------
+// make-row()
+// ------------------------------------------
+// Creates a 12-column CSS Grid row.
+// @param {Number} $gap  – gap value (default: $grid-gap)
 
 @mixin make-row($gap: settings.$grid-gap) {
 	display: grid;
@@ -73,19 +112,41 @@
 	gap: $gap;
 }
 
+// ------------------------------------------
+// make-col()
+// ------------------------------------------
+// Spans a column across N grid tracks.
+// @param {Number} $span  – number of columns to span
+
 @mixin make-col($span) {
 	grid-column: span $span;
 }
+
+// ------------------------------------------
+// make-col-exact()
+// ------------------------------------------
+// Positions a column with exact start/end lines.
+// @param {Number} $start  – start grid line
+// @param {Number} $end    – end grid line
 
 @mixin make-col-exact($start, $end) {
 	grid-column: $start / $end;
 }
 
 // ==========================================
-// 4. Типографика
+// 4. Typography
 // ==========================================
 
-// Универсальный миксин для шрифта
+// ------------------------------------------
+// font()
+// ------------------------------------------
+// Universal font shorthand mixin.
+// @param {String} $size        – font size key
+// @param {String|Number} $weight   – font weight key or raw value
+// @param {String} $line-height – line height key
+// @param {Color} $color        – text color
+// @param {String} $family      – font family
+
 @mixin font($size, $weight: null, $line-height: null, $color: null, $family: null) {
 	font-size: functions.font-size($size);
 
@@ -105,20 +166,39 @@
 	}
 }
 
-// Только текст (без family)
+// ------------------------------------------
+// text()
+// ------------------------------------------
+// Text-only font mixin (no family).
+// @param {String} $size        – font size key
+// @param {String|Number} $weight   – font weight
+// @param {String} $line-height – line height key
+// @param {Color} $color        – text color
+
 @mixin text($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
 	@include font($size, $weight, $line-height, $color, null);
 }
 
-// Только семейство
+// ------------------------------------------
+// font-family()
+// ------------------------------------------
+// @param {String} $family  – font family value
+
 @mixin font-family($family) {
 	font-family: $family;
 }
 
-// Заголовки (обновлённые с family)
+// ------------------------------------------
+// heading()
+// ------------------------------------------
+// Semantic heading mixin with automatic size mapping.
+// @param {Number} $level   – heading level 1–6
+// @param {Color} $color     – text color
+// @param {String} $family   – font family
+
 @mixin heading(
 	$level: 1,
-	$color: var(--color-text), // ← вместо var(--pink-500)
+	$color: var(--color-text),
 	$family: var(--font-family-heading)
 ) {
 	$sizes: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
@@ -129,8 +209,17 @@
 }
 
 // ==========================================
-// 5. Темизация
+// 5. Theming
 // ==========================================
+
+// ------------------------------------------
+// theme-aware()
+// ------------------------------------------
+// Applies different values for light and dark themes.
+// Respects both system preference and manual data-theme override.
+// @param {String} $property     – CSS property
+// @param {*} $light-value       – value for light theme
+// @param {*} $dark-value        – value for dark theme
 
 @mixin theme-aware($property, $light-value, $dark-value) {
 	#{$property}: $light-value;
@@ -149,8 +238,17 @@
 }
 
 // ==========================================
-// 6. Компоненты и утилиты
+// 6. Components & Utilities
 // ==========================================
+
+// ------------------------------------------
+// hover()
+// ------------------------------------------
+// Wraps hover and focus-visible states with @media (hover: hover)
+// to prevent sticky hover states on touch devices.
+// @param {String} $property   – transition property
+// @param {String} $duration   – transition duration
+// @content                     – hover/focus styles
 
 @mixin hover($property: all, $duration: settings.$transition-base) {
 	@if $property != none {
@@ -168,6 +266,14 @@
 	}
 }
 
+// ------------------------------------------
+// focus-ring()
+// ------------------------------------------
+// Standardized focus-visible outline.
+// @param {Color} $color   – outline color
+// @param {Number} $offset  – outline offset
+// @content                  – additional focus styles
+
 @mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
 	&:focus-visible {
 		outline: 2px solid $color;
@@ -175,6 +281,13 @@
 		@content;
 	}
 }
+
+// ------------------------------------------
+// custom-scrollbar()
+// ------------------------------------------
+// Themed WebKit scrollbar for a specific element.
+// @param {Number} $width   – scrollbar width
+// @param {Number} $radius  – thumb border radius
 
 @mixin custom-scrollbar($width: 8px, $radius: 4px) {
 	&::-webkit-scrollbar {
@@ -196,6 +309,13 @@
 	}
 }
 
+// ------------------------------------------
+// overlay()
+// ------------------------------------------
+// Full-viewport overlay (e.g. for modals).
+// @param {Number} $opacity   – background opacity
+// @param {Number} $z-index   – stacking order
+
 @mixin overlay($opacity: 0.5, $z-index: functions.z-index('overlay')) {
 	position: fixed;
 	inset: 0;
@@ -203,12 +323,23 @@
 	z-index: $z-index;
 }
 
+// ------------------------------------------
+// center()
+// ------------------------------------------
+// Absolute or fixed centering via transform.
+// @param {String} $position  – position value (absolute | fixed)
+
 @mixin center($position: absolute) {
 	position: $position;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
+
+// ------------------------------------------
+// absolute()
+// ------------------------------------------
+// Shorthand for absolute positioning.
 
 @mixin absolute($top: null, $right: null, $bottom: null, $left: null) {
 	position: absolute;
@@ -218,6 +349,11 @@
 	left: $left;
 }
 
+// ------------------------------------------
+// fixed()
+// ------------------------------------------
+// Shorthand for fixed positioning.
+
 @mixin fixed($top: null, $right: null, $bottom: null, $left: null) {
 	position: fixed;
 	top: $top;
@@ -225,6 +361,12 @@
 	bottom: $bottom;
 	left: $left;
 }
+
+// ------------------------------------------
+// truncate()
+// ------------------------------------------
+// Text truncation with optional multi-line clamp.
+// @param {Number} $lines  – number of lines (1 = ellipsis)
 
 @mixin truncate($lines: 1) {
 	@if $lines == 1 {
@@ -239,6 +381,11 @@
 	}
 }
 
+// ------------------------------------------
+// clearfix()
+// ------------------------------------------
+// Classic clearfix for float-based layouts.
+
 @mixin clearfix {
 	&::after {
 		content: '';
@@ -246,6 +393,11 @@
 		clear: both;
 	}
 }
+
+// ------------------------------------------
+// responsive-image()
+// ------------------------------------------
+// Container for images that maintain aspect ratio.
 
 @mixin responsive-image {
 	position: relative;
@@ -258,15 +410,38 @@
 	}
 }
 
+// ------------------------------------------
+// gradient()
+// ------------------------------------------
+// Linear gradient shorthand.
+// @param {String} $direction  – gradient direction
+// @param {Color} $color1      – start color
+// @param {Color} $color2      – end color
+
 @mixin gradient($direction: to right, $color1: #3b82f6, $color2: #2563eb) {
 	background: linear-gradient($direction, $color1, $color2);
 }
+
+// ------------------------------------------
+// animation()
+// ------------------------------------------
+// Animation with reduced-motion respect.
+// @param {String} $name      – animation name
+// @param {String} $duration  – duration
+// @param {String} $timing    – easing function
+// @param {String} $delay     – delay
 
 @mixin animation($name, $duration: 0.3s, $timing: ease, $delay: 0s) {
 	@media (prefers-reduced-motion: no-preference) {
 		animation: $name $duration $timing $delay;
 	}
 }
+
+// ------------------------------------------
+// responsive-video()
+// ------------------------------------------
+// Responsive embed container for iframes/videos.
+// @param {Number} $ratio  – aspect ratio (default: 16/9)
 
 @mixin responsive-video($ratio: 16/9) {
 	position: relative;
@@ -285,10 +460,15 @@
 }
 
 // ==========================================
-// 7. Логические отступы (гибкие)
+// 7. Logical Spacing (Flexible)
 // ==========================================
+// Uses logical properties (block/inline) for RTL support.
 
-// margin-block (одно или два значения)
+// ------------------------------------------
+// margin-block()
+// ------------------------------------------
+// @param {String|Number} $top     – top margin (module key or value)
+// @param {String|Number} $bottom  – bottom margin (optional)
 
 @mixin margin-block($top, $bottom: null) {
 	@if $bottom != null {
@@ -298,7 +478,11 @@
 	}
 }
 
-// margin-inline (одно или два значения)
+// ------------------------------------------
+// margin-inline()
+// ------------------------------------------
+// @param {String|Number} $start  – start (inline-start) margin
+// @param {String|Number} $end    – end (inline-end) margin (optional)
 
 @mixin margin-inline($start, $end: null) {
 	@if $end != null {
@@ -308,7 +492,11 @@
 	}
 }
 
-// padding-block (одно или два значения)
+// ------------------------------------------
+// padding-block()
+// ------------------------------------------
+// @param {String|Number} $top     – top padding
+// @param {String|Number} $bottom  – bottom padding (optional)
 
 @mixin padding-block($top, $bottom: null) {
 	@if $bottom != null {
@@ -318,7 +506,11 @@
 	}
 }
 
-// padding-inline (одно или два значения)
+// ------------------------------------------
+// padding-inline()
+// ------------------------------------------
+// @param {String|Number} $start  – start padding
+// @param {String|Number} $end    – end padding (optional)
 
 @mixin padding-inline($start, $end: null) {
 	@if $end != null {
@@ -328,7 +520,12 @@
 	}
 }
 
-// Универсальный миксин для margin (все 4 стороны)
+// ------------------------------------------
+// margin()
+// ------------------------------------------
+// Universal margin mixin supporting 1–4 values.
+// Converts to logical properties for RTL support.
+
 @mixin margin($top: null, $right: null, $bottom: null, $left: null) {
 	@if $top != null and $right != null and $bottom != null and $left != null {
 		margin-block: functions.spacing($top) functions.spacing($bottom);
@@ -344,7 +541,11 @@
 	}
 }
 
-// Универсальный миксин для padding (все 4 стороны)
+// ------------------------------------------
+// padding()
+// ------------------------------------------
+// Universal padding mixin supporting 1–4 values.
+
 @mixin padding($top: null, $right: null, $bottom: null, $left: null) {
 	@if $top != null and $right != null and $bottom != null and $left != null {
 		padding-block: functions.spacing($top) functions.spacing($bottom);
@@ -361,25 +562,51 @@
 }
 
 // ==========================================
-// 8. Миксины для OKLCH-цветов
+// 8. OKLCH Color Mixins
 // ==========================================
 
-// Фон с цветом и прозрачностью
+// ------------------------------------------
+// bg-color()
+// ------------------------------------------
+// @param {String} $name   – color name
+// @param {String} $shade  – shade key
+// @param {Number} $alpha  – opacity
+
 @mixin bg-color($name, $shade: '500', $alpha: 1) {
 	background: functions.color($name, $shade, $alpha);
 }
 
-// Текст с цветом и прозрачностью
+// ------------------------------------------
+// text-color()
+// ------------------------------------------
+// @param {String} $name   – color name
+// @param {String} $shade  – shade key
+// @param {Number} $alpha  – opacity
+
 @mixin text-color($name, $shade: '500', $alpha: 1) {
 	color: functions.color($name, $shade, $alpha);
 }
 
-// Граница с цветом и прозрачностью
+// ------------------------------------------
+// border-color()
+// ------------------------------------------
+// @param {String} $name   – color name
+// @param {String} $shade  – shade key
+// @param {Number} $alpha  – opacity
+
 @mixin border-color($name, $shade: '500', $alpha: 1) {
 	border-color: functions.color($name, $shade, $alpha);
 }
 
-// Цвет с прозрачностью (для любого свойства)
+// ------------------------------------------
+// color-with-alpha()
+// ------------------------------------------
+// Applies any color property with alpha support.
+// @param {String} $property  – CSS property
+// @param {String} $name      – color name
+// @param {String} $shade     – shade key
+// @param {Number} $alpha     – opacity
+
 @mixin color-with-alpha($property, $name, $shade: '500', $alpha: 1) {
 	#{$property}: functions.color($name, $shade, $alpha);
 }

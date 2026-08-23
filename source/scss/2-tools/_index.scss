@@ -1,3 +1,9 @@
-// 2-tools/_index.scss
+// ==========================================
+// 2-tools — Functions and mixins
+// ==========================================
+// This layer contains all Sass functions and mixins.
+// No CSS output should be generated from this layer alone.
+// ==========================================
+
 @forward 'functions';
 @forward 'mixins';
