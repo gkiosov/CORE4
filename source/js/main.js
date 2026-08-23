@@ -24,7 +24,6 @@ class App {
 				accordions: true,
 				buttons: true,
 				dropdowns: true,
-				likeButtons: true,
 				revealAnimations: true,
 				...config.modules
 			}
@@ -154,7 +153,6 @@ const app = new App({
 		accordions: true,
 		buttons: true,
 		dropdowns: true,
-		likeButtons: false,
 		revealAnimations: true
 	}
 });
