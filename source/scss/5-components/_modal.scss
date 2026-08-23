@@ -188,24 +188,35 @@
 	}
 }
 
+// ==========================================
+// Scroll Lock
+// ==========================================
+// scrollbar-gutter: stable (в _reset.scss) уже резервирует место
+// для скроллбара — никакой padding-right компенсации не нужна.
+// Fallback для старых браузеров через @supports.
+// ==========================================
+
 html.is-locked {
 	overflow: hidden;
-	padding-right: var(--scrollbar-width);
 	touch-action: none;
-	height: 100%;
-
-	body {
-		overflow: hidden;
-		touch-action: none;
-		height: 100%;
-	}
 }
 
-// Fixed / sticky elements (header, navbar, etc.) must be compensated
-// so they don't shift when the scrollbar disappears.
-.is-fixed,
-[data-fixed] {
-	html.is-locked & {
+body.is-locked {
+	overflow: hidden;
+	touch-action: none;
+}
+
+// Fallback: только если браузер НЕ поддерживает scrollbar-gutter
+@supports not (scrollbar-gutter: stable) {
+	html.is-locked,
+	body.is-locked {
 		padding-right: var(--scrollbar-width);
+	}
+
+	.is-fixed,
+	[data-fixed] {
+		html.is-locked & {
+			padding-right: var(--scrollbar-width);
+		}
 	}
 }

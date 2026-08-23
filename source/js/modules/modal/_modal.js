@@ -397,21 +397,25 @@ export class Modal {
 	}
 
 	// ================================
-	// Scroll Lock (html + body, with restore)
+	// Scroll Lock (no padding needed — scrollbar-gutter: stable handles it)
 	// ================================
 
 	_lockBodyScroll() {
-		// Compute scrollbar width once per page lifetime and store in CSS variable
-		if (Modal._scrollbarWidth === undefined) {
-			Modal._scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-			document.documentElement.style.setProperty('--scrollbar-width', `${Modal._scrollbarWidth}px`);
+		// Fallback: вычисляем ширину только если браузер не поддерживает scrollbar-gutter
+		if (CSS.supports && !CSS.supports('scrollbar-gutter', 'stable')) {
+			if (Modal._scrollbarWidth === undefined) {
+				Modal._scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+				document.documentElement.style.setProperty('--scrollbar-width', `${Modal._scrollbarWidth}px`);
+			}
 		}
 
 		document.documentElement.classList.add('is-locked');
+		document.body.classList.add('is-locked');
 	}
 
 	_unlockBodyScroll() {
 		document.documentElement.classList.remove('is-locked');
+		document.body.classList.remove('is-locked');
 	}
 
 	// ================================
