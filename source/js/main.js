@@ -1,5 +1,5 @@
 // ==========================================
-// Главный файл — инициализация всех модулей
+// Entry point — initializes all modules
 // ==========================================
 
 import '../scss/main.scss';
@@ -11,16 +11,11 @@ import { FocusTrap } from './utilities/_focus-trap.js';
 import { initRevealAnimations } from './utilities/_viewport.js';
 
 import { ThemeManager } from './modules/theme/_theme.js';
-import { initModals, Modal } from './modules/modal/_index.js';
-import { initAccordions, Accordion } from './modules/accordion/_accordion.js';
-import { initButtons, Button } from './modules/button/_index.js';
-import { initDropdowns, Dropdown } from './modules/dropdown/_index.js';
-//import { initLikeButtons, LikeButton } from './modules/like-button/_index.js';
 
 class App {
 	constructor(config = {}) {
 		this.modules = {};
-		this.isInitialized = false; // ← добавлено
+		this.isInitialized = false;
 
 		this.config = {
 			modules: {
@@ -29,26 +24,126 @@ class App {
 				accordions: true,
 				buttons: true,
 				dropdowns: true,
-				//likeButtons: true,
+				likeButtons: true,
 				revealAnimations: true,
 				...config.modules
 			}
 		};
+
+		// Cache for lazy-loaded modules
+		this._factories = {};
 	}
 
-	init() {
-		if (this.isInitialized) return; // ← guard от двойного вызова
-		this.isInitialized = true;      // ← сразу ставим флаг
+	async init() {
+		if (this.isInitialized) return;
+		this.isInitialized = true;
 
+		await this._initModules();
+	}
+
+	/**
+	 * Re-initialize modules for dynamically added DOM elements.
+	 * Safe to call multiple times — destroys old instances before creating new ones.
+	 */
+	async reinit() {
+		await this._initModules(/* isReinit = */ true);
+	}
+
+	async _initModules(isReinit = false) {
 		const cfg = this.config.modules;
 
-		if (cfg.theme) this.modules.theme = new ThemeManager();
-		if (cfg.modals) this.modules.modals = initModals();
-		if (cfg.accordions) this.modules.accordions = initAccordions();
-		if (cfg.buttons) this.modules.buttons = initButtons();
-		if (cfg.dropdowns) this.modules.dropdowns = initDropdowns();
-		//if (cfg.likeButtons) this.modules.likeButtons = initLikeButtons();
-		if (cfg.revealAnimations) initRevealAnimations();
+		// ThemeManager is lightweight — always loaded statically
+		if (cfg.theme && !this.modules.theme) {
+			this.modules.theme = new ThemeManager();
+		}
+
+		// Lazy-load modules only if enabled AND matching elements exist in DOM.
+		// import() must use a string literal so webpack can analyze and split chunks.
+
+		// Modals
+		if (cfg.modals && document.querySelector('[data-modal]')) {
+			if (!this._factories.modals) {
+				this._factories.modals = await import(
+					/* webpackChunkName: "modals" */
+					'./modules/modal/_index.js'
+					);
+			}
+			this._registerModule('modals', () => this._factories.modals.initModals(), isReinit);
+			window.CORE4.components.Modal = this._factories.modals.Modal;
+		}
+
+		// Accordions
+		if (cfg.accordions && document.querySelector('[data-accordion]')) {
+			if (!this._factories.accordions) {
+				this._factories.accordions = await import(
+					/* webpackChunkName: "accordions" */
+					'./modules/accordion/_accordion.js'
+					);
+			}
+			this._registerModule('accordions', () => this._factories.accordions.initAccordions(), isReinit);
+			window.CORE4.components.Accordion = this._factories.accordions.Accordion;
+		}
+
+		// Buttons
+		if (cfg.buttons && document.querySelector('[data-button]')) {
+			if (!this._factories.buttons) {
+				this._factories.buttons = await import(
+					/* webpackChunkName: "buttons" */
+					'./modules/button/_index.js'
+					);
+			}
+			this._registerModule('buttons', () => this._factories.buttons.initButtons(), isReinit);
+			window.CORE4.components.Button = this._factories.buttons.Button;
+		}
+
+		// Dropdowns
+		if (cfg.dropdowns && document.querySelector('[data-dropdown]')) {
+			if (!this._factories.dropdowns) {
+				this._factories.dropdowns = await import(
+					/* webpackChunkName: "dropdowns" */
+					'./modules/dropdown/_dropdown.js'
+					);
+			}
+			this._registerModule('dropdowns', () => this._factories.dropdowns.initDropdowns(), isReinit);
+			window.CORE4.components.Dropdown = this._factories.dropdowns.Dropdown;
+		}
+
+		// Reveal animations (lightweight, no chunk needed)
+		if (cfg.revealAnimations) {
+			initRevealAnimations();
+		}
+	}
+
+	/**
+	 * Helper: destroy old instances (on reinit) and merge new ones.
+	 */
+	_registerModule(name, initFn, isReinit) {
+		if (isReinit && this.modules[name]) {
+			this.modules[name].forEach(instance => {
+				if (typeof instance.destroy === 'function') {
+					instance.destroy();
+				}
+			});
+		}
+		const newInstances = initFn();
+		this.modules[name] = [...(this.modules[name] || []), ...newInstances];
+	}
+
+	getModule(name) {
+		return this.modules[name] || null;
+	}
+
+	destroy() {
+		Object.values(this.modules).forEach(moduleList => {
+			if (Array.isArray(moduleList)) {
+				moduleList.forEach(m => m.destroy?.());
+			} else if (moduleList && typeof moduleList.destroy === 'function') {
+				moduleList.destroy();
+			}
+		});
+		this.modules = {};
+		this._factories = {};
+		this.isInitialized = false;
 	}
 }
 
@@ -59,24 +154,25 @@ const app = new App({
 		accordions: true,
 		buttons: true,
 		dropdowns: true,
-		//likeButtons: false,
+		likeButtons: false,
 		revealAnimations: true
 	}
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-	app.init();
+document.addEventListener('DOMContentLoaded', async () => {
+	await app.init();
 });
 
 window.CORE4 = {
 	app,
 	core,
 	utils: { dom, keyboard },
-	components: { ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap } // LikeButtons
+	components: { ThemeManager, FocusTrap }
+	// Modal, Accordion, Button, Dropdown, LikeButton are added lazily by init()
 };
 
 if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
-	console.log('🔧 Доступны глобальные переменные:', Object.keys(window.CORE4));
+	console.log('🔧 Global variables available:', Object.keys(window.CORE4));
 }
 
 export default app;
