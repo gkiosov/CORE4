@@ -1,1114 +1,562 @@
-# 📘 SCSS Design System Documentation
+# CORE4 SCSS Documentation
 
-> **Version:** 0.1.0 Alpha  
-> **Updated:** August 2026  
-> **Compatibility:** Dart Sass 1.80+
+> **Version:** 0.1.0 Alpha | **Updated:** August 2026
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Modular System (Settings)](#-modular-system-settings)
-3. [Functions (Tools)](#-functions-tools)
-4. [Mixins](#-mixins)
-5. [Colors & Theming](#-colors--theming)
-6. [Grid](#-grid)
-7. [Components](#-components)
-8. [Quick Start](#-quick-start)
-
----
-
-## Introduction
-
-This documentation describes the SCSS system of the design system. All sizes and spacing are multiples of the base unit **4px**, ensuring visual rhythm and predictability.
-
-**System import:**
-```scss
-@use '1-settings' as settings;
-@use '2-tools' as tools;
-```
-
----
-
-## 🧱 Modular System (Settings)
-
-### Base Unit
-
-```scss
-$module: 4px; // Base unit
-```
-
-### Spacing
-
-| Key | Value | Key | Value |
-| :--- | :--- | :--- | :--- |
-| `0` | 0 | `10` | 40px |
-| `1` | 4px | `11` | 44px |
-| `2` | 8px | `12` | 48px |
-| `3` | 12px | `14` | 56px |
-| `4` | 16px | `16` | 64px |
-| `5` | 20px | `20` | 80px |
-| `6` | 24px | `24` | 96px |
-| `7` | 28px | | |
-| `8` | 32px | | |
-| `9` | 36px | | |
-
-**Usage:**
-```scss
-.element {
-  padding: settings.spacing(4); // → 16px
-  margin: settings.spacing(6);  // → 24px
-  gap: settings.spacing(3);     // → 12px
-}
-```
-
-### Breakpoints
-
-| Breakpoint | Value | Prefix |
-| :--- | :--- | :--- |
-| `xs` | 375px | `col-xs-*` |
-| `sm` | 576px | `col-sm-*` |
-| `md` | 768px | `col-md-*` |
-| `lg` | 992px | `col-lg-*` |
-| `xl` | 1200px | `col-xl-*` |
-| `xxl` | 1400px | `col-xxl-*` |
+1. [Overview](#overview)
+2. [File Structure](#file-structure)
+3. [Settings](#settings)
+4. [Tools](#tools)
+   - [Functions](#functions)
+   - [Mixins](#mixins)
+5. [Generic](#generic)
+   - [Fonts](#fonts)
+   - [Animations](#animations)
+   - [Base & Typography](#base--typography)
+6. [Objects](#objects)
+   - [Grid](#grid)
+   - [Layout](#layout)
+   - [Utilities](#utilities)
+7. [Components](#components)
+   - [Button](#button)
+   - [Card](#card)
+   - [Modal](#modal)
+   - [Accordion](#accordion)
+   - [Dropdown](#dropdown)
+8. [Themes](#themes)
+9. [Build & Webpack](#build--webpack)
 
 ---
 
-## 🧪 Functions (Tools)
+## Overview
 
-### `module($modules)`
-Converts the number of modules to pixels.
+CORE4 uses a modular SCSS architecture based on **ITCSS** (Inverted Triangle CSS):
 
-```scss
-@function module($modules) {
-  @return $modules * settings.$module;
-}
+| Layer | Folder | Purpose |
+|-------|--------|---------|
+| 1. Settings | `1-settings/` | Variables, colors, typography, themes |
+| 2. Tools | `2-tools/` | Functions and mixins |
+| 3. Generic | `3-generic/` | Base styles, fonts, animations, typography |
+| 4. Objects | `4-objects/` | Grid, layout patterns, utility classes |
+| 5. Components | `5-components/` | UI components (buttons, cards, modals, etc.) |
+
+The base module is **4px**. All spacing, sizing, and grid values are multiples of 4.
+
+---
+
+## File Structure
+
+```
+source/scss/
+├── 1-settings/
+│   ├── _variables.scss
+│   ├── _typography.scss
+│   ├── _colors.scss
+│   ├── _themes.scss
+│   ├── _reset.scss
+│   └── _index.scss
+├── 2-tools/
+│   ├── _functions.scss
+│   ├── _mixins.scss
+│   └── _index.scss
+├── 3-generic/
+│   ├── _base.scss
+│   ├── _fonts.scss
+│   ├── _animations.scss
+│   ├── _typography.scss
+│   └── _index.scss
+├── 4-objects/
+│   ├── _grid.scss
+│   ├── _layout.scss
+│   ├── _utilities.scss
+│   └── _index.scss
+├── 5-components/
+│   ├── _button.scss
+│   ├── _card.scss
+│   ├── _modal.scss
+│   └── _index.scss
+└── main.scss
 ```
 
-**Example:**
-```scss
-.element {
-  padding: tools.module(4); // → 16px
-  margin: tools.module(6);  // → 24px
-  height: tools.module(10); // → 40px
-}
-```
+---
 
-### `spacing($name)`
-Returns a spacing value by key.
+## Settings
 
-```scss
-@function spacing($name) {
-  $modules: map.get(settings.$spacing-modules, $name);
-  @return module($modules);
-}
-```
+### `_variables.scss`
 
-**Example:**
-```scss
-.element {
-  padding: tools.spacing(4); // → 16px
-  margin: tools.spacing(6);  // → 24px
-  gap: tools.spacing(3);     // → 12px
-}
+Core design tokens:
 
-// Quoted keys also work
-.element {
-  padding: tools.spacing('4'); // → 16px
-}
-```
+| Token | Value | Description |
+|-------|-------|-------------|
+| `$module` | `4px` | Base unit |
+| `$grid-columns` | `12` | Grid column count |
+| `$transition-base` | `0.2s ease` | Default transition |
 
-### `radius($name)`
-Returns a border-radius value.
+### `_colors.scss`
+
+Color system uses **OKLCH** (perceptually uniform color space, 2026 standard). All colors are generated programmatically into CSS custom properties.
 
 ```scss
-@function radius($name) {
-  $modules: map.get(settings.$radius-modules, $name);
-  @if $name == 'full' {
-    @return 9999px;
-  }
-  @return module($modules);
-}
+// Available color families (shades 50–950)
+// --grey-*, --blue-*, --red-*, --green-*, --amber-*, --light-blue-*, --pink-*
 ```
 
-**Example:**
+### `_typography.scss`
+
+Font families are defined as a map:
+
 ```scss
-.card {
-  border-radius: tools.radius('md');  // → 8px
-}
-
-.btn {
-  border-radius: tools.radius('full'); // → 9999px (pill)
-}
+$font-family: (
+  'base':     'InterTight, system-ui, sans-serif',
+  'heading':  'InterTight, system-ui, sans-serif',
+  'mono':     'JetBrains-Mono, monospace',
+  'accent':   'InterTight, system-ui, sans-serif',
+);
 ```
 
-**Valid keys:** `'none'` (0), `'sm'` (4px), `'md'` (8px), `'lg'` (12px), `'xl'` (16px), `'full'` (9999px)
+Font weights:
 
-### `font-size($name)`
-Returns a font size.
+| Name | Weight |
+|------|--------|
+| `thin` | 100 |
+| `light` | 300 |
+| `normal` | 400 |
+| `medium` | 500 |
+| `semibold` | 600 |
+| `bold` | 700 |
 
-| Key | Value | Key | Value |
-| :--- |:---------| :--- | :--- |
-| `xs` | 16px     | `2xl` | 28px |
-| `sm` | 18px     | `3xl` | 32px |
-| `base` | 16px     | `4xl` | 36px |
-| `md` | 18px     | `5xl` | 40px |
-| `lg` | 20px     | `6xl` | 44px |
-| `xl` | 24px     | `7xl` | 48px |
+---
 
-**Example:**
+## Tools
+
+### Functions
+
+#### `module($n)`
+Returns a multiple of the base module (4px).
+
 ```scss
-h1 {
-  font-size: tools.font-size('3xl'); // → 32px
-}
-
-p {
-  font-size: tools.font-size('base'); // → 16px
-}
+module(4)  // → 16px
+module(10) // → 40px
 ```
 
-### `line-height($name)`
+#### `spacing($n)`
+Alias for `module()`. Used for padding/margin values.
+
+```scss
+spacing(4) // → 16px
+```
+
+#### `font-size($name)`
+Returns a font size from the scale.
+
+| Name | Size |
+|------|------|
+| `xs` | 12px |
+| `sm` | 14px |
+| `base` | 16px |
+| `md` | 18px |
+| `lg` | 20px |
+| `xl` | 24px |
+| `2xl` | 32px |
+| `3xl` | 40px |
+| `4xl` | 48px |
+| `5xl` | 64px |
+| `6xl` | 80px |
+| `7xl` | 96px |
+
+```scss
+font-size('sm')  // → 14px
+font-size('3xl') // → 40px
+```
+
+#### `line-height($name)`
 Returns a line-height value.
 
-| Key | Value | Key | Value |
-| :--- |:---------| :--- | :--- |
-| `xs` | 16px     | `2xl` | 32px |
-| `sm` | 18px     | `3xl` | 36px |
-| `base` | 20px     | `4xl` | 40px |
-| `md` | 20px     | `5xl` | 44px |
-| `lg` | 24px     | `6xl` | 48px |
-| `xl` | 28px     | `7xl` | 52px |
-
-**Example:**
-```scss
-p {
-  line-height: tools.line-height('base'); // → 20px
-}
-```
-
-### `color($name, $shade: '500')`
-Universal function for retrieving colors. Works with primary and semantic colors.
+| Name | Value |
+|------|-------|
+| `xs` | 1.25 |
+| `sm` | 1.375 |
+| `base` | 1.5 |
+| `md` | 1.625 |
+| `lg` | 1.75 |
+| `xl` | 2 |
 
 ```scss
-@function color($name, $shade: '500') {
-  // Checks semantic colors, then the main palette
-}
+line-height('lg') // → 1.75
 ```
 
-**Examples:**
-```scss
-// Primary color
-.btn--danger {
-  background: tools.color('red', '500');
-}
+#### `radius($name)`
+Returns a border-radius value.
 
-// Semantic color
-.btn--primary {
-  background: tools.color('primary');
-  // or with a shade
-  background: tools.color('primary', '300');
-}
-
-// With transparency
-.mark {
-  background: rgba(tools.color('warning'), 0.2);
-}
-```
-
-**Valid values:**
-- **Primary:** `'red'`, `'blue'`, `'green'`, `'grey'`, etc.
-- **Semantic:** `'primary'`, `'success'`, `'warning'`, `'danger'`, `'info'`
-
-### `breakpoint($name)`
-Returns a breakpoint value.
+| Name | Value |
+|------|-------|
+| `none` | 0 |
+| `sm` | 4px |
+| `md` | 8px |
+| `lg` | 12px |
+| `xl` | 16px |
+| `full` | 9999px |
 
 ```scss
-@function breakpoint($name) {
-  @return map.get(settings.$breakpoints, $name);
-}
+radius('md') // → 8px
 ```
 
-**Example:**
-```scss
-.container {
-  max-width: tools.breakpoint('xl'); // → 1200px
-}
-```
+#### `shadow($name)`
+Returns a box-shadow value.
 
-### `clamp-fluid($min, $max)`
-Creates a fluid value for responsive typography.
+| Name | Value |
+|------|-------|
+| `sm` | `0 1px 3px rgba(0,0,0,0.06)` |
+| `md` | `0 4px 12px rgba(0,0,0,0.08)` |
+| `lg` | `0 8px 24px rgba(0,0,0,0.10)` |
+| `xl` | `0 16px 48px rgba(0,0,0,0.12)` |
 
-```scss
-@function clamp-fluid($min, $max) {
-  $slope: math.div($max - $min, 1400px - 375px);
-  $intercept: $min - $slope * 375px;
-  @return clamp(#{$min}, #{$intercept} + #{$slope * 100}vw, #{$max});
-}
-```
-
-**Example:**
-```scss
-h1 {
-  font-size: tools.clamp-fluid(24px, 48px);
-  // From 24px on mobile to 48px on desktop
-}
-```
-
-### `vh($value, $type: 'svh')`
-Creates a safe viewport value for mobile devices.
+#### `color($name, $shade: '500', $alpha: 1)`
+Returns a color from the OKLCH palette with optional alpha.
 
 ```scss
-@function vh($value, $type: 'svh') {
-  @return calc(#{$value} * var(--#{$type}));
-}
+color('blue', '500')      // → var(--blue-500)
+color('blue', '500', 0.5) // → rgba(...) from --blue-500
 ```
 
-**Example:**
-```scss
-.hero {
-  min-height: tools.vh(100, 'svh'); // → 100svh
-}
-
-.modal {
-  max-height: tools.vh(80, 'dvh'); // → 80dvh
-}
-```
-
----
-
-## 🛠 Mixins
-
-### Responsiveness
+### Mixins
 
 #### `respond-to($breakpoint)`
-Mobile-first. Applies styles from the specified breakpoint and up.
+Media query mixin. Breakpoints: `xs`, `sm`, `md`, `lg`, `xl`, `xxl`.
 
 ```scss
-@mixin respond-to($breakpoint) {
-  $value: map.get(settings.$breakpoints, $breakpoint);
-  @if $value {
-    @media (min-width: $value) {
-      @content;
-    }
-  }
+@include tools.respond-to('md') {
+  font-size: tools.font-size('md');
 }
 ```
-
-**Example:**
-```scss
-.element {
-  font-size: 14px;
-
-  @include tools.respond-to('md') {
-    font-size: 18px; // On tablets and up
-  }
-
-  @include tools.respond-to('lg') {
-    font-size: 20px; // On desktop and up
-  }
-}
-```
-
-#### `respond-below($breakpoint)`
-Desktop-first. Applies styles below the specified breakpoint.
-
-```scss
-@mixin respond-below($breakpoint) {
-  $value: map.get(settings.$breakpoints, $breakpoint);
-  @if $value {
-    @media (max-width: $value - 1px) {
-      @content;
-    }
-  }
-}
-```
-
-**Example:**
-```scss
-.element {
-  font-size: 18px;
-
-  @include tools.respond-below('md') {
-    font-size: 14px; // On mobile and tablets
-  }
-}
-```
-
-### Spacing (Logical Properties)
-
-#### `margin-block($top, $bottom)`
-Sets vertical outer spacing.
-
-```scss
-@mixin margin-block($top, $bottom: null) {
-  @if $bottom != null {
-    margin-block: spacing($top) spacing($bottom);
-  } @else {
-    margin-block: spacing($top);
-  }
-}
-```
-
-**Example:**
-```scss
-.element {
-  @include tools.margin-block(4);       // → margin-block: 16px 16px;
-  @include tools.margin-block(6, 4);    // → margin-block: 24px 16px;
-}
-```
-
-#### `padding-block($top, $bottom)`
-Sets vertical inner spacing.
-
-```scss
-@mixin padding-block($top, $bottom: null) {
-  @if $bottom != null {
-    padding-block: spacing($top) spacing($bottom);
-  } @else {
-    padding-block: spacing($top);
-  }
-}
-```
-
-**Example:**
-```scss
-.card {
-  @include tools.padding-block(4);      // → padding-block: 16px 16px;
-  @include tools.padding-block(6, 4);   // → padding-block: 24px 16px;
-}
-```
-
-#### `margin-inline($start, $end)`
-Sets horizontal outer spacing.
-
-```scss
-@mixin margin-inline($start, $end: null) {
-  @if $end != null {
-    margin-inline: spacing($start) spacing($end);
-  } @else {
-    margin-inline: spacing($start);
-  }
-}
-```
-
-**Example:**
-```scss
-.element {
-  @include tools.margin-inline(6);      // → margin-inline: 24px 24px;
-  @include tools.margin-inline(6, 4);   // → margin-inline: 24px 16px;
-}
-```
-
-#### `padding-inline($start, $end)`
-Sets horizontal inner spacing.
-
-```scss
-@mixin padding-inline($start, $end: null) {
-  @if $end != null {
-    padding-inline: spacing($start) spacing($end);
-  } @else {
-    padding-inline: spacing($start);
-  }
-}
-```
-
-**Example:**
-```scss
-.container {
-  @include tools.padding-inline(6);     // → padding-inline: 24px 24px;
-  @include tools.padding-inline(6, 4);  // → padding-inline: 24px 16px;
-}
-```
-
-### Adaptive Spacing
 
 #### `adaptive($property, $base, $scales)`
-Changes spacing depending on the breakpoint.
+Applies a property with stepped responsive scaling.
 
 ```scss
-@mixin adaptive($property, $base, $scales) {
-  #{$property}: module($base);
-
-  @each $breakpoint, $multiplier in $scales {
-    @include respond-to($breakpoint) {
-      #{$property}: module($base * $multiplier);
-    }
-  }
-}
+@include tools.adaptive(gap, 4, (
+  'md': 1.5,  // → 24px at md+
+  'lg': 2     // → 32px at lg+
+));
 ```
 
-**Example:**
-```scss
-.section {
-  // padding: 32px on mobile, 48px on tablet, 64px on desktop
-  @include tools.adaptive(
-    padding,
-    8,
-    (
-      'md': 1.5,
-      'lg': 2
-    )
-  );
-}
+#### `font($size, $weight: null, $line-height: null, $color: null, $family: null)`
+Universal font mixin. All optional parameters default to `null` (skipped if not provided).
 
-.container {
-  // padding-inline: 16px → 24px → 32px
-  @include tools.adaptive(
-    padding-inline,
-    4,
-    (
-      'md': 1.5,
-      'lg': 2
-    )
-  );
-}
+```scss
+@include tools.font('lg', 'bold', 'lg', var(--color-primary), var(--font-family-heading));
 ```
 
-### Grid
-
-#### `make-row($gap: $grid-gap)`
-Creates a row with 12 columns.
+#### `heading($level: 1, $color: var(--color-text), $family: var(--font-family-heading))`
+Heading mixin. `$level` 1–6 maps to sizes `7xl` → `2xl`. Line-height is derived from the size token.
 
 ```scss
-@mixin make-row($gap: settings.$grid-gap) {
-  display: grid;
-  grid-template-columns: repeat(settings.$grid-columns, 1fr);
-  gap: $gap;
-}
+h1 { @include tools.heading(1); }           // → 96px, bold
+h3 { @include tools.heading(3); }           // → 64px, bold
+h3 { @include tools.heading(3, var(--color-primary)); } // with custom color
 ```
 
-**Example:**
-```scss
-.products {
-  @include tools.make-row(24px);
-}
-```
-
-#### `make-col($span)`
-Sets column width (from 1 to 12).
+#### `hover($property: all, $duration: settings.$transition-base)`
+Applies hover styles inside `@media (hover: hover)` and also on `:focus-visible`. The `$timing` parameter has been removed — timing is baked into `$duration`.
 
 ```scss
-@mixin make-col($span) {
-  grid-column: span $span;
-}
-```
-
-**Example:**
-```scss
-.sidebar {
-  @include tools.make-col(3); // 3 out of 12 columns
-}
-
-.content {
-  @include tools.make-col(9); // 9 out of 12 columns
-}
-```
-
-#### `make-col-exact($start, $end)`
-Exact column positioning.
-
-```scss
-@mixin make-col-exact($start, $end) {
-  grid-column: $start / $end;
-}
-```
-
-**Example:**
-```scss
-.hero-text {
-  @include tools.make-col-exact(2, 8);  // From 2nd to 8th
-}
-
-.hero-image {
-  @include tools.make-col-exact(9, 13); // From 9th to 13th (12 columns + 1)
-}
-```
-
-### Typography
-
-#### `font($size, $weight: normal, $line-height: normal, $color: var(--color-text))`
-Sets all text properties in one line.
-
-```scss
-@mixin font($size, $weight: normal, $line-height: normal, $color: var(--color-text)) {
-  font-size: font-size($size);
-  font-weight: map.get(settings.$font-weight, $weight);
-
-  @if $line-height != normal {
-    line-height: line-height($line-height);
-  }
-
-  color: $color;
-}
-```
-
-**Example:**
-```scss
-.card__title {
-  @include tools.font('lg', 'semibold', 'tight', var(--color-text));
-  // → font-size: 20px; font-weight: 600; line-height: 28px;
-}
-
-.card__description {
-  @include tools.font('base', 'normal', 'relaxed', var(--color-text-secondary));
-  // → font-size: 16px; font-weight: 400; line-height: 28px;
-}
-```
-
-#### `heading($level: 1)`
-Styles H1-H6 headings.
-
-```scss
-@mixin heading($level: 1) {
-  $sizes: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
-  $line-heights: (1: '7xl', 2: '6xl', 3: '5xl', 4: '4xl', 5: '3xl', 6: '2xl');
-
-  $size: map.get($sizes, $level);
-  $lh: map.get($line-heights, $level);
-
-  @include font($size, 'bold', $lh);
-  @include margin-block(0, 4);
-}
-```
-
-**Example:**
-```scss
-h1 { @include tools.heading(1); } // → font-size: 48px; font-weight: 700; line-height: 52px;
-h2 { @include tools.heading(2); } // → font-size: 44px; font-weight: 700; line-height: 48px;
-h3 { @include tools.heading(3); } // → font-size: 40px; font-weight: 700; line-height: 44px;
-```
-
-### Theming
-
-#### `theme-aware($property, $light-value, $dark-value)`
-Switches property values depending on the theme.
-
-```scss
-@mixin theme-aware($property, $light-value, $dark-value) {
-  #{$property}: $light-value;
-
-  @media (prefers-color-scheme: dark) {
-    #{$property}: $dark-value;
-  }
-
-  [data-theme="dark"] & {
-    #{$property}: $dark-value;
-  }
-
-  [data-theme="light"] & {
-    #{$property}: $light-value;
-  }
-}
-```
-
-**Example:**
-```scss
-.card {
-  @include tools.theme-aware('background', #ffffff, #0f172a);
-  @include tools.theme-aware('border-color', #e2e8f0, #334155);
-}
-```
-
-### Components & Utilities
-
-#### `@mixin hover($property: all, $duration: settings.$transition-base)`
-Adds a `@media (hover: hover)` section for the class with `:hover` and `:focus-visible`, plus animation parameters.
-
-```scss
-@mixin hover($property: all, $duration: settings.$transition-base, $timing: ease) {
-  // Transition is ALWAYS set (it doesn't interfere on touch)
-  @if $property != none {
-    transition: $property $duration $timing;
-  }
-
-  // Hover only for devices with real hover
-  @media (hover: hover) {
-    &:hover {
-      @content;
-    }
-  }
-
-  // For keyboard — always show the effect
-  &:focus-visible {
-    @content;
-  }
-}
-```
-
-**Example:**
-```scss
-// Simple color change (button)
-.btn--primary {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-
-  @include hover(background-color) {
-    background: var(--color-primary-hover);
-  }
-}
-
-// Multiple properties at once
-.btn--secondary {
-  background: var(--color-bg-secondary);
-  color: var(--color-text);
-  border-color: var(--color-border);
-
-  // List the properties to animate
-  @include hover((background-color, border-color, color)) {
-    background: var(--color-bg-hover);
-    border-color: var(--color-border-hover);
-    color: var(--color-text-hover);
-  }
-}
-
-// Lift animation (card)
-.card {
-  background: var(--color-surface);
-  box-shadow: tools.shadow('sm');
-
-  // Animate transform and box-shadow with custom duration
-  @include hover((transform, box-shadow), 0.25s, ease-out) {
-    transform: translateY(-4px);
-    box-shadow: tools.shadow('lg');
-  }
-}
-
-// Scale animation (icon/icon button)
-.icon-btn {
-  background: transparent;
-  color: var(--color-text);
-
-  @include hover((transform, color), 0.2s) {
-    transform: scale(1.1);
-    color: var(--color-primary);
-  }
-}
-
-// Color change + underline (link)
-.link {
-  color: var(--color-primary);
-  text-decoration: none;
-  position: relative;
-
-  @include hover((color, width), 0.3s) {
-    color: var(--color-primary-hover);
-
-    // If you want to animate a pseudo-element — do it inside
-    &:after {
-      width: 100%;
-    }
-  }
-
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: currentColor;
-    transition: width 0.3s ease; // duplicate for smooth pseudo-element
-  }
-}
-
-// No animation (instant snap)
-.tag {
-  background: var(--color-bg);
-
-  @include hover(none) {
-    background: var(--color-bg-hover);
-  }
+@include tools.hover((background-color)) {
+  background-color: var(--color-primary-hover);
 }
 ```
 
 #### `focus-ring($color: var(--color-border-focus), $offset: 2px)`
-Adds focus styles for keyboard navigation.
+Keyboard focus styles. Accepts `@content` for additional focus-visible rules.
 
-```scss
-@mixin focus-ring($color: var(--color-border-focus), $offset: 2px) {
-  &:focus-visible {
-    outline: 2px solid $color;
-    outline-offset: $offset;
-  }
-}
-```
-
-**Example:**
 ```scss
 .btn {
   @include tools.focus-ring;
 }
 
 .input {
-  @include tools.focus-ring(var(--color-primary), 4px);
+  @include tools.focus-ring(var(--color-primary), 4px) {
+    box-shadow: 0 0 0 4px var(--color-primary-light);
+  };
 }
 ```
 
 #### `custom-scrollbar($width: 8px, $radius: 4px)`
-Creates a custom scrollbar.
+Custom scrollbar styling.
 
 ```scss
-@mixin custom-scrollbar($width: 8px, $radius: 4px) {
-  &::-webkit-scrollbar {
-    width: $width;
-    height: $width;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: $radius;
-
-    &:hover {
-      background: var(--scrollbar-thumb-hover);
-    }
-  }
-}
+@include tools.custom-scrollbar(8px, 4px);
 ```
 
-**Example:**
-```scss
-.modal__content {
-  @include tools.custom-scrollbar(6px, 6px);
-}
-```
+#### Logical spacing mixins
 
-#### `truncate($lines: 1)`
-Truncates text and adds an ellipsis.
-
-```scss
-@mixin truncate($lines: 1) {
-  @if $lines == 1 {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  } @else {
-    display: -webkit-box;
-    -webkit-line-clamp: $lines;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-```
-
-**Example:**
-```scss
-.card__title {
-  @include tools.truncate(1); // One line
-}
-
-.card__description {
-  @include tools.truncate(3); // Three lines
-}
-```
-
-#### `center($position: absolute)`
-Centers an element absolutely.
-
-```scss
-@mixin center($position: absolute) {
-  position: $position;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-```
-
-**Example:**
-```scss
-.loader {
-  @include tools.center;
-}
-
-.modal {
-  @include tools.center(fixed);
-}
-```
-
-#### `overlay($opacity: 0.5, $z-index: z-index('overlay'))`
-Creates an overlay for modals.
-
-```scss
-@mixin overlay($opacity: 0.5, $z-index: z-index('overlay')) {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, $opacity);
-  z-index: $z-index;
-}
-```
-
-**Example:**
-```scss
-.modal {
-  &__overlay {
-    @include tools.overlay(0.6);
-  }
-}
-```
+| Mixin | Description |
+|-------|-------------|
+| `margin-block($top, $bottom: null)` | Logical block margins |
+| `margin-inline($start, $end: null)` | Logical inline margins |
+| `padding-block($top, $bottom: null)` | Logical block padding |
+| `padding-inline($start, $end: null)` | Logical inline padding |
+| `margin($top, $right, $bottom, $left)` | All 4 sides (falls back to logical) |
+| `padding($top, $right, $bottom, $left)` | All 4 sides (falls back to logical) |
 
 ---
 
-## 🌓 Colors & Theming
+## Generic
 
-### Available Colors
+### Fonts
 
-| Group | Colors |
-| :--- | :--- |
-| **Primary** | red, pink, purple, deep-purple, indigo, blue, light-blue, cyan, teal, green, light-green, lime, yellow, amber, orange, deep-orange, brown, blue-grey, grey |
-| **Semantic** | primary (blue), success (green), warning (amber), danger (red), info (light-blue) |
+Fonts are managed via `source/scss/3-generic/_fonts.scss`:
 
-### CSS Variables
+```scss
+$font-registry: (
+  'InterTight': 'InterTight',
+  'JetBrains-Mono': 'JetBrains-Mono',
+);
 
-All colors are available via CSS variables:
+$active-fonts: ('InterTight', 'JetBrains-Mono');
 
-```css
-:root {
-  --red-500: oklch(0.4 0.25 27.9deg);
-  --blue-500: oklch(0.4 0.25 240deg);
+$font-weights: (
+  'InterTight': (
+    (file: 'InterTight-Light', weight: 300, style: normal),
+    (file: 'InterTight-Regular', weight: 400, style: normal),
+    (file: 'InterTight-Medium', weight: 500, style: normal),
+    (file: 'InterTight-SemiBold', weight: 600, style: normal),
+    (file: 'InterTight-Bold', weight: 700, style: normal),
+  ),
+  'JetBrains-Mono': (
+    (file: 'JetBrainsMono-Light', weight: 300, style: normal),
+    (file: 'JetBrainsMono-Regular', weight: 400, style: normal),
+    (file: 'JetBrainsMono-Medium', weight: 500, style: normal),
+    (file: 'JetBrainsMono-SemiBold', weight: 600, style: normal),
+    (file: 'JetBrainsMono-Bold', weight: 700, style: normal),
+  ),
+);
+```
+
+Only fonts listed in `$active-fonts` generate `@font-face` declarations. Files must be placed in `source/assets/fonts/{folder}/`.
+
+### Animations
+
+Reveal animations are defined in `source/scss/3-generic/_animations.scss`:
+
+```scss
+[data-reveal] {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+```
+
+Initial state (opacity: 0, transform offset) is set by JavaScript (`utilities/_viewport.js`).
+
+---
+
+## Objects
+
+### Grid
+
+12-column CSS Grid system, Bootstrap-like.
+
+```html
+<div class="row">
+  <div class="col-4">Column</div>
+  <div class="col-8">Column</div>
+</div>
+```
+
+Responsive gap adapts: `16px` base → `24px` at `md` → `32px` at `lg`.
+
+### Layout
+
+Container and section utilities.
+
+### Utilities
+
+Spacing, display, visibility, and other atomic utility classes.
+
+---
+
+## Components
+
+### Button
+
+Buttons use a variant map for color generation:
+
+```scss
+$button-variants: (
+  primary: (bg: var(--color-primary), color: var(--color-text-inverse), hover: var(--color-primary-hover), active: var(--color-primary-active)),
+  success: (bg: var(--color-success), color: var(--color-text-inverse), hover: var(--color-success-hover)),
+  danger:  (bg: var(--color-danger),  color: var(--color-text-inverse), hover: var(--color-danger-hover)),
+  warning: (bg: var(--color-warning), color: var(--color-text-inverse), hover: var(--color-warning-hover)),
+  info:    (bg: var(--color-info),    color: var(--color-text-inverse), hover: var(--color-info-hover)),
+);
+```
+
+Variants are auto-generated via `@each`. Hover uses `tools.hover()` mixin with `@media (hover: hover)`.
+
+**Base styles:**
+- `display: flex`
+- `height: tools.module(10)` (40px)
+- `gap: tools.spacing(1)` (4px)
+- `font-size: tools.font-size('sm')` (14px)
+- `line-height: tools.line-height('lg')` (1.75)
+- `padding: tools.spacing(2) tools.spacing(5)` (8px 20px)
+
+**Sizes:**
+
+| Modifier | Height | Font Size | Padding |
+|----------|--------|-------------|---------|
+| `.btn--sm` | 24px | 12px | 4px 8px |
+| `.btn` (default) | 40px | 14px | 8px 20px |
+| `.btn--lg` | 48px | 16px | 12px 24px |
+
+**States:**
+- `.btn--disabled` / `:disabled` — `opacity: 0.5`
+- `.btn--loading` — spinner overlay, `color: transparent`
+- `.btn--block` — `width: 100%`
+
+**Variants:**
+- `.btn--primary`, `.btn--success`, `.btn--danger`, `.btn--warning`, `.btn--info`
+- `.btn--secondary` — bordered, background-secondary
+- `.btn--outline` — transparent background, colored border/text
+- `.btn--ghost` — transparent, hover shows background-hover
+
+### Card
+
+Card component with image, content, and action areas.
+
+### Modal
+
+Modal overlay with focus trap support.
+
+### Accordion
+
+Accordion with animated height transitions and ARIA attributes.
+
+### Dropdown
+
+Dropdown menu with auto-positioning (flip), keyboard navigation, and ARIA support.
+
+---
+
+## Themes
+
+Themes are defined in `source/scss/1-settings/_themes.scss`.
+
+### Light theme (mixin)
+
+```scss
+@mixin light-theme {
+  --color-background: var(--grey-50);
+  --color-background-secondary: var(--grey-100);
+  --color-background-tertiary: var(--grey-200);
+  --color-background-hover: var(--grey-300);
+  --color-background-inverse: var(--grey-900);
+
+  --color-neutral: var(--grey-500);
+
+  --color-text: var(--grey-900);
+  --color-text-secondary: var(--grey-700);
+  --color-text-tertiary: var(--grey-500);
+  --color-text-inverse: var(--grey-50);
+  --color-text-link: var(--blue-500);
+  --color-text-link-hover: var(--blue-600);
+
+  --color-border: var(--grey-300);
+  --color-border-hover: var(--grey-400);
+  --color-border-focus: var(--blue-500);
+
   --color-primary: var(--blue-500);
   --color-primary-hover: var(--blue-600);
+  --color-primary-active: var(--blue-700);
+  --color-primary-light: var(--blue-50);
+
+  --color-success: var(--green-500);
+  --color-success-hover: var(--green-600);
+
+  --color-warning: var(--amber-500);
+  --color-warning-hover: var(--amber-600);
+
+  --color-danger: var(--red-500);
+  --color-danger-hover: var(--red-600);
+
+  --color-error: var(--red-500);
+  --color-error-hover: var(--red-600);
+
+  --color-info: var(--light-blue-500);
+  --color-info-hover: var(--light-blue-600);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  --scrollbar-track: var(--grey-100);
+  --scrollbar-thumb: var(--grey-300);
+  --scrollbar-thumb-hover: var(--grey-400);
 }
 ```
 
-### Usage in Components
+### Dark theme (mixin)
+
+Same structure, inverted values (grey-950 → grey-50, etc.).
+
+### Application
 
 ```scss
-.element {
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-color: var(--color-border);
+:root {
+  @include color-generator.generate-color-variables(colors.$colors);
+  --font-family-base: #{map.get(typo.$font-family, 'base')};
+  --font-family-heading: #{map.get(typo.$font-family, 'heading')};
+  --font-family-mono: #{map.get(typo.$font-family, 'mono')};
+  --font-family-accent: #{map.get(typo.$font-family, 'accent')};
+  @include light-theme;
+  --theme-transition: 0.2s ease;
 }
-```
 
-### Theme Switching
+@media (prefers-color-scheme: dark) {
+  :root { @include dark-theme; }
+}
 
-```html
-<!-- Light theme -->
-<html data-theme="light">
-
-<!-- Dark theme -->
-<html data-theme="dark">
-```
-
-**JavaScript for switching:**
-```javascript
-document.documentElement.setAttribute('data-theme', 'dark');
+:root[data-theme="dark"] { @include dark-theme; }
+:root[data-theme="light"] { @include light-theme; }
 ```
 
 ---
 
-## 🎨 Grid
+## Build & Webpack
 
-### Basic Grid
+### Asset handling
 
-```html
-<div class="row">
-  <div class="col-4">Column 1</div>
-  <div class="col-4">Column 2</div>
-  <div class="col-4">Column 3</div>
-</div>
+Webpack processes the following assets:
+
+| Asset type | Extension | Output folder |
+|------------|-----------|---------------|
+| Fonts | `.woff2`, `.woff`, `.eot`, `.ttf`, `.otf` | `build/fonts/` |
+| SVG icons | `.svg` | `build/icons/` |
+| Images | `.png`, `.jpg`, `.jpeg`, `.gif` | `build/images/` |
+
+### Side effects
+
+`package.json` declares SCSS/CSS as side effects to prevent tree-shaking:
+
+```json
+"sideEffects": ["*.scss", "*.css"]
 ```
 
-### Responsive Columns
+### Commands
 
-```html
-<div class="row">
-  <div class="col-12 col-md-6 col-lg-4">
-    <!-- Mobile: 1 column -->
-    <!-- Tablet: 2 columns -->
-    <!-- Desktop: 3 columns -->
-  </div>
-</div>
-```
-
-### Available Prefixes
-
-| Prefix | Breakpoint |
-| :--- | :--- |
-| `col-` | All screens |
-| `col-sm-` | ≥576px |
-| `col-md-` | ≥768px |
-| `col-lg-` | ≥992px |
-| `col-xl-` | ≥1200px |
-| `col-xxl-` | ≥1400px |
-
-### Exact Positioning
-
-```html
-<div class="row">
-  <div class="col-start-3 col-end-9">
-    <!-- Starts at column 3, ends at 9 -->
-    <!-- Occupies columns 3, 4, 5, 6, 7, 8 -->
-  </div>
-</div>
-```
-
-### Gap (spacing between columns)
-
-```html
-<div class="row gap-4">  <!-- 16px gap -->
-<div class="row gap-6">  <!-- 24px gap -->
-<div class="row gap-8">  <!-- 32px gap -->
-```
-
-### Alignment in Grid
-
-```html
-<div class="row justify-center align-center">
-  <div class="col-4">Centered content</div>
-</div>
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server with HMR |
+| `npm run build` | Production build (minified) |
+| `npm run watch` | Watch mode for development |
 
 ---
 
-## 🧩 Components
-
-### Buttons (`.btn`)
-
-```html
-<!-- Variants -->
-<button class="btn btn--primary">Primary</button>
-<button class="btn btn--secondary">Secondary</button>
-<button class="btn btn--success">Success</button>
-<button class="btn btn--warning">Warning</button>
-<button class="btn btn--danger">Danger</button>
-<button class="btn btn--info">Info</button>
-<button class="btn btn--outline">Outline</button>
-<button class="btn btn--ghost">Ghost</button>
-
-<!-- Sizes -->
-<button class="btn btn--sm">Small</button>
-<button class="btn btn--lg">Large</button>
-
-<!-- States -->
-<button class="btn btn--disabled" disabled>Disabled</button>
-<button class="btn btn--loading">Loading</button>
-```
-
-### Cards (`.card`)
-
-```html
-<div class="card">
-  <div class="card__image">
-    <img src="image.jpg" alt="Description">
-  </div>
-  <div class="card__content">
-    <h3 class="card__title">Title</h3>
-    <p class="card__description">Card description</p>
-    <div class="card__footer">
-      <span class="card__price">49,990 ₽</span>
-      <button class="btn btn--primary">Add to cart</button>
-    </div>
-  </div>
-</div>
-
-<!-- Featured card -->
-<div class="card card--featured">...</div>
-
-<!-- Small card -->
-<div class="card card--small">...</div>
-```
-
-### Modals (`.modal`)
-
-```html
-<!-- Modal -->
-<div id="my-modal" class="modal" data-modal>
-  <div class="modal__content">
-    <div class="modal__header">
-      <h3 class="modal__title">Title</h3>
-      <button class="modal__close" data-modal-close>×</button>
-    </div>
-    <div class="modal__body">
-      <p>Modal window content</p>
-    </div>
-    <div class="modal__footer">
-      <button class="btn btn--secondary">Cancel</button>
-      <button class="btn btn--primary">Confirm</button>
-    </div>
-  </div>
-</div>
-
-<!-- Trigger -->
-<button data-modal-trigger="my-modal">Open modal</button>
-```
-
-**Modal sizes:**
-```html
-<div class="modal__content modal__content--sm">  <!-- 400px -->
-<div class="modal__content modal__content--lg">  <!-- 800px -->
-<div class="modal__content modal__content--xl">  <!-- 1140px -->
-<div class="modal__content modal__content--full"> <!-- Full screen -->
-```
-
----
-
-## ✅ Quick Start
-
-### Include in a Project
-
-```scss
-// 1. Import the entire system
-@use '1-settings' as settings;
-@use '2-tools' as tools;
-
-// 2. Use spacing
-.element {
-  padding: tools.spacing(4);
-  margin: tools.spacing(6);
-}
-
-// 3. Use grid
-.grid {
-  @include tools.make-row;
-}
-
-// 4. Use colors
-.element {
-  color: tools.color('primary');
-  background: var(--color-background-secondary);
-}
-
-// 5. Use responsiveness
-.element {
-  font-size: tools.font-size('base');
-
-  @include tools.respond-to('md') {
-    font-size: tools.font-size('lg');
-  }
-}
-```
-
-### Usage in HTML
-
-```html
-<!-- Container -->
-<div class="container">
-  <!-- Row -->
-  <div class="row">
-    <!-- Columns -->
-    <div class="col-md-6 col-lg-4">
-      <!-- Content -->
-    </div>
-  </div>
-</div>
-```
-
----
-
-## 📚 Additional Resources
-
-- [OKLCH Color Picker](https://oklch.com/) — visual tool for colors
-- [CSS Color Level 4](https://www.w3.org/TR/css-color-4/) — specification
-- [Logical Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties) — logical properties in CSS
-
----
-
-**Version:** 1.0.0  
-**Updated:** August 2026  
-**Author:** core4 Design System
+**Author:** Georgy Kiosov | **License:** MIT

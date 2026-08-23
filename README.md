@@ -1,10 +1,6 @@
 # 🎨 CORE4 Design System
 
-> **A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, and a responsive grid.**
-
-![Version](https://img.shields.io/badge/Alpha-0.1.0-red.svg)
-![Build Status](https://img.shields.io/badge/Build-passing-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+> **A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, a responsive grid, and lazy-loaded components.**
 
 ---
 
@@ -24,12 +20,13 @@
 
 ## 📖 Overview
 
-**core4 Design System** is a modular design system built on:
+**CORE4 Design System** is a modular design system built on:
 - **SCSS** with a modular architecture (ITCSS)
-- **JavaScript** with ES modules
-- **Webpack** for bundling
+- **JavaScript** with ES modules and dynamic imports
+- **Webpack** for bundling with code splitting
 - **OKLCH colors** (2026 standard)
 - **Logical properties** (RTL language support)
+- **Custom fonts** (InterTight, JetBrains Mono)
 
 The system is designed for rapid creation of responsive interfaces with a unified visual rhythm (base unit of 4px).
 
@@ -41,10 +38,13 @@ The system is designed for rapid creation of responsive interfaces with a unifie
 - 🎨 **OKLCH Colors** — perceptually uniform colors (2026 standard)
 - 🌓 **Dark/Light Theme** — system + manual switching via `data-theme`
 - 📱 **Responsiveness** — 6 breakpoints (`xs`, `sm`, `md`, `lg`, `xl`, `xxl`)
-- 🔮 **Dynamic Components** — modals, accordions in vanilla JS
-- ♿️ **Accessibility** — keyboard navigation (Tab, Escape, Focus Trap)
+- 🔮 **Dynamic Components** — modals, accordions, dropdowns, buttons in vanilla JS
+- ♿️ **Accessibility** — keyboard navigation (Tab, Escape, Focus Trap), ARIA attributes
 - 🧪 **Modularity** — SCSS and JS modules for reuse
 - 📦 **Ready-to-use Build** — Webpack + Babel + minification
+- ⚡ **Lazy Loading** — JS modules load on demand only when DOM elements exist
+- 🔄 **Re-initialization** — `app.reinit()` for dynamically added components
+- ✨ **Reveal Animations** — scroll-triggered entrance animations via `data-reveal`
 
 ---
 
@@ -69,7 +69,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` — the page auto-refreshes on changes.
+Open `http://localhost:8080` — the page auto-refreshes on changes.
 
 ### 4. Build for production
 
@@ -80,6 +80,9 @@ npm run build
 Compiled files will appear in the `build/` folder:
 - `build/css/main.min.css` — minified styles
 - `build/js/main.min.js` — minified script
+- `build/fonts/` — font files
+- `build/icons/` — SVG icons
+- `build/images/` — images
 
 ---
 
@@ -88,6 +91,8 @@ Compiled files will appear in the `build/` folder:
 ```bash
 core4/
 ├── source/
+│   ├── assets/
+│   │   └── fonts/             # Font files (InterTight, JetBrains Mono)
 │   ├── scss/
 │   │   ├── 1-settings/        # Variables, themes, resets
 │   │   │   ├── _variables.scss
@@ -100,8 +105,10 @@ core4/
 │   │   │   ├── _functions.scss
 │   │   │   ├── _mixins.scss
 │   │   │   └── _index.scss
-│   │   ├── 3-generic/         # Base styles
+│   │   ├── 3-generic/         # Base styles, fonts, animations
 │   │   │   ├── _base.scss
+│   │   │   ├── _fonts.scss
+│   │   │   ├── _animations.scss
 │   │   │   ├── _typography.scss
 │   │   │   └── _index.scss
 │   │   ├── 4-objects/         # Grid and utilities
@@ -117,36 +124,49 @@ core4/
 │   │   └── main.scss          # Main import file
 │   │
 │   └── js/
-│       ├── core/              # Core (configs, helpers)
+│       ├── core/              # Core (configs, helpers, events)
 │       │   ├── _config.js
 │       │   ├── _helpers.js
 │       │   ├── _events.js
 │       │   └── _index.js
-│       ├── modules/           # Modules
+│       ├── modules/           # Modules (lazy-loaded)
 │       │   ├── theme/
 │       │   │   ├── _theme.js
 │       │   │   └── _index.js
 │       │   ├── modal/
 │       │   │   ├── _modal.js
 │       │   │   └── _index.js
-│       │   └── accordion/
-│       │       ├── _accordion.js
+│       │   ├── accordion/
+│       │   │   ├── _accordion.js
+│       │   │   └── _index.js
+│       │   ├── button/
+│       │   │   ├── _button.js
+│       │   │   └── _index.js
+│       │   └── dropdown/
+│       │       ├── _dropdown.js
 │       │       └── _index.js
 │       ├── utilities/         # Utilities
 │       │   ├── _dom.js
 │       │   ├── _keyboard.js
 │       │   ├── _focus-trap.js
+│       │   ├── _viewport.js
 │       │   └── _index.js
 │       └── main.js            # Entry point
 │
 ├── build/                     # Build output (generated)
 │   ├── css/
 │   │   └── main.min.css
-│   └── js/
-│       └── main.min.js
+│   ├── js/
+│   │   └── main.min.js
+│   ├── fonts/
+│   ├── icons/
+│   └── images/
 │
 ├── docs/                      # Documentation
-│   └── SCSS-GUIDE.md
+│   ├── SCSS-GUIDE.md
+│   ├── SCSS-GUIDE-RU.md
+│   ├── JAVASCRIPT-GUIDE.md
+│   └── JAVASCRIPT-GUIDE-RU.md
 │
 ├── webpack.config.js          # Webpack configuration
 ├── package.json               # Dependencies
@@ -161,8 +181,9 @@ core4/
 | Command | Description |
 |:---|:---|
 | `npm run dev` | Start development server with Hot Reload |
-| `npm run build` | Build production version (minified) |
+| `npm run build` | Build production version (minified, no dev server) |
 | `npm run start` | Same as `npm run dev` |
+| `npm run watch` | Watch mode for development |
 | `npm run test` | Run tests (Jest) |
 | `npm run test:watch` | Run tests in watch mode |
 
@@ -171,6 +192,9 @@ core4/
 ## 📚 Documentation
 
 - **[SCSS Documentation](docs/SCSS-GUIDE.md)** — detailed description of all functions, mixins, and components.
+- **[SCSS Documentation (RU)](docs/SCSS-GUIDE-RU.md)** — русская версия.
+- **[JavaScript Documentation](docs/JAVASCRIPT-GUIDE.md)** — architecture, modules, utilities, and API reference.
+- **[JavaScript Documentation (RU)](docs/JAVASCRIPT-GUIDE-RU.md)** — русская версия.
 
 ### Key SCSS Functions
 
@@ -193,9 +217,9 @@ core4/
   }
 }
 
-// Colors
+// Colors (CSS custom properties)
 .element {
-  color: tools.color('primary');
+  color: var(--color-primary);
   background: var(--color-background-secondary);
 }
 
@@ -231,11 +255,18 @@ core4/
 </html>
 ```
 
-### Component Example
+### Component Examples
 
 ```html
 <!-- Button -->
-<button class="btn btn--primary">Primary</button>
+<button class="btn btn--primary" data-button="default">Primary</button>
+
+<!-- Async Button -->
+<button class="btn btn--primary" data-button="async"
+        data-loading-text="Loading..."
+        data-success-text="Done!">
+  Submit
+</button>
 
 <!-- Card -->
 <div class="card">
@@ -263,6 +294,28 @@ core4/
         </div>
     </div>
 </div>
+
+<!-- Accordion -->
+<div data-accordion data-accordion-multiple="true">
+    <div data-accordion-item>
+        <button data-accordion-header>Section 1</button>
+        <div data-accordion-content>Content 1</div>
+    </div>
+</div>
+
+<!-- Dropdown -->
+<div data-dropdown data-dropdown-placement="bottom-start">
+    <button data-dropdown-trigger>Menu</button>
+    <div data-dropdown-menu>
+        <button>Item 1</button>
+        <button>Item 2</button>
+    </div>
+</div>
+
+<!-- Reveal Animation -->
+<div data-reveal data-reveal-direction="up" data-reveal-delay="200">
+    This fades in on scroll
+</div>
 ```
 
 ### Theme Switching
@@ -273,6 +326,49 @@ document.documentElement.setAttribute('data-theme', 'dark');
 
 // Or via button (already implemented in ThemeManager)
 ```
+
+### Global API (Development)
+
+In development mode, the following globals are available:
+
+```javascript
+window.CORE4.app              // App instance
+window.CORE4.core             // Core (CONFIG, EventManager)
+window.CORE4.utils.dom        // DOM helpers
+window.CORE4.utils.keyboard   // Keyboard helpers
+window.CORE4.components       // Components (ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap)
+```
+
+### Re-initialization for Dynamic Content
+
+If you add components to the DOM dynamically (e.g., via AJAX), call:
+
+```javascript
+await window.CORE4.app.reinit();
+```
+
+This safely destroys old instances and creates new ones.
+
+---
+
+## 🔤 Fonts
+
+CORE4 includes the following open-source fonts:
+
+### Inter Tight
+- **Author:** Rasmus Andersson
+- **License:** [SIL Open Font License 1.1](https://github.com/rsms/inter/blob/master/LICENSE.txt)
+- **Source:** [Google Fonts](https://fonts.google.com/specimen/Inter+Tight) / [GitHub](https://github.com/rsms/inter)
+- **Weights included:** 100 (Thin), 200 (Extra Light), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Extra Bold), 900 (Black)
+
+### JetBrains Mono
+- **Author:** JetBrains
+- **License:** [SIL Open Font License 1.1](https://github.com/JetBrains/JetBrainsMono/blob/master/OFL.txt)
+- **Source:** [JetBrains](https://www.jetbrains.com/lp/mono/) / [GitHub](https://github.com/JetBrains/JetBrainsMono)
+- **Weights included:** 100 (Thin), 200 (Extra Light), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Extra Bold)
+
+Both fonts are free for personal and commercial use.
+
 
 ---
 
@@ -300,4 +396,4 @@ If you have questions, open an [Issue](https://github.com/your-username/core4/is
 
 **Version:** 0.1.0 Alpha  
 **Updated:** August 2026  
-**Author:** Georgiy Kiosov
+**Author:** George Kiosov
