@@ -1,5 +1,5 @@
 // ==========================================
-// Модуль управления аккордеонами
+// Accordion Module
 // ==========================================
 
 import { CONFIG, EventManager } from '../../core/_index.js';
@@ -15,6 +15,10 @@ export class Accordion {
         };
 
         this.items = [];
+        this._handlers = [];        // Stores click/keydown handlers for cleanup
+        this._expandHandler = null;   // Expand-all button handler
+        this._collapseHandler = null; // Collapse-all button handler
+
         this.init();
     }
 
@@ -41,37 +45,44 @@ export class Accordion {
 
             this.items.push({ item, header, content });
 
-            header.addEventListener('click', () => this.toggle(index));
-
-            header.addEventListener('keydown', (e) => {
+            // Store bound handlers so we can remove them in destroy()
+            const clickHandler = () => this.toggle(index);
+            const keydownHandler = (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     this.toggle(index);
                 }
-            });
+            };
+
+            header.addEventListener('click', clickHandler);
+            header.addEventListener('keydown', keydownHandler);
+
+            this._handlers.push({ header, clickHandler, keydownHandler });
         });
 
-        // Кнопки "Открыть все" / "Закрыть все"
+        // Expand All / Collapse All buttons
         const expandBtn = qs('[data-accordion-expand]', this.element);
         const collapseBtn = qs('[data-accordion-collapse]', this.element);
 
         if (expandBtn) {
-            expandBtn.addEventListener('click', () => this.expandAll());
+            this._expandHandler = () => this.expandAll();
+            expandBtn.addEventListener('click', this._expandHandler);
         }
         if (collapseBtn) {
-            collapseBtn.addEventListener('click', () => this.collapseAll());
+            this._collapseHandler = () => this.collapseAll();
+            collapseBtn.addEventListener('click', this._collapseHandler);
         }
     }
 
     // ================================
-    // Открытие одного элемента
+    // Open a single item
     // ================================
 
     open(index) {
         const item = this.items[index];
         if (!item || item.item.classList.contains(this.options.openClass)) return;
 
-        // В режиме single закрываем остальные
+        // In single mode, close others
         if (!this.options.multiple) {
             this.items.forEach((other, i) => {
                 if (i !== index && other.item.classList.contains(this.options.openClass)) {
@@ -88,7 +99,7 @@ export class Accordion {
     }
 
     // ================================
-    // Закрытие одного элемента
+    // Close a single item
     // ================================
 
     close(index, instant = false) {
@@ -116,7 +127,7 @@ export class Accordion {
     }
 
     // ================================
-    // Открыть ВСЕ (игнорирует multiple)
+    // Expand ALL (ignores multiple)
     // ================================
 
     expandAll() {
@@ -132,7 +143,7 @@ export class Accordion {
     }
 
     // ================================
-    // Закрыть ВСЕ
+    // Collapse ALL
     // ================================
 
     collapseAll(instant = false) {
@@ -153,7 +164,7 @@ export class Accordion {
     }
 
     // ================================
-    // Внутренние методы
+    // Internal methods
     // ================================
 
     _closeInstant(item) {
@@ -210,16 +221,40 @@ export class Accordion {
     }
 
     destroy() {
-        this.items.forEach(({ header }) => {
-            header.removeEventListener('click', this.toggle);
-            header.removeEventListener('keydown', this.toggle);
+        // Remove all item-level event listeners
+        this._handlers.forEach(({ header, clickHandler, keydownHandler }) => {
+            header.removeEventListener('click', clickHandler);
+            header.removeEventListener('keydown', keydownHandler);
         });
+        this._handlers = [];
+
+        // Remove expand/collapse button listeners
+        const expandBtn = qs('[data-accordion-expand]', this.element);
+        const collapseBtn = qs('[data-accordion-collapse]', this.element);
+
+        if (expandBtn && this._expandHandler) {
+            expandBtn.removeEventListener('click', this._expandHandler);
+            this._expandHandler = null;
+        }
+        if (collapseBtn && this._collapseHandler) {
+            collapseBtn.removeEventListener('click', this._collapseHandler);
+            this._collapseHandler = null;
+        }
+
+        // Clean up pending transitions
+        this.items.forEach(({ content }) => {
+            this._clearTransition(content);
+        });
+
+        // Close all items instantly
         this.collapseAll(true);
+
+        this.items = [];
     }
 }
 
 // ================================
-// Автоинициализация
+// Auto-initialization
 // ================================
 
 export function initAccordions(selector = '[data-accordion]') {
