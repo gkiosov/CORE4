@@ -1,5 +1,5 @@
 // ==========================================
-// Модуль управления dropdown-меню
+// Dropdown Module
 // ==========================================
 
 import { CONFIG, EventManager } from '../../core/_index.js';
@@ -16,7 +16,7 @@ export class Dropdown {
 		this.options = {
 			openClass: options.openClass || 'is-open',
 			placement: options.placement || element.dataset.dropdownPlacement || 'bottom-start',
-			autoFlip: options.autoFlip !== false, // по умолчанию включено
+			autoFlip: options.autoFlip !== false, // enabled by default
 			...options
 		};
 
@@ -24,6 +24,10 @@ export class Dropdown {
 		this.currentPlacement = this.options.placement;
 		this._clickOutsideHandler = null;
 		this._keydownHandler = null;
+		this._triggerClickHandler = null;
+		this._triggerKeydownHandler = null;
+		this._menuKeydownHandler = null;
+		this._itemClickHandlers = [];
 
 		this.init();
 	}
@@ -31,32 +35,66 @@ export class Dropdown {
 	init() {
 		if (!this.trigger || !this.menu) return;
 
+		// Ensure menu has an id for aria-controls
+		if (!this.menu.id) {
+			this.menu.id = `dropdown-menu-${Math.random().toString(36).slice(2, 9)}`;
+		}
+
+		// ARIA attributes on trigger
+		this.trigger.setAttribute('aria-haspopup', 'true');
+		this.trigger.setAttribute('aria-expanded', 'false');
+		this.trigger.setAttribute('aria-controls', this.menu.id);
+
+		// ARIA attributes on menu
+		this.menu.setAttribute('role', 'menu');
+
 		this.items = qsa('button, a[href], [tabindex]:not([tabindex="-1"])', this.menu);
 
-		this.trigger.addEventListener('click', (e) => {
-			e.preventDefault();
-			this.toggle();
+		// ARIA attributes on menu items
+		this.items.forEach(item => {
+			item.setAttribute('role', 'menuitem');
 		});
 
-		this.trigger.addEventListener('keydown', (e) => {
+		// Mark dividers as separators
+		const dividers = qsa('.dropdown__item--divider', this.menu);
+		dividers.forEach(divider => {
+			divider.setAttribute('role', 'separator');
+			divider.removeAttribute('role', 'menuitem'); // in case it was set above
+		});
+
+		// Trigger click
+		this._triggerClickHandler = (e) => {
+			e.preventDefault();
+			this.toggle();
+		};
+		this.trigger.addEventListener('click', this._triggerClickHandler);
+
+		// Trigger keyboard
+		this._triggerKeydownHandler = (e) => {
 			if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
 				this.open();
 				this._focusFirst();
 			}
-		});
+		};
+		this.trigger.addEventListener('keydown', this._triggerKeydownHandler);
 
-		this.menu.addEventListener('keydown', (e) => this._handleMenuKeydown(e));
+		// Menu keyboard navigation
+		this._menuKeydownHandler = (e) => this._handleMenuKeydown(e);
+		this.menu.addEventListener('keydown', this._menuKeydownHandler);
 
+		// Item click handlers
 		this.items.forEach((item, index) => {
-			item.addEventListener('click', () => {
+			const handler = () => {
 				EventManager.dispatch(this.element, 'dropdown:select', {
 					item,
 					index,
 					dropdown: this
 				});
 				this.close();
-			});
+			};
+			item.addEventListener('click', handler);
+			this._itemClickHandlers.push({ item, handler });
 		});
 	}
 
@@ -67,10 +105,10 @@ export class Dropdown {
 		addClass(this.element, this.options.openClass);
 		this.trigger.setAttribute('aria-expanded', 'true');
 
-		// Авто-позиционирование
+		// Auto-positioning
 		this._position();
 
-		// Закрытие по клику вне
+		// Close on click outside
 		this._clickOutsideHandler = (e) => {
 			if (!this.element.contains(e.target)) {
 				this.close();
@@ -78,7 +116,7 @@ export class Dropdown {
 		};
 		document.addEventListener('click', this._clickOutsideHandler);
 
-		// Закрытие по Escape
+		// Close on Escape
 		this._keydownHandler = (e) => {
 			if (Keyboard.isEscape(e)) {
 				e.preventDefault();
@@ -115,16 +153,16 @@ export class Dropdown {
 	}
 
 	// ================================
-	// Позиционирование с авто-flip
+	// Positioning with auto-flip
 	// ================================
 
 	_position() {
-		// Сначала применяем заданный placement
+		// Apply the requested placement first
 		this._applyPlacementClass(this.options.placement);
 
 		if (!this.options.autoFlip) return;
 
-		// Проверяем, влезает ли меню
+		// Check if menu fits
 		const best = this._getBestPlacement();
 		if (best !== this.currentPlacement) {
 			this._applyPlacementClass(best);
@@ -155,14 +193,14 @@ export class Dropdown {
 		const viewportW = window.innerWidth;
 		const viewportH = window.innerHeight;
 
-		const padding = 8; // минимальный отступ от края viewport
+		const padding = 8; // minimum viewport padding
 
-		// Проверяем, влезает ли текущий placement
+		// Check if current placement fits
 		if (this._fits(this.currentPlacement, triggerRect, menuRect, viewportW, viewportH, padding)) {
 			return this.currentPlacement;
 		}
 
-		// Пробуем flipped-варианты
+		// Try flipped variants
 		const flips = this._getFlipMap();
 		const alternatives = flips[this.options.placement] || [this.options.placement];
 
@@ -172,7 +210,7 @@ export class Dropdown {
 			}
 		}
 
-		// Если ничего не подошло — возвращаем исходный (лучшее из худшего)
+		// Fallback to original placement (best of the worst)
 		return this.options.placement;
 	}
 
@@ -210,7 +248,7 @@ export class Dropdown {
 	}
 
 	// ================================
-	// Клавиатура
+	// Keyboard
 	// ================================
 
 	_handleMenuKeydown(e) {
@@ -240,6 +278,28 @@ export class Dropdown {
 
 	destroy() {
 		this.close();
+
+		// Remove trigger listeners
+		if (this._triggerClickHandler) {
+			this.trigger.removeEventListener('click', this._triggerClickHandler);
+			this._triggerClickHandler = null;
+		}
+		if (this._triggerKeydownHandler) {
+			this.trigger.removeEventListener('keydown', this._triggerKeydownHandler);
+			this._triggerKeydownHandler = null;
+		}
+
+		// Remove menu keyboard listener
+		if (this._menuKeydownHandler) {
+			this.menu.removeEventListener('keydown', this._menuKeydownHandler);
+			this._menuKeydownHandler = null;
+		}
+
+		// Remove item click listeners
+		this._itemClickHandlers.forEach(({ item, handler }) => {
+			item.removeEventListener('click', handler);
+		});
+		this._itemClickHandlers = [];
 	}
 }
 
