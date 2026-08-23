@@ -27,6 +27,7 @@ export class Button {
 		this.isToggled = false;
 		this.type = element.dataset.button || 'default';
 
+		this._resetTimer = null;
 		this.init();
 	}
 
