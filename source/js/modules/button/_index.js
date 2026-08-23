@@ -1,5 +1,5 @@
 // ==========================================
-// Модуль кнопок (экспорт)
+// Button Module (exports)
 // ==========================================
 
 import { qsa } from '../../utilities/_dom.js';
@@ -8,7 +8,9 @@ import { Button } from './_button.js';
 let buttons = [];
 
 /**
- * Инициализация всех кнопок на странице
+ * Initialize all [data-button] elements on the page.
+ * @param {string} selector  – CSS selector (default: '[data-button]')
+ * @returns {Button[]}
  */
 export function initButtons(selector = '[data-button]') {
 	const elements = qsa(selector);

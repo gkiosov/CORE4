@@ -1,5 +1,8 @@
 // ==========================================
-// Dropdown Module
+// Dropdown Component
+// ==========================================
+// Accessible dropdown with ARIA roles, keyboard navigation,
+// auto-flip positioning, and click-outside / Escape close.
 // ==========================================
 
 import { CONFIG, EventManager } from '../../core/_index.js';
@@ -7,6 +10,13 @@ import { qs, qsa, addClass, removeClass } from '../../utilities/_dom.js';
 import { Keyboard } from '../../utilities/_keyboard.js';
 
 export class Dropdown {
+	/**
+	 * @param {Element} element
+	 * @param {Object} options
+	 * @param {string} options.openClass    – CSS class applied when open
+	 * @param {string} options.placement    – initial placement: bottom-start | bottom-end | top-start | top-end | left | right
+	 * @param {boolean} options.autoFlip    – automatically flip if viewport edge is reached (default: true)
+	 */
 	constructor(element, options = {}) {
 		this.element = element;
 		this.trigger = qs('[data-dropdown-trigger]', element);
@@ -16,7 +26,7 @@ export class Dropdown {
 		this.options = {
 			openClass: options.openClass || 'is-open',
 			placement: options.placement || element.dataset.dropdownPlacement || 'bottom-start',
-			autoFlip: options.autoFlip !== false, // enabled by default
+			autoFlip: options.autoFlip !== false,
 			...options
 		};
 
@@ -59,7 +69,7 @@ export class Dropdown {
 		const dividers = qsa('.dropdown__item--divider', this.menu);
 		dividers.forEach(divider => {
 			divider.setAttribute('role', 'separator');
-			divider.removeAttribute('role', 'menuitem'); // in case it was set above
+			divider.removeAttribute('role', 'menuitem');
 		});
 
 		// Trigger click
@@ -98,6 +108,7 @@ export class Dropdown {
 		});
 	}
 
+	/** Open the dropdown menu. */
 	open() {
 		if (this.isOpen) return;
 		this.isOpen = true;
@@ -129,6 +140,7 @@ export class Dropdown {
 		EventManager.dispatch(this.element, 'dropdown:opened', { dropdown: this });
 	}
 
+	/** Close the dropdown menu. */
 	close() {
 		if (!this.isOpen) return;
 		this.isOpen = false;
@@ -148,6 +160,7 @@ export class Dropdown {
 		EventManager.dispatch(this.element, 'dropdown:closed', { dropdown: this });
 	}
 
+	/** Toggle open/close state. */
 	toggle() {
 		this.isOpen ? this.close() : this.open();
 	}
@@ -156,19 +169,25 @@ export class Dropdown {
 	// Positioning with auto-flip
 	// ================================
 
+	/**
+	 * Apply placement class and auto-flip if needed.
+	 * @private
+	 */
 	_position() {
-		// Apply the requested placement first
 		this._applyPlacementClass(this.options.placement);
 
 		if (!this.options.autoFlip) return;
 
-		// Check if menu fits
 		const best = this._getBestPlacement();
 		if (best !== this.currentPlacement) {
 			this._applyPlacementClass(best);
 		}
 	}
 
+	/**
+	 * @param {string} placement
+	 * @private
+	 */
 	_applyPlacementClass(placement) {
 		const placements = [
 			'dropdown__menu--top-start',
@@ -187,6 +206,11 @@ export class Dropdown {
 		this.currentPlacement = placement;
 	}
 
+	/**
+	 * Find the first placement that fits inside the viewport.
+	 * @returns {string}
+	 * @private
+	 */
 	_getBestPlacement() {
 		const triggerRect = this.trigger.getBoundingClientRect();
 		const menuRect = this.menu.getBoundingClientRect();
@@ -195,12 +219,10 @@ export class Dropdown {
 
 		const padding = 8; // minimum viewport padding
 
-		// Check if current placement fits
 		if (this._fits(this.currentPlacement, triggerRect, menuRect, viewportW, viewportH, padding)) {
 			return this.currentPlacement;
 		}
 
-		// Try flipped variants
 		const flips = this._getFlipMap();
 		const alternatives = flips[this.options.placement] || [this.options.placement];
 
@@ -210,10 +232,14 @@ export class Dropdown {
 			}
 		}
 
-		// Fallback to original placement (best of the worst)
 		return this.options.placement;
 	}
 
+	/**
+	 * Check whether a placement fits within the viewport.
+	 * @returns {boolean}
+	 * @private
+	 */
 	_fits(placement, triggerRect, menuRect, vw, vh, pad) {
 		const menuW = menuRect.width || 200;
 		const menuH = menuRect.height || 150;
@@ -236,6 +262,11 @@ export class Dropdown {
 		}
 	}
 
+	/**
+	 * Map of preferred fallback placements for each base placement.
+	 * @returns {Object}
+	 * @private
+	 */
 	_getFlipMap() {
 		return {
 			'bottom-start': ['bottom-start', 'top-start', 'bottom-end', 'top-end'],
@@ -251,6 +282,11 @@ export class Dropdown {
 	// Keyboard
 	// ================================
 
+	/**
+	 * Handle ArrowDown, ArrowUp, Home, End inside the menu.
+	 * @param {KeyboardEvent} e
+	 * @private
+	 */
 	_handleMenuKeydown(e) {
 		const items = this.items;
 		const currentIndex = items.indexOf(document.activeElement);
@@ -272,14 +308,15 @@ export class Dropdown {
 		}
 	}
 
+	/** Focus the first menu item. */
 	_focusFirst() {
 		this.items[0]?.focus();
 	}
 
+	/** Remove all listeners and close. */
 	destroy() {
 		this.close();
 
-		// Remove trigger listeners
 		if (this._triggerClickHandler) {
 			this.trigger.removeEventListener('click', this._triggerClickHandler);
 			this._triggerClickHandler = null;
@@ -289,13 +326,11 @@ export class Dropdown {
 			this._triggerKeydownHandler = null;
 		}
 
-		// Remove menu keyboard listener
 		if (this._menuKeydownHandler) {
 			this.menu.removeEventListener('keydown', this._menuKeydownHandler);
 			this._menuKeydownHandler = null;
 		}
 
-		// Remove item click listeners
 		this._itemClickHandlers.forEach(({ item, handler }) => {
 			item.removeEventListener('click', handler);
 		});
@@ -303,6 +338,11 @@ export class Dropdown {
 	}
 }
 
+/**
+ * Initialize all dropdowns matching the selector.
+ * @param {string} selector  – CSS selector (default: '[data-dropdown]')
+ * @returns {Dropdown[]}
+ */
 export function initDropdowns(selector = '[data-dropdown]') {
 	const elements = document.querySelectorAll(selector);
 	return Array.from(elements).map(el => new Dropdown(el));

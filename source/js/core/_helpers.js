@@ -1,106 +1,130 @@
 // ==========================================
-// Вспомогательные функции
+// Helper Functions
+// ==========================================
+// General-purpose utilities: type checking, ID generation,
+// debounce/throttle, deep clone, and safe property access.
 // ==========================================
 
-// Счётчик для generateId (защита от коллизий при быстрых вызовах)
+// Counter for generateId (collision guard for rapid successive calls)
 let _idCounter = 0;
 
 /**
- * Проверка типа элемента
+ * Check whether a value is a DOM Element.
+ * @param {*} el
+ * @returns {boolean}
  */
 export const isElement = (el) => el instanceof Element;
 
 /**
- * Проверка, является ли элемент видимым (учитывает CSS)
+ * Check whether an element is visually visible (accounts for CSS).
+ * @param {Element} el
+ * @returns {boolean}
  */
 export const isVisible = (el) => {
-    if (!isElement(el)) return false;
+	if (!isElement(el)) return false;
 
-    const rect = el.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return false;
+	const rect = el.getBoundingClientRect();
+	if (rect.width === 0 || rect.height === 0) return false;
 
-    const style = window.getComputedStyle(el);
-    return style.display !== 'none'
-        && style.visibility !== 'hidden'
-        && style.opacity !== '0';
+	const style = window.getComputedStyle(el);
+	return style.display !== 'none'
+		&& style.visibility !== 'hidden'
+		&& style.opacity !== '0';
 };
 
 /**
- * Получение уникального ID
- * Приоритет: crypto.randomUUID() → Date.now() + счётчик
+ * Generate a unique identifier.
+ * Priority: crypto.randomUUID() → Date.now() + counter fallback.
+ * @param {string} prefix  – ID prefix (default: 'core4')
+ * @returns {string}
  */
 export const generateId = (prefix = 'core4') => {
-    const suffix = typeof crypto !== 'undefined' && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `${Date.now()}-${++_idCounter}`;
-    return `${prefix}-${suffix}`;
+	const suffix = typeof crypto !== 'undefined' && crypto.randomUUID
+		? crypto.randomUUID()
+		: `${Date.now()}-${++_idCounter}`;
+	return `${prefix}-${suffix}`;
 };
 
 /**
- * Дебаунс (ограничение частоты вызовов)
+ * Debounce a function (limit execution frequency).
+ * @param {Function} fn   – function to debounce
+ * @param {number} delay  – delay in milliseconds (default: 300)
+ * @returns {Function}
  */
 export const debounce = (fn, delay = 300) => {
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), delay);
-    };
+	let timer;
+	return (...args) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => fn(...args), delay);
+	};
 };
 
 /**
- * Троттлинг (пропуск вызовов)
+ * Throttle a function (skip intermediate calls).
+ * @param {Function} fn   – function to throttle
+ * @param {number} delay  – minimum interval in ms (default: 300)
+ * @returns {Function}
  */
 export const throttle = (fn, delay = 300) => {
-    let lastCall = 0;
-    return (...args) => {
-        const now = Date.now();
-        if (now - lastCall >= delay) {
-            lastCall = now;
-            fn(...args);
-        }
-    };
+	let lastCall = 0;
+	return (...args) => {
+		const now = Date.now();
+		if (now - lastCall >= delay) {
+			lastCall = now;
+			fn(...args);
+		}
+	};
 };
 
 /**
- * Глубокое клонирование
- * Приоритет: structuredClone() → JSON.parse/stringify (с ограничениями)
+ * Deep clone an object.
+ * Priority: structuredClone() → JSON.parse/stringify (limited fallback).
+ * Note: the JSON fallback does NOT preserve Date, Map, Set, RegExp, or functions.
+ * @param {*} obj
+ * @returns {*}
  */
 export const deepClone = (obj) => {
-    if (obj === null || typeof obj !== 'object') return obj;
+	if (obj === null || typeof obj !== 'object') return obj;
 
-    if (typeof structuredClone === 'function') {
-        try {
-            return structuredClone(obj);
-        } catch (e) {
-            // Fallback если structuredClone не справился (например, функции)
-        }
-    }
+	if (typeof structuredClone === 'function') {
+		try {
+			return structuredClone(obj);
+		} catch (e) {
+			// Fallback if structuredClone fails (e.g. functions inside)
+		}
+	}
 
-    // Ограниченный fallback: не сохраняет Date, Map, Set, RegExp, функции
-    return JSON.parse(JSON.stringify(obj));
+	// Limited fallback: does not preserve Date, Map, Set, RegExp, or functions
+	return JSON.parse(JSON.stringify(obj));
 };
 
 /**
- * Проверка, является ли значение plain object (не массив, не null)
+ * Check whether a value is a plain object (not an array, not null).
+ * @param {*} val
+ * @returns {boolean}
  */
 export const isPlainObject = (val) => {
-    return Object.prototype.toString.call(val) === '[object Object]';
+	return Object.prototype.toString.call(val) === '[object Object]';
 };
 
 /**
- * Безопасное получение вложенного свойства
- * Поддерживает строку 'a.b.c' или массив ['a', 'b.c']
+ * Safely retrieve a nested property by path.
+ * Supports dot-notation string ('a.b.c') or array of keys.
+ * @param {Object} obj            – source object
+ * @param {string|string[]} path  – property path
+ * @param {*} fallback            – value returned when path is missing
+ * @returns {*}
  */
 export const getNestedValue = (obj, path, fallback = null) => {
-    if (obj == null) return fallback;
+	if (obj == null) return fallback;
 
-    const keys = Array.isArray(path) ? path : String(path).split('.');
-    let result = obj;
+	const keys = Array.isArray(path) ? path : String(path).split('.');
+	let result = obj;
 
-    for (const key of keys) {
-        if (result == null) return fallback;
-        result = result[key];
-    }
+	for (const key of keys) {
+		if (result == null) return fallback;
+		result = result[key];
+	}
 
-    return result === undefined ? fallback : result;
+	return result === undefined ? fallback : result;
 };

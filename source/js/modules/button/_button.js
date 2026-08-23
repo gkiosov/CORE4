@@ -1,11 +1,26 @@
 // ==========================================
-// Модуль управления кнопками
+// Button Component
+// ==========================================
+// Enhanced button with async states (loading, success, error),
+// toggle mode, automatic reset timer, and custom event dispatch.
 // ==========================================
 
 import { CONFIG, EventManager } from '../../core/_index.js';
 import { qs, addClass, removeClass } from '../../utilities/_dom.js';
 
 export class Button {
+	/**
+	 * @param {Element} element                  – the <button> or [data-button] element
+	 * @param {Object} options
+	 * @param {string} options.loadingClass      – CSS class for loading state
+	 * @param {string} options.successClass      – CSS class for success state
+	 * @param {string} options.errorClass        – CSS class for error state
+	 * @param {string|null} options.loadingText  – text shown while loading
+	 * @param {string|null} options.successText  – text shown on success
+	 * @param {string|null} options.errorText    – text shown on error
+	 * @param {number} options.resetDelay        – ms before auto-reset (default: 2000)
+	 * @param {string} options.toggleClass       – CSS class for active toggle state
+	 */
 	constructor(element, options = {}) {
 		this.element = element;
 		this.originalText = element.textContent.trim();
@@ -32,7 +47,7 @@ export class Button {
 	}
 
 	init() {
-		// Если это toggle-кнопка — проверяем начальное состояние
+		// If toggle button — sync initial state from existing class
 		if (this.type === 'toggle') {
 			this.isToggled = this.element.classList.contains(this.options.toggleClass);
 			this.element.setAttribute('aria-pressed', String(this.isToggled));
@@ -41,15 +56,19 @@ export class Button {
 		this.element.addEventListener('click', (e) => this.handleClick(e));
 	}
 
+	/**
+	 * Route click based on button type.
+	 * @param {MouseEvent} e
+	 */
 	handleClick(e) {
-		// Если кнопка в состоянии загрузки — блокируем
+		// Block interaction while loading
 		if (this.isProcessing) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
 		}
 
-		// Async-кнопка: блокируем нативное поведение
+		// Async button: suppress native behavior, enter loading state
 		if (this.type === 'async') {
 			e.preventDefault();
 			this.setLoading();
@@ -60,14 +79,14 @@ export class Button {
 			return;
 		}
 
-		// Toggle-кнопка
+		// Toggle button
 		if (this.type === 'toggle') {
 			e.preventDefault();
 			this.toggle();
 			return;
 		}
 
-		// Обычная кнопка: просто диспатчим событие
+		// Default button: just dispatch the event
 		EventManager.dispatch(this.element, 'button:click', {
 			button: this,
 			originalEvent: e
@@ -75,9 +94,10 @@ export class Button {
 	}
 
 	// ================================
-	// Async-состояния
+	// Async states
 	// ================================
 
+	/** Enter loading state: add class, disable, optionally change text. */
 	setLoading() {
 		this.isProcessing = true;
 		addClass(this.element, this.options.loadingClass);
@@ -89,6 +109,10 @@ export class Button {
 		}
 	}
 
+	/**
+	 * Enter success state.
+	 * @param {string|null} text  – override text
+	 */
 	setSuccess(text = null) {
 		if (!this.isProcessing) return;
 
@@ -103,6 +127,10 @@ export class Button {
 		this.scheduleReset();
 	}
 
+	/**
+	 * Enter error state.
+	 * @param {string|null} text  – override text
+	 */
 	setError(text = null) {
 		if (!this.isProcessing) return;
 
@@ -117,6 +145,7 @@ export class Button {
 		this.scheduleReset();
 	}
 
+	/** Reset to original state: clear classes, text, and timer. */
 	reset() {
 		clearTimeout(this._resetTimer);
 		this.isProcessing = false;
@@ -126,6 +155,7 @@ export class Button {
 		this.element.textContent = this.originalText;
 	}
 
+	/** Schedule auto-reset after resetDelay. */
 	scheduleReset() {
 		clearTimeout(this._resetTimer);
 		this._resetTimer = setTimeout(() => this.reset(), this.options.resetDelay);
@@ -135,6 +165,10 @@ export class Button {
 	// Toggle
 	// ================================
 
+	/**
+	 * Toggle pressed state.
+	 * @param {boolean|null} forceState  – force specific state
+	 */
 	toggle(forceState = null) {
 		this.isToggled = forceState !== null ? forceState : !this.isToggled;
 
@@ -148,19 +182,21 @@ export class Button {
 	}
 
 	// ================================
-	// Утилиты
+	// Utilities
 	// ================================
 
+	/** Set plain text content. */
 	setText(text) {
 		this.element.textContent = text;
 	}
 
+	/** Set HTML content. */
 	setHTML(html) {
 		this.element.innerHTML = html;
 	}
 
 	destroy() {
 		clearTimeout(this._resetTimer);
-		// Отписка от событий не нужна — элемент удаляется или переинициализируется
+		// Listener removal is unnecessary — element is either removed or re-initialized
 	}
 }

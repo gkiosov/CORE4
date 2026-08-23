@@ -1,6 +1,9 @@
 // ==========================================
 // Entry point — initializes all modules
 // ==========================================
+// Orchestrates lazy loading of heavy modules and
+// exposes the CORE4 namespace on window for debugging.
+// ==========================================
 
 import '../scss/main.scss';
 
@@ -13,6 +16,9 @@ import { initRevealAnimations } from './utilities/_viewport.js';
 import { ThemeManager } from './modules/theme/_theme.js';
 
 class App {
+	/**
+	 * @param {Object} config  – module activation flags
+	 */
 	constructor(config = {}) {
 		this.modules = {};
 		this.isInitialized = false;
@@ -29,10 +35,14 @@ class App {
 			}
 		};
 
-		// Cache for lazy-loaded modules
+		// Cache for lazy-loaded dynamic imports
 		this._factories = {};
 	}
 
+	/**
+	 * Initialize the application once.
+	 * Safe to call — guards against double initialization.
+	 */
 	async init() {
 		if (this.isInitialized) return;
 		this.isInitialized = true;
@@ -42,12 +52,19 @@ class App {
 
 	/**
 	 * Re-initialize modules for dynamically added DOM elements.
-	 * Safe to call multiple times — destroys old instances before creating new ones.
+	 * Destroys old instances before creating new ones.
 	 */
 	async reinit() {
 		await this._initModules(/* isReinit = */ true);
 	}
 
+	/**
+	 * Initialize or re-initialize all enabled modules.
+	 * Heavy modules are lazy-loaded via dynamic import() only
+	 * when their corresponding DOM elements are present.
+	 * @param {boolean} isReinit  – true when called from reinit()
+	 * @private
+	 */
 	async _initModules(isReinit = false) {
 		const cfg = this.config.modules;
 
@@ -115,6 +132,10 @@ class App {
 
 	/**
 	 * Helper: destroy old instances (on reinit) and merge new ones.
+	 * @param {string} name       – module key
+	 * @param {Function} initFn   – factory returning new instances
+	 * @param {boolean} isReinit  – whether this is a re-initialization
+	 * @private
 	 */
 	_registerModule(name, initFn, isReinit) {
 		if (isReinit && this.modules[name]) {
@@ -128,10 +149,18 @@ class App {
 		this.modules[name] = [...(this.modules[name] || []), ...newInstances];
 	}
 
+	/**
+	 * Retrieve an initialized module by name.
+	 * @param {string} name
+	 * @returns {Array|Object|null}
+	 */
 	getModule(name) {
 		return this.modules[name] || null;
 	}
 
+	/**
+	 * Tear down all modules and reset state.
+	 */
 	destroy() {
 		Object.values(this.modules).forEach(moduleList => {
 			if (Array.isArray(moduleList)) {
@@ -166,7 +195,7 @@ window.CORE4 = {
 	core,
 	utils: { dom, keyboard },
 	components: { ThemeManager, FocusTrap }
-	// Modal, Accordion, Button, Dropdown, LikeButton are added lazily by init()
+	// Modal, Accordion, Button, Dropdown are added lazily by init()
 };
 
 if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {

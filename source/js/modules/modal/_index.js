@@ -1,5 +1,5 @@
 // ==========================================
-// Модуль модальных окон (экспорт)
+// Modal Module (exports)
 // ==========================================
 
 import { CONFIG } from '../../core/_config.js';
@@ -9,41 +9,46 @@ import { Modal } from './_modal.js';
 
 let modals = [];
 
+/**
+ * Initialize all [data-modal] elements on the page.
+ * Sets up global Escape and trigger click handlers.
+ * @returns {Modal[]}
+ */
 export function initModals() {
-    const elements = qsa(CONFIG.SELECTORS.MODAL);
+	const elements = qsa(CONFIG.SELECTORS.MODAL);
 
-    elements.forEach((element, index) => {
-        const modal = new Modal(element, {
-            triggerSelector: `[data-modal-trigger="${element.id || index}"]`
-        });
-        modals.push(modal);
-    });
+	elements.forEach((element, index) => {
+		const modal = new Modal(element, {
+			triggerSelector: `[data-modal-trigger="${element.id || index}"]`
+		});
+		modals.push(modal);
+	});
 
-    // Глобальный обработчик Escape
-    document.addEventListener('keydown', (e) => {
-        if (!Keyboard.isEscape(e)) return;
-        const openModal = modals.slice().reverse().find(m => m.isOpen);
-        if (openModal) openModal.close();
-    });
+	// Global Escape handler — closes the topmost open modal
+	document.addEventListener('keydown', (e) => {
+		if (!Keyboard.isEscape(e)) return;
+		const openModal = modals.slice().reverse().find(m => m.isOpen);
+		if (openModal) openModal.close();
+	});
 
-    // Глобальный обработчик триггеров
-    document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('[data-modal-trigger]');
-        if (!trigger) return;
+	// Global trigger click handler
+	document.addEventListener('click', (e) => {
+		const trigger = e.target.closest('[data-modal-trigger]');
+		if (!trigger) return;
 
-        const target = trigger.getAttribute('data-modal-trigger');
-        const modalElement = document.getElementById(target);
+		const target = trigger.getAttribute('data-modal-trigger');
+		const modalElement = document.getElementById(target);
 
-        if (modalElement) {
-            const modal = modals.find(m => m.element === modalElement);
-            if (modal) {
-                e.preventDefault();
-                modal.toggle(trigger);
-            }
-        }
-    });
+		if (modalElement) {
+			const modal = modals.find(m => m.element === modalElement);
+			if (modal) {
+				e.preventDefault();
+				modal.toggle(trigger);
+			}
+		}
+	});
 
-    return modals;
+	return modals;
 }
 
 export { Modal, modals };
