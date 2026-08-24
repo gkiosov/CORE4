@@ -370,14 +370,14 @@
 
 @mixin truncate($lines: 1) {
 	@if $lines == 1 {
-		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		white-space: nowrap;
 	} @else {
 		display: -webkit-box;
+		overflow: hidden;
 		-webkit-line-clamp: $lines;
 		-webkit-box-orient: vertical;
-		overflow: hidden;
 	}
 }
 
@@ -388,9 +388,9 @@
 
 @mixin clearfix {
 	&::after {
+		clear: both;
 		content: '';
 		display: block;
-		clear: both;
 	}
 }
 
@@ -400,13 +400,13 @@
 // Container for images that maintain aspect ratio.
 
 @mixin responsive-image {
-	position: relative;
 	overflow: hidden;
+	position: relative;
 
 	img {
-		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		width: 100%;
 	}
 }
 
@@ -444,18 +444,18 @@
 // @param {Number} $ratio  – aspect ratio (default: 16/9)
 
 @mixin responsive-video($ratio: 16/9) {
-	position: relative;
-	padding-bottom: math.div(100%, $ratio);
 	height: 0;
 	overflow: hidden;
+	position: relative;
+	padding-bottom: math.div(100%, $ratio);
 
 	iframe,
 	video {
+		height: 100%;
+		left: 0;
 		position: absolute;
 		top: 0;
-		left: 0;
 		width: 100%;
-		height: 100%;
 	}
 }
 

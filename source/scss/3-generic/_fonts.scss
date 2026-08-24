@@ -60,11 +60,11 @@ $font-weights: (
 	@if $folder and $weights {
 		@each $w in $weights {
 			@font-face {
+				font-display: swap;
 				font-family: $font-name;
 				src: url('../assets/fonts/#{$folder}/#{map.get($w, file)}.woff2') format('woff2');
-				font-weight: map.get($w, weight);
 				font-style: map.get($w, style);
-				font-display: swap;
+				font-weight: map.get($w, weight);
 			}
 		}
 	}

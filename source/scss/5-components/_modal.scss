@@ -16,19 +16,19 @@
 }
 
 .modal {
-	position: fixed;
-	inset: 0;
-	z-index: tools.z-index('modal'); // base 300, JS stacks nested +10
-	display: flex;
 	align-items: center;
-	justify-content: center;
-	padding: tools.spacing(4);
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity settings.$transition-slow, visibility settings.$transition-slow;
 	background: var(--overlay-dark, rgba(0, 0, 0, 0.6));
+	display: flex;
+	inset: 0;
+	justify-content: center;
+	opacity: 0;
 	overscroll-behavior: contain;
+	padding: tools.spacing(4);
+	position: fixed;
 	touch-action: none; // prevent browser swipe-back while modal is open
+	transition: opacity settings.$transition-slow, visibility settings.$transition-slow;
+	visibility: hidden;
+	z-index: tools.z-index('modal'); // base 300, JS stacks nested +10
 
 	// Open state — toggled by JS via CONFIG.STATE.OPEN ('is-open')
 	&.is-open {
@@ -67,22 +67,22 @@
 	// Content wrapper
 	// ------------------------------------------
 	&__content {
-		position: relative;
+		background: var(--color-background);
+		border-radius: tools.radius('lg');
+		box-shadow: tools.shadow('xl');
 		display: flex;
 		flex-direction: column;
-		width: 100%;
 		max-width: 560px;
 		max-height: 90svh;
 		max-height: 90dvh;
 		overflow: hidden;           // scroll lives only in __body
-		background: var(--color-background);
-		border-radius: tools.radius('lg');
-		box-shadow: tools.shadow('xl');
+		position: relative;
 		transform: scale(0.95) translateY(tools.spacing(2));
 		transition: transform settings.$transition-slow;
+		width: 100%;
 
-		@include tools.custom-scrollbar;
 		@include tools.adaptive(padding, 6, settings.$spacing-scale);
+		@include tools.custom-scrollbar;
 
 		// Size variants
 		&--sm  { max-width: 400px; }

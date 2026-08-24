@@ -17,8 +17,8 @@
 
 	// Stack all columns vertically on mobile
 	@include tools.respond-below('sm') {
-		grid-template-columns: 1fr;
 		gap: tools.spacing(3);
+		grid-template-columns: 1fr;
 	}
 
 	// Adaptive gap: 16px → 24px → 32px

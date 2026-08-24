@@ -21,8 +21,8 @@
 	}
 
 	@include tools.respond-to('lg') {
-		grid-template-columns: tools.spacing(24) 1fr;
 		gap: tools.spacing(6);
+		grid-template-columns: tools.spacing(24) 1fr;
 	}
 }
 
@@ -60,11 +60,11 @@
 // ------------------------------------------
 
 .fullscreen {
+	align-items: center;
+	display: flex;
+	justify-content: center;
 	min-height: 100svh;
 	min-height: 100dvh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	padding: tools.spacing(8);
 }
 

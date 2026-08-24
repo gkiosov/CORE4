@@ -15,15 +15,15 @@
 	// ------------------------------------------
 	&__header {
 		all: unset;
-		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: tools.spacing(4) tools.spacing(6);
-		cursor: pointer;
-		font-weight: map.get(settings.$font-weight, 'medium');
-		font-size: tools.font-size('base');
 		color: var(--color-text);
+		cursor: pointer;
+		display: flex;
+		font-size: tools.font-size('base');
+		font-weight: map.get(settings.$font-weight, 'medium');
+		justify-content: space-between;
+		padding: tools.spacing(4) tools.spacing(6);
+		width: 100%;
 
 		// Chevron indicator
 		&::after {
@@ -56,9 +56,9 @@
 	// Inner content (padding container)
 	// ------------------------------------------
 	&__inner {
-		padding: 0 tools.spacing(6) tools.spacing(4);
 		color: var(--color-text-secondary);
 		font-size: tools.font-size('sm');
 		line-height: tools.line-height('base');
+		padding: 0 tools.spacing(6) tools.spacing(4);
 	}
 }

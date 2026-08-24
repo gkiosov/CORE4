@@ -17,17 +17,17 @@
 	transition: all settings.$transition-base;
 
 	@include tools.hover(transform, 0.3s) {
-		transform: translateY(-4px);
 		box-shadow: var(--shadow-lg);
+		transform: translateY(-4px);
 	}
 
 	// ------------------------------------------
 	// Image
 	// ------------------------------------------
 	&__image {
-		@include tools.responsive-image;
 		background: var(--color-background-tertiary);
 		margin: -1 * tools.spacing(4) -1 * tools.spacing(4) tools.spacing(4);
+		@include tools.responsive-image;
 
 		@include tools.adaptive(
 				margin-top,
@@ -74,17 +74,17 @@
 	// Footer
 	// ------------------------------------------
 	&__footer {
-		display: flex;
 		align-items: center;
+		border-top: 1px solid var(--color-border);
+		display: flex;
 		justify-content: space-between;
 		margin-top: tools.spacing(2);
 		padding-top: tools.spacing(3);
-		border-top: 1px solid var(--color-border);
 	}
 
 	&__price {
-		@include tools.font('xl', 'bold');
 		color: tools.color('primary');
+		@include tools.font('xl', 'bold');
 	}
 
 	// ------------------------------------------
@@ -99,8 +99,8 @@
 	}
 
 	&--small {
+		@include tools.font('sm');
 		padding: tools.spacing(3);
 		text-align: center;
-		@include tools.font('sm');
 	}
 }

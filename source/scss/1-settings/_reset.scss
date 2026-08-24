@@ -11,9 +11,9 @@
 // ------------------------------------------
 
 :where(*, *::before, *::after) {
+	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
 }
 
 // ------------------------------------------
@@ -52,17 +52,17 @@ html {
 // Theme transition for background and text color.
 
 body {
+	background-color: var(--color-background);
+	color: var(--color-text);
 	min-height: 100svh;
 	min-height: 100dvh;
+	overflow-wrap: break-word;
+	text-wrap: pretty;
+	transition: background-color var(--theme-transition), color var(--theme-transition);
+	word-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-tap-highlight-color: transparent;
-	text-wrap: pretty;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	background-color: var(--color-background);
-	color: var(--color-text);
-	transition: background-color var(--theme-transition), color var(--theme-transition);
 }
 
 // ------------------------------------------
@@ -71,8 +71,8 @@ body {
 
 :where(img, picture, video, canvas, svg) {
 	display: block;
-	max-width: 100%;
 	height: auto;
+	max-width: 100%;
 }
 
 :where(svg) {
@@ -122,8 +122,8 @@ body {
 // ------------------------------------------
 
 :where(input, button, textarea, select) {
-	font: inherit;
 	color: inherit;
+	font: inherit;
 }
 
 :where(button) {
@@ -162,15 +162,15 @@ body {
 // ------------------------------------------
 
 .visually-hidden:not(:focus):not(:active) {
-	position: absolute !important;
-	width: 1px !important;
+	border: 0 !important;
+	clip: rect(0 0 0 0) !important;
 	height: 1px !important;
-	padding: 0 !important;
 	margin: -1px !important;
 	overflow: hidden !important;
-	clip: rect(0 0 0 0) !important;
+	padding: 0 !important;
+	position: absolute !important;
+	width: 1px !important;
 	white-space: nowrap !important;
-	border: 0 !important;
 }
 
 // ------------------------------------------
@@ -183,8 +183,8 @@ body {
 	*::after {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
 	}
 }
 
@@ -194,8 +194,8 @@ body {
 // Themed scrollbars using CSS variables.
 
 ::-webkit-scrollbar {
-	width: 8px;
 	height: 8px;
+	width: 8px;
 }
 
 ::-webkit-scrollbar-track {

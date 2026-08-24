@@ -52,13 +52,13 @@ $button-variants: (
 	border-radius: tools.radius('md');
 	cursor: pointer;
 	display: flex;
-	font-size: tools.font-size('sm');
+	font-size: tools.font-size('base');
 	font-weight: map.get(settings.$font-weight, 'medium');
 	gap: tools.spacing(1);
-	height: tools.module(10);
+	height: tools.module(9);
 	justify-content: center;
-	line-height: tools.line-height('lg');
-	padding: tools.spacing(2) tools.spacing(5);
+	line-height: tools.line-height('base');
+	padding: tools.spacing(2) tools.spacing(4);
 	text-decoration: none;
 
 	// Targeted transitions (avoid 'all' for performance)
@@ -78,25 +78,18 @@ $button-variants: (
 
 	&--sm {
 		border-radius: tools.radius('sm');
-		font-size: tools.font-size('xs'); // 12px
-		height: tools.module(6);
-		line-height: tools.line-height('xs');
-		padding: tools.spacing(1) tools.spacing(2);
+		font-size: tools.font-size('sm');
+		height: tools.module(6.5);
+		line-height: tools.line-height('sm');
+		padding: tools.spacing(1) tools.spacing(3);
 	}
 
 	&--lg {
-		padding: tools.spacing(4) tools.spacing(8);
-		font-size: tools.font-size('md'); // 18px
-
-		@include tools.respond-to('md') {
-			padding: tools.spacing(5) tools.spacing(10);
-			font-size: tools.font-size('lg'); // 20px
-		}
-
-		@include tools.respond-to('lg') {
-			padding: tools.spacing(6) tools.spacing(12);
-			font-size: tools.font-size('xl'); // 24px
-		}
+		border-radius: tools.radius('lg');
+		font-size: tools.font-size('lg');
+		height: tools.module(11);
+		line-height: tools.line-height('lg');
+		padding: tools.spacing(2) tools.spacing(6);
 	}
 
 	// ==========================================
@@ -128,7 +121,7 @@ $button-variants: (
 
 	&--outline {
 		background: transparent;
-		border: 1px solid currentColor;
+		border: 2px solid currentColor;
 
 		@each $name, $props in $button-variants {
 			&.btn--#{$name} {
@@ -162,7 +155,10 @@ $button-variants: (
 	&:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-		pointer-events: none;
+
+		&:active {
+			pointer-events: none;
+		}
 	}
 
 	&--loading {
