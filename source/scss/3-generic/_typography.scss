@@ -115,6 +115,6 @@ small, .small {
 // ------------------------------------------
 
 mark {
-	background: color.change(tools.color('warning'), $alpha: 0.2);
+	background: color.change(tools.color-alpha('red', '500', 0.5));
 	padding: 0 tools.spacing(1);
 }

@@ -303,22 +303,5 @@ $colors: (
 		'700': oklch(0.418 0 0deg),
 		'800': oklch(0.321 0 0deg),
 		'900': oklch(0.216 0 0deg),
-	),
-);
-
-
-// ------------------------------------------
-// Semantic colors (role mapping)
-// ------------------------------------------
-// Maps design roles to specific palette colors.
-// Used by color() and semantic-color() functions.
-
-$semantic-colors: (
-	'primary': map.get($colors, 'blue'),
-	'success': map.get($colors, 'green'),
-	'warning': map.get($colors, 'amber'),
-	'danger': map.get($colors, 'red'),
-	'error': map.get($colors, 'red'),
-	'info': map.get($colors, 'light-blue'),
-	'neutral': map.get($colors, 'grey')
+	)
 );

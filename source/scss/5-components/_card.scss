@@ -83,7 +83,7 @@
 	}
 
 	&__price {
-		color: tools.color('primary');
+		color: var(--color-primary);
 		@include tools.font('xl', 'bold');
 	}
 
@@ -92,7 +92,7 @@
 	// ------------------------------------------
 
 	&--featured {
-		border-color: tools.color('primary');
+		border-color: var(--color-primary);
 		box-shadow: var(--shadow-md);
 
 		@include tools.theme-aware('background', #eff6ff, #1e293b);

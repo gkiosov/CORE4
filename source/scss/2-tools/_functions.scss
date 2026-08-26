@@ -1,5 +1,5 @@
 // ==========================================
-// Functions (Modular System)
+// Functions (far System)
 // ==========================================
 // Utility functions for converting module-based values to pixels,
 // accessing design tokens, and working with OKLCH colors.
@@ -276,20 +276,7 @@
 	$result: null;
 	$base-color: null;
 
-	// 1. Check semantic color roles
-	$semantic-map: map.get(settings.$semantic-colors, $name);
-	@if $semantic-map != null {
-		$base-color: map.get($semantic-map, $shade);
-		@if $base-color != null {
-			@if $alpha < 1 {
-				@return color.change($base-color, $alpha: $alpha);
-			}
-			@return $base-color;
-		}
-		@warn "Shade '#{$shade}' not found for semantic color '#{$name}'";
-	}
-
-	// 2. Check base palette
+	// Check base palette
 	$color-map: map.get(settings.$colors, $name);
 	@if $color-map != null {
 		$base-color: map.get($color-map, $shade);
@@ -302,44 +289,13 @@
 		@warn "Shade '#{$shade}' not found for color '#{$name}'. Available: #{map.keys($color-map)}";
 	}
 
-	// 3. Fallback
+	// Fallback
 	@if $result == null {
 		@warn "Color '#{$name}' not found in palette. Available: #{map.keys(settings.$colors)}";
 		@return oklch(0.5 0 0);
 	}
 
 	@return $result;
-}
-
-// ------------------------------------------
-// semantic-color()
-// ------------------------------------------
-// Explicit function for semantic colors with alpha.
-// @param {String} $role   – semantic role (primary, success, etc.)
-// @param {String} $shade  – shade key (default: '500')
-// @param {Number} $alpha  – opacity 0–1 (default: 1)
-// @return {Color}         – OKLCH color value
-
-@function semantic-color($role, $shade: '500', $alpha: 1) {
-	$color-map: map.get(settings.$semantic-colors, $role);
-
-	@if $color-map == null {
-		@warn "Semantic color '#{$role}' not found. Available: #{map.keys(settings.$semantic-colors)}";
-		@return oklch(0.5 0 0);
-	}
-
-	$base-color: map.get($color-map, $shade);
-
-	@if $base-color == null {
-		@warn "Shade '#{$shade}' not found for semantic color '#{$role}'";
-		@return oklch(0.5 0 0);
-	}
-
-	@if $alpha < 1 {
-		@return color.change($base-color, $alpha: $alpha);
-	}
-
-	@return $base-color;
 }
 
 // ------------------------------------------
@@ -365,17 +321,4 @@
 
 @function color-var($name, $shade: '500') {
 	@return var(--#{$name}-#{$shade});
-}
-
-// ------------------------------------------
-// semantic-color-var()
-// ------------------------------------------
-// Returns a CSS custom property reference for a semantic color.
-// Note: semantic colors are defined as theme variables, not palette variables.
-// @param {String} $role   – semantic role
-// @param {String} $shade  – shade key (default: '500')
-// @return {String}        – var() expression
-
-@function semantic-color-var($role, $shade: '500') {
-	@return var(--#{$role}-#{$shade});
 }
