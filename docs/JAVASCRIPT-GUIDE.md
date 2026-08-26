@@ -48,36 +48,36 @@ The `App` class is the single entry point. It manages module lifecycle, lazy loa
 
 ```javascript
 class App {
-  constructor(config = {}) {
-    this.modules = {};
-    this.isInitialized = false;
-    this.config = {
-      modules: {
-        theme: true,
-        modals: true,
-        accordions: true,
-        buttons: true,
-        dropdowns: true,
-        revealAnimations: true,
-        ...config.modules
-      }
-    };
-    this._factories = {}; // Cache for lazy-loaded chunks
-  }
+   constructor(config = {}) {
+      this.modules = {};
+      this.isInitialized = false;
+      this.config = {
+         modules: {
+            theme: true,
+            modals: true,
+            accordions: true,
+            buttons: true,
+            dropdowns: true,
+            revealAnimations: true,
+            ...config.modules
+         }
+      };
+      this._factories = {}; // Cache for lazy-loaded chunks
+   }
 
-  async init() {
-    if (this.isInitialized) return;
-    this.isInitialized = true;
-    await this._initModules();
-  }
+   async init() {
+      if (this.isInitialized) return;
+      this.isInitialized = true;
+      await this._initModules();
+   }
 
-  /**
-   * Re-initialize modules for dynamically added DOM elements.
-   * Safe to call multiple times — destroys old instances before creating new ones.
-   */
-  async reinit() {
-    await this._initModules(/* isReinit = */ true);
-  }
+   /**
+    * Re-initialize modules for dynamically added DOM elements.
+    * Safe to call multiple times — destroys old instances before creating new ones.
+    */
+   async reinit() {
+      await this._initModules(/* isReinit = */ true);
+   }
 }
 ```
 
@@ -85,14 +85,14 @@ class App {
 
 ```javascript
 const app = new App({
-  modules: {
-    theme: true,            // ThemeManager (always loaded statically)
-    modals: true,           // Lazy-loaded if [data-modal] exists
-    accordions: true,       // Lazy-loaded if [data-accordion] exists
-    buttons: true,          // Lazy-loaded if [data-button] exists
-    dropdowns: true,        // Lazy-loaded if [data-dropdown] exists
-    revealAnimations: true  // Always loaded (lightweight)
-  }
+   modules: {
+      theme: true,            // ThemeManager (always loaded statically)
+      modals: true,           // Lazy-loaded if [data-modal] exists
+      accordions: true,       // Lazy-loaded if [data-accordion] exists
+      buttons: true,          // Lazy-loaded if [data-button] exists
+      dropdowns: true,        // Lazy-loaded if [data-dropdown] exists
+      revealAnimations: true  // Always loaded (lightweight)
+   }
 });
 ```
 
@@ -112,14 +112,14 @@ Modules (except `ThemeManager` and `revealAnimations`) are loaded via `import()`
 ```javascript
 // Modals — chunk "modals"
 if (cfg.modals && document.querySelector('[data-modal]')) {
-  if (!this._factories.modals) {
-    this._factories.modals = await import(
-      /* webpackChunkName: "modals" */
-      './modules/modal/_index.js'
-    );
-  }
-  this._registerModule('modals', () => this._factories.modals.initModals(), isReinit);
-  window.CORE4.components.Modal = this._factories.modals.Modal;
+   if (!this._factories.modals) {
+      this._factories.modals = await import(
+              /* webpackChunkName: "modals" */
+              './modules/modal/_index.js'
+              );
+   }
+   this._registerModule('modals', () => this._factories.modals.initModals(), isReinit);
+   window.CORE4.components.Modal = this._factories.modals.Modal;
 }
 ```
 
@@ -129,11 +129,11 @@ This enables **code splitting** — each module becomes a separate webpack chunk
 
 ```javascript
 window.CORE4 = {
-  app,              // App instance
-  core,             // Core exports (CONFIG, EventManager)
-  utils: { dom, keyboard },
-  components: { ThemeManager, FocusTrap }
-  // Modal, Accordion, Button, Dropdown are added lazily by init()
+   app,              // App instance
+   core,             // Core exports (CONFIG, EventManager)
+   utils: { dom, keyboard },
+   components: { ThemeManager, FocusTrap }
+   // Modal, Accordion, Button, Dropdown are added lazily by init()
 };
 ```
 
@@ -163,11 +163,11 @@ Centralized event system. All modules dispatch custom events through it.
 import { EventManager } from './core/_events.js';
 
 // Dispatch
-eventManager.dispatch(element, 'modal:opened', { modal: this });
+EventManager.dispatch(element, 'modal:opened', { modal: this });
 
 // Listen
 element.addEventListener('modal:opened', (e) => {
-  console.log(e.detail.modal);
+   console.log(e.detail.modal);
 });
 ```
 
@@ -266,9 +266,9 @@ import { initRevealAnimations, isInViewport, onViewportEnter, onViewportLeave, o
 |-----------|---------|-------------|
 | `data-reveal-delay` | `0` | Delay in ms |
 | `data-reveal-duration` | `600` | Duration in ms |
-| `data-reveal-direction` | `up` | `up` \| `down` \| `left` \| `right` |
+| `data-reveal-direction` | `up` | `up`, `down`, `left`, `right` |
 | `data-reveal-once` | `false` | Stay visible after first appearance |
-| `data-reveal-exit-edge` | `any` | Edge to track for disappearance: `top` \| `bottom` \| `left` \| `right` \| `any` |
+| `data-reveal-exit-edge` | `any` | Edge to track for disappearance: `top`, `bottom`, `left`, `right`, `any` |
 
 ---
 
@@ -276,24 +276,96 @@ import { initRevealAnimations, isInViewport, onViewportEnter, onViewportLeave, o
 
 ### ThemeManager
 
-Manages dark/light theme switching.
+Manages dark/light theme switching. The module operates in a declarative mode: the script only controls state, classes, and attributes, while all visuals (icons, animations) are handled by CSS.
 
 ```javascript
 import { ThemeManager } from './modules/theme/_theme.js';
 
 const theme = new ThemeManager();
 
-theme.setTheme('dark');   // Force dark
-theme.setTheme('light');  // Force light
-theme.setTheme('system'); // Follow OS preference
-theme.toggle();           // Toggle between dark and light
+theme.set('dark');   // Force dark
+theme.set('light');  // Force light
+theme.set('system'); // Follow OS preference
+theme.toggle();      // Toggle dark ↔ light
+theme.reset();       // Return to system
 ```
 
-| Method | Description |
-|--------|-------------|
-| `setTheme(name)` | Set theme: `dark` \| `light` \| `system` |
-| `toggle()` | Toggle between dark and light |
-| `getCurrentTheme()` | Returns current theme name |
+#### Getters
+
+| Getter | Type | Description |
+|--------|------|-------------|
+| `choice` | `string` | User's choice: `dark`, `light`, `system` |
+| `effective` | `string` | Actually applied theme: `dark`, `light` |
+| `isDark` | `boolean` | Current effective theme is dark |
+| `isLight` | `boolean` | Current effective theme is light |
+
+#### Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `apply(theme, options)` | `string` | Apply theme (`dark`/`light`/`system`). Returns `effective`. `options.silent` — skip dispatching event |
+| `set(theme)` | `string` | Alias for `apply()` |
+| `toggle()` | `string` | Toggle `light` ↔ `dark` |
+| `reset()` | `string` | Return to `system` |
+| `destroy()` | `void` | Remove listeners, clean up instance |
+
+#### Switch markup
+
+The module expects an `input[type="checkbox"]` inside the element matched by `toggleSelector` (default `[data-theme-toggle]`). The script does not mutate content — it only toggles `checked`, `aria-checked`, and CSS classes.
+
+```html
+<label class="theme-switch" data-theme-toggle>
+  <input
+    type="checkbox"
+    class="theme-switch__input"
+    role="switch"
+    aria-label="Toggle dark theme"
+  >
+  <span class="theme-switch__track" aria-hidden="true">
+    <span class="theme-switch__thumb"></span>
+    <span class="theme-switch__icon theme-switch__icon--light">☀️</span>
+    <span class="theme-switch__icon theme-switch__icon--dark">🌙</span>
+  </span>
+</label>
+```
+
+#### How `system` works
+
+On first visit `localStorage` is empty — the module defaults to `system` and reads the OS `prefers-color-scheme`. The user sees dark or light, but `choice` remains `system`.
+
+If the user later changes OS settings, the site **automatically** switches (as long as no manual choice exists). After clicking the switch, the choice is persisted to `localStorage` and auto-sync is disabled.
+
+| Scenario | `localStorage` | `choice` | `effective` | Reacts to OS change |
+|----------|---------------|----------|-------------|---------------------|
+| First visit | — | `system` | OS-dependent | ✅ Yes |
+| User picked dark | `dark` | `dark` | `dark` | ❌ No |
+| User picked light | `light` | `light` | `light` | ❌ No |
+| Called `reset()` | — | `system` | OS-dependent | ✅ Yes |
+
+#### Events
+
+```javascript
+document.documentElement.addEventListener('theme:changed', (e) => {
+  console.log(e.detail.effective);  // 'dark' | 'light'
+  console.log(e.detail.choice);     // 'dark' | 'light' | 'system'
+  console.log(e.detail.isDark);     // boolean
+  console.log(e.detail.isSystem);   // boolean
+});
+```
+
+#### Configuration
+
+```javascript
+const theme = new ThemeManager({
+  themeKey: 'core4-theme',        // localStorage key
+  themeAttr: 'data-theme',        // attribute on root element
+  darkValue: 'dark',
+  lightValue: 'light',
+  systemValue: 'system',
+  toggleSelector: '[data-theme-toggle]',
+  rootSelector: 'html'
+});
+```
 
 ### Modal
 
@@ -303,13 +375,13 @@ Modal dialog with focus trap, keyboard support, and backdrop click handling.
 <button data-modal-trigger="my-modal">Open</button>
 
 <div id="my-modal" class="modal" data-modal>
-  <div class="modal__content">
-    <div class="modal__header">
-      <h3>Title</h3>
-      <button data-modal-close>×</button>
-    </div>
-    <div class="modal__body">...</div>
-  </div>
+   <div class="modal__content">
+      <div class="modal__header">
+         <h3>Title</h3>
+         <button data-modal-close>×</button>
+      </div>
+      <div class="modal__body">...</div>
+   </div>
 </div>
 ```
 
@@ -339,14 +411,14 @@ Collapsible sections with animated height transitions and full ARIA support.
 
 ```html
 <div data-accordion data-accordion-multiple="true">
-  <div data-accordion-item>
-    <button data-accordion-header>Section 1</button>
-    <div data-accordion-content>Content 1</div>
-  </div>
-  <div data-accordion-item>
-    <button data-accordion-header>Section 2</button>
-    <div data-accordion-content>Content 2</div>
-  </div>
+   <div data-accordion-item>
+      <button data-accordion-header>Section 1</button>
+      <div data-accordion-content>Content 1</div>
+   </div>
+   <div data-accordion-item>
+      <button data-accordion-header>Section 2</button>
+      <div data-accordion-content>Content 2</div>
+   </div>
 </div>
 ```
 
@@ -392,7 +464,7 @@ Interactive button with async states, toggle mode, and loading spinner.
         data-success-text="Done!"
         data-error-text="Error!"
         data-reset-delay="3000">
-  Submit
+   Submit
 </button>
 
 <!-- Toggle -->
@@ -406,14 +478,14 @@ const buttons = initButtons();
 
 // Or manual
 const btn = new Button(element, {
-  loadingClass: 'is-loading',
-  successClass: 'is-success',
-  errorClass: 'is-error',
-  loadingText: 'Loading...',
-  successText: 'Done!',
-  errorText: 'Error!',
-  resetDelay: 2000,
-  toggleClass: 'is-active'
+   loadingClass: 'is-loading',
+   successClass: 'is-success',
+   errorClass: 'is-error',
+   loadingText: 'Loading...',
+   successText: 'Done!',
+   errorText: 'Error!',
+   resetDelay: 2000,
+   toggleClass: 'is-active'
 });
 ```
 
@@ -436,11 +508,11 @@ Dropdown menu with auto-positioning, keyboard navigation, and ARIA.
 
 ```html
 <div data-dropdown data-dropdown-placement="bottom-start">
-  <button data-dropdown-trigger>Menu</button>
-  <div data-dropdown-menu>
-    <button>Item 1</button>
-    <button>Item 2</button>
-  </div>
+   <button data-dropdown-trigger>Menu</button>
+   <div data-dropdown-menu>
+      <button>Item 1</button>
+      <button>Item 2</button>
+   </div>
 </div>
 ```
 
@@ -451,9 +523,9 @@ const dropdowns = initDropdowns();
 
 // Or manual
 const dropdown = new Dropdown(element, {
-  openClass: 'is-open',
-  placement: 'bottom-start',
-  autoFlip: true
+   openClass: 'is-open',
+   placement: 'bottom-start',
+   autoFlip: true
 });
 
 dropdown.open();
@@ -495,7 +567,7 @@ Webpack processes fonts, SVG icons, and images:
 
 ```json
 {
-  "sideEffects": ["*.scss", "*.css"]
+   "sideEffects": ["*.scss", "*.css"]
 }
 ```
 

@@ -163,7 +163,7 @@ CONFIG.animations = true;       // Включить анимации
 import { EventManager } from './core/_events.js';
 
 // Диспатч
-eventManager.dispatch(element, 'modal:opened', { modal: this });
+EventManager.dispatch(element, 'modal:opened', { modal: this });
 
 // Прослушивание
 element.addEventListener('modal:opened', (e) => {
@@ -266,9 +266,9 @@ import { initRevealAnimations, isInViewport, onViewportEnter, onViewportLeave, o
 |---------|-------------|----------|
 | `data-reveal-delay` | `0` | Задержка в мс |
 | `data-reveal-duration` | `600` | Длительность в мс |
-| `data-reveal-direction` | `up` | `up` \| `down` \| `left` \| `right` |
+| `data-reveal-direction` | `up` | `up`, `down`, `left`, `right` |
 | `data-reveal-once` | `false` | Оставаться видимым после первого появления |
-| `data-reveal-exit-edge` | `any` | Край для отслеживания исчезновения: `top` \| `bottom` \| `left` \| `right` \| `any` |
+| `data-reveal-exit-edge` | `any` | Край для отслеживания исчезновения: `top`, `bottom`, `left`, `right`, `any` |
 
 ---
 
@@ -276,24 +276,96 @@ import { initRevealAnimations, isInViewport, onViewportEnter, onViewportLeave, o
 
 ### ThemeManager
 
-Управление переключением тёмной/светлой темы.
+Управление переключением тёмной/светлой темы. Модуль работает в декларативном режиме: скрипт управляет только состоянием, классами и атрибутами, а вся визуализация (иконки, анимации) реализуется через CSS.
 
 ```javascript
 import { ThemeManager } from './modules/theme/_theme.js';
 
 const theme = new ThemeManager();
 
-theme.setTheme('dark');   // Принудительно тёмная
-theme.setTheme('light');  // Принудительно светлая
-theme.setTheme('system'); // Следовать системной теме ОС
-theme.toggle();           // Переключить тёмная ↔ светлая
+theme.set('dark');   // Принудительно тёмная
+theme.set('light');  // Принудительно светлая
+theme.set('system'); // Следовать системной теме ОС
+theme.toggle();      // Переключить тёмная ↔ светлая
+theme.reset();       // Вернуться к system
 ```
 
-| Метод | Описание |
-|-------|----------|
-| `setTheme(name)` | Установить тему: `dark` \| `light` \| `system` |
-| `toggle()` | Переключить тёмную ↔ светлую |
-| `getCurrentTheme()` | Вернуть название текущей темы |
+#### Геттеры
+
+| Геттер | Тип | Описание |
+|--------|-----|----------|
+| `choice` | `string` | Выбор пользователя: `dark`, `light`, `system` |
+| `effective` | `string` | Реально применённая тема: `dark`, `light` |
+| `isDark` | `boolean` | Текущая эффективная тема — тёмная |
+| `isLight` | `boolean` | Текущая эффективная тема — светлая |
+
+#### Методы
+
+| Метод | Возвращает | Описание |
+|-------|-----------|----------|
+| `apply(theme, options)` | `string` | Применить тему (`dark`/`light`/`system`). Возвращает `effective`. `options.silent` — не диспатчить событие |
+| `set(theme)` | `string` | Алиас для `apply()` |
+| `toggle()` | `string` | Переключить `light` ↔ `dark` |
+| `reset()` | `string` | Вернуться к `system` |
+| `destroy()` | `void` | Удалить слушатели, очистить инстанс |
+
+#### Разметка switch
+
+Модуль ожидает `input[type="checkbox"]` внутри элемента с селектором `toggleSelector` (по умолчанию `[data-theme-toggle]`). Скрипт не меняет содержимое — только `checked`, `aria-checked` и CSS-классы.
+
+```html
+<label class="theme-switch" data-theme-toggle>
+  <input
+    type="checkbox"
+    class="theme-switch__input"
+    role="switch"
+    aria-label="Переключить тёмную тему"
+  >
+  <span class="theme-switch__track" aria-hidden="true">
+    <span class="theme-switch__thumb"></span>
+    <span class="theme-switch__icon theme-switch__icon--light">☀️</span>
+    <span class="theme-switch__icon theme-switch__icon--dark">🌙</span>
+  </span>
+</label>
+```
+
+#### Как работает `system`
+
+При первом визите `localStorage` пуст — модуль выбирает `system` и смотрит `prefers-color-scheme` ОС. Пользователь видит тёмную или светлую тему, но `choice` остаётся `system`.
+
+Если пользователь позже меняет настройки ОС, сайт **автоматически** переключается (пока нет ручного выбора). После клика по switch выбор фиксируется в `localStorage`, и авто-синхронизация отключается.
+
+| Сценарий | `localStorage` | `choice` | `effective` | Реакция на смену ОС |
+|----------|---------------|----------|-------------|---------------------|
+| Первый визит | — | `system` | зависит от ОС | ✅ Авто |
+| Пользователь включил тёмную | `dark` | `dark` | `dark` | ❌ Нет |
+| Пользователь включил светлую | `light` | `light` | `light` | ❌ Нет |
+| Нажал «Авто» (`reset()`) | — | `system` | зависит от ОС | ✅ Авто |
+
+#### События
+
+```javascript
+document.documentElement.addEventListener('theme:changed', (e) => {
+  console.log(e.detail.effective);  // 'dark' | 'light'
+  console.log(e.detail.choice);     // 'dark' | 'light' | 'system'
+  console.log(e.detail.isDark);     // boolean
+  console.log(e.detail.isSystem);   // boolean
+});
+```
+
+#### Конфигурация
+
+```javascript
+const theme = new ThemeManager({
+  themeKey: 'core4-theme',        // ключ в localStorage
+  themeAttr: 'data-theme',        // атрибут на корневом элементе
+  darkValue: 'dark',
+  lightValue: 'light',
+  systemValue: 'system',
+  toggleSelector: '[data-theme-toggle]',
+  rootSelector: 'html'
+});
+```
 
 ### Modal
 
