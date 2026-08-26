@@ -55,8 +55,8 @@
 		box-shadow: var(--thumb-shadow);
 		z-index: 2;
 		transition:
-			transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-			background settings.$transition-base;
+			transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+			background 0.3s ease;
 	}
 
 	// Switch icons
