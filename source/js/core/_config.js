@@ -35,7 +35,8 @@ export const CONFIG = {
 		ACCORDION: '[data-accordion]',
 		TABS: '[data-tabs]',
 		DROPDOWN: '[data-dropdown]',
-		BUTTON: '[data-button]'
+		BUTTON: '[data-button]',
+		FORM: '[data-form]'
 	},
 
 	/** Keyboard key names */

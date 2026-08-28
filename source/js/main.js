@@ -31,6 +31,7 @@ class App {
 				buttons: true,
 				dropdowns: true,
 				revealAnimations: true,
+				forms: true,
 				...config.modules
 			}
 		};
@@ -128,6 +129,21 @@ class App {
 		if (cfg.revealAnimations) {
 			initRevealAnimations();
 		}
+
+		// Forms
+		if (cfg.forms && document.querySelector('[data-form]')) {
+			if (!this._factories.forms) {
+				this._factories.forms = await import(
+					/* webpackChunkName: "forms" */
+					'./modules/form/_index.js'
+					);
+			}
+			this._registerModule('forms', () => this._factories.forms.initForms(), isReinit);
+			window.CORE4.components.Form = this._factories.forms.Form;
+			window.CORE4.components.Wizard = this._factories.forms.Wizard;
+			window.CORE4.components.DraftSaver = this._factories.forms.DraftSaver;
+			window.CORE4.components.PasswordStrength = this._factories.forms.PasswordStrength;
+		}
 	}
 
 	/**
@@ -182,6 +198,7 @@ const app = new App({
 		accordions: true,
 		buttons: true,
 		dropdowns: true,
+		forms: true,
 		revealAnimations: true
 	}
 });
