@@ -521,6 +521,11 @@ fieldset.is-valid {
 	color: var(--color-text-tertiary);
 	text-align: end;
 	margin-block-start: tools.spacing(1);
+	transition: color 0.2s ease;
+
+	&.is-near-limit {
+		color: var(--color-warning);
+	}
 
 	&.is-exceeded {
 		color: var(--color-error);

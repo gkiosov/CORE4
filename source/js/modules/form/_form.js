@@ -10,11 +10,12 @@
 // and FocusTrap for error navigation.
 // ==========================================
 
-import { CONFIG, EventManager } from '../../core/_index.js';
+import { EventManager } from '../../core/_index.js';
 import { qs, qsa, addClass, removeClass, toggleClass, createElement } from '../../utilities/_dom.js';
-import { FocusTrap } from '../../utilities/_focus-trap.js';
 import { FileUpload } from './_file-upload.js';
 import { PasswordStrength } from './_password-strength.js';
+import { InputMask } from './_input-mask.js';
+import { OtpInput } from './_otp-input.js';
 
 // ==========================================
 // Debounce Utility
@@ -26,141 +27,6 @@ function debounce(fn, delay) {
 		clearTimeout(timer);
 		timer = setTimeout(() => fn.apply(this, args), delay);
 	};
-}
-
-// ==========================================
-// Input Mask
-// ==========================================
-
-const MASK_PATTERNS = {
-	'phone-us': '(###) ###-####',
-	'phone-eu': '+## ### ### ###',
-	'date': '##/##/####',
-	'time': '##:##',
-	'datetime': '##/##/#### ##:##',
-	'credit-card': '#### #### #### ####',
-	'ssn': '###-##-####',
-	'zip': '#####-####',
-	'zip-short': '#####'
-};
-
-class InputMask {
-	constructor(field, pattern) {
-		this.field = field;
-		this.pattern = pattern;
-
-		this._onInput = this._handleInput.bind(this);
-		this._onKeydown = this._handleKeydown.bind(this);
-		this._onBeforeInput = this._handleBeforeInput.bind(this);
-
-		field.addEventListener('input', this._onInput);
-		field.addEventListener('keydown', this._onKeydown);
-		field.addEventListener('beforeinput', this._onBeforeInput);
-
-		field.dataset.maskRaw = '';
-	}
-
-	_matchesSlot(char, pChar) {
-		if (pChar === '#') return /\d/.test(char);
-		if (pChar === 'A') return /[a-zA-Z]/.test(char);
-		if (pChar === '*') return char.length === 1;
-		return char === pChar;
-	}
-
-	_handleBeforeInput(e) {
-		if (e.inputType === 'insertText' && e.data) {
-			const nextSlot = this._getNextSlotIndex(this.field.value);
-			if (nextSlot === -1) {
-				e.preventDefault();
-				return;
-			}
-			const pChar = this.pattern[nextSlot];
-			if (!this._matchesSlot(e.data, pChar)) {
-				e.preventDefault();
-			}
-		}
-	}
-
-	_getNextSlotIndex(value) {
-		let pi = 0;
-		let vi = 0;
-		while (pi < this.pattern.length && vi < value.length) {
-			if (value[vi] === this.pattern[pi]) {
-				vi++;
-			}
-			pi++;
-		}
-		return pi < this.pattern.length ? pi : -1;
-	}
-
-	_extractRaw(value) {
-		let raw = '';
-		let vi = 0;
-		for (let pi = 0; pi < this.pattern.length && vi < value.length; pi++) {
-			const pChar = this.pattern[pi];
-			if (['#', 'A', '*'].includes(pChar)) {
-				if (this._matchesSlot(value[vi], pChar)) {
-					raw += value[vi];
-					vi++;
-				}
-			} else if (value[vi] === pChar) {
-				vi++;
-			}
-		}
-		return raw;
-	}
-
-	_applyPattern(raw) {
-		let result = '';
-		let ri = 0;
-		for (const pChar of this.pattern) {
-			if (ri >= raw.length) break;
-			if (['#', 'A', '*'].includes(pChar)) {
-				result += raw[ri++];
-			} else {
-				result += pChar;
-			}
-		}
-		return result;
-	}
-
-	_handleInput(e) {
-		const raw = this._extractRaw(e.target.value);
-		const formatted = this._applyPattern(raw);
-
-		if (e.target.value !== formatted) {
-			e.target.value = formatted;
-			e.target.setSelectionRange(formatted.length, formatted.length);
-		}
-
-		e.target.dataset.maskRaw = raw;
-	}
-
-	_handleKeydown(e) {
-		if (e.key === 'Backspace') {
-			const val = this.field.value;
-			const len = val.length;
-			if (len === 0) return;
-
-			const lastChar = val[len - 1];
-			const lastPatternChar = this.pattern[len - 1];
-			if (lastPatternChar && !['#', 'A', '*'].includes(lastPatternChar)) {
-				const raw = this._extractRaw(val.slice(0, -2));
-				const formatted = this._applyPattern(raw);
-				this.field.value = formatted;
-				this.field.dataset.maskRaw = raw;
-				this.field.setSelectionRange(formatted.length, formatted.length);
-				e.preventDefault();
-			}
-		}
-	}
-
-	destroy() {
-		this.field.removeEventListener('input', this._onInput);
-		this.field.removeEventListener('keydown', this._onKeydown);
-		this.field.removeEventListener('beforeinput', this._onBeforeInput);
-		delete this.field.dataset.maskRaw;
-	}
 }
 
 // ==========================================
@@ -486,6 +352,7 @@ export class Form {
 
 		/** @type {InputMask[]} */
 		this._masks = [];
+		this._otpInputs = [];
 
 		/** @type {FileUpload[]} */
 		this._fileUploads = [];
@@ -529,6 +396,7 @@ export class Form {
 		this._initProgress();
 		this._initWizard();
 		this._initAutosave();
+		this._initOtpInputs();
 		this._bindSubmit();
 		this._bindReset();
 
@@ -563,16 +431,17 @@ export class Form {
 			}
 		}
 
-		// Mark required groups
+		// Mark required fields and groups
 		if (field.required || field.dataset.validateRequired !== undefined) {
 			addClass(group, 'form__group--required');
+			field.setAttribute('aria-required', 'true');
 		}
 
 		// Initialize input mask if specified
 		this._initMask(field);
 
-		// Initialize file upload if input type is file
-		if (field.type === 'file') {
+		// Initialize file upload if input type is file (skip native .form__file-drop zones)
+		if (field.type === 'file' && !field.closest('.form__file-drop')) {
 			this._initFileUpload(field);
 		}
 
@@ -598,14 +467,20 @@ export class Form {
 			if (this._touched.has(field) && this.options.liveValidate) {
 				this.validateField(field);
 			}
-			this._updateCounter(field);
 			this._updateProgress();
 			this._triggerAutosave();
 		}, this.options.debounceDelay);
 
+		// Real-time counter + max-length enforcement (no debounce)
+		const onInputRealtime = () => {
+			this._updateCounter(field);
+			this._enforceMaxlength(field);
+		};
+
 		field.addEventListener('blur', onBlur);
 		field.addEventListener('focus', onFocus);
 		field.addEventListener('input', onInput);
+		field.addEventListener('input', onInputRealtime);
 
 		// File input change listener
 		if (field.type === 'file') {
@@ -638,13 +513,15 @@ export class Form {
 		const maskType = field.dataset.mask;
 		if (!maskType) return;
 
-		const pattern = MASK_PATTERNS[maskType] || field.dataset.maskPattern;
-		if (!pattern) {
+		const isBuiltin = ['phone', 'date', 'time', 'datetime', 'credit-card', 'ssn', 'zip', 'zip-short', 'custom'].includes(maskType);
+		const hasPattern = field.dataset.maskPattern;
+
+		if (!isBuiltin && !hasPattern) {
 			console.warn(`[Form] Unknown mask "${maskType}" and no data-mask-pattern provided.`, field);
 			return;
 		}
 
-		const mask = new InputMask(field, pattern);
+		const mask = new InputMask(field);
 		addClass(field, 'form__input--masked');
 		this._masks.push(mask);
 	}
@@ -1194,7 +1071,7 @@ export class Form {
 				addClass(btn, 'is-active');
 				btn.setAttribute('aria-current', 'step');
 			} else if (i < this._wizard.current) {
-				addClass(btn, 'is-completed is-visited');
+				addClass(btn, 'is-completed', 'is-visited');
 				btn.removeAttribute('aria-current');
 			} else {
 				btn.removeAttribute('aria-current');
@@ -1237,6 +1114,17 @@ export class Form {
 
 		// Create status indicator
 		this._initAutosaveStatus();
+	}
+
+	/**
+	 * Initialize OTP inputs if [data-otp] containers exist.
+	 * @private
+	 */
+	_initOtpInputs() {
+		this.element.querySelectorAll('[data-otp]').forEach(container => {
+			const otp = new OtpInput(container);
+			this._otpInputs.push(otp);
+		});
 	}
 
 	/**
@@ -1403,6 +1291,7 @@ export class Form {
 
 		const group = field.closest('.form__group');
 		addClass(group, 'is-validating-async');
+		field.setAttribute('aria-busy', 'true');
 
 		const method = (field.dataset.validateAsyncMethod || 'GET').toUpperCase();
 		const paramName = field.dataset.validateAsyncParam || 'value';
@@ -1784,6 +1673,11 @@ export class Form {
 		this._updateProgress();
 		this._triggerAutosave();
 
+		// Reset all character counters after the browser finishes native reset
+		requestAnimationFrame(() => {
+			this.fields.forEach(field => this._updateCounter(field));
+		});
+
 		EventManager.dispatch(this.element, 'form:reset', { form: this });
 	}
 
@@ -1797,8 +1691,25 @@ export class Form {
 		if (!counter || !max || max === '-1') return;
 
 		const current = field.value.length;
+		const limit = parseInt(max, 10);
 		counter.textContent = `${current} / ${max}`;
-		toggleClass(counter, 'is-exceeded', current > parseInt(max, 10));
+		toggleClass(counter, 'is-exceeded', current >= limit);
+		toggleClass(counter, 'is-near-limit', current >= limit * 0.9 && current < limit);
+	}
+
+	/**
+	 * Enforce max-length by truncating input value in real-time.
+	 * @param {HTMLInputElement|HTMLTextAreaElement} field
+	 * @private
+	 */
+	_enforceMaxlength(field) {
+		const max = field.dataset.maxlength || field.maxLength;
+		if (!max || max === '-1') return;
+
+		const limit = parseInt(max, 10);
+		if (field.value.length > limit) {
+			field.value = field.value.slice(0, limit);
+		}
 	}
 
 	// ================================
@@ -1868,6 +1779,9 @@ export class Form {
 
 		this._masks.forEach(mask => mask.destroy());
 		this._masks = [];
+
+		this._otpInputs.forEach(otp => otp.destroy());
+		this._otpInputs = [];
 
 		this._asyncControllers.forEach(ctrl => ctrl.abort());
 		this._asyncControllers.clear();

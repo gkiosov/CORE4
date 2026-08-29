@@ -116,14 +116,23 @@ export class FileUpload {
 			}
 		};
 
+		// Click on dropzone opens the file dialog
+		const onClick = (e) => {
+			if (e.target !== this.input) {
+				this.input.click();
+			}
+		};
+
 		dropzone.addEventListener('dragover', onDragOver);
 		dropzone.addEventListener('dragleave', onDragLeave);
 		dropzone.addEventListener('drop', onDrop);
+		dropzone.addEventListener('click', onClick);
 
 		this._handlers.push(
 			{ element: dropzone, type: 'dragover', handler: onDragOver },
 			{ element: dropzone, type: 'dragleave', handler: onDragLeave },
-			{ element: dropzone, type: 'drop', handler: onDrop }
+			{ element: dropzone, type: 'drop', handler: onDrop },
+			{ element: dropzone, type: 'click', handler: onClick }
 		);
 	}
 
