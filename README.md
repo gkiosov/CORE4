@@ -1,54 +1,45 @@
 # 🎨 CORE4 Design System
 
-> **A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, a responsive grid, and lazy-loaded components.**
+> **A modular, high-performance design system built with SCSS and JavaScript, featuring OKLCH colors, lazy-loaded components, and an accessibility-first approach.**
 
-![Version](https://img.shields.io/badge/Draft-0.1.0-red.svg)
-![Build Status](https://img.shields.io/badge/Build-passing-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-
----
-
-## 📋 Table of Contents
-
-1. [Overview](#-overview)
-2. [Features](#-features)
-3. [Quick Start](#-quick-start)
-4. [Project Structure](#-project-structure)
-5. [Build Commands](#-build-commands)
-6. [Documentation](#-documentation)
-7. [How to Use](#-how-to-use)
-8. [Contributing](#-contributing)
-9. [License](#-license)
+[![Version](https://img.shields.io/badge/Draft-0.1.0-red.svg)](https://github.com/gkiosov/CORE4)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
 ## 📖 Overview
 
-**CORE4 Design System** is a modular design system built on:
-- **SCSS** with a modular architecture (ITCSS)
-- **JavaScript** with ES modules and dynamic imports
-- **Webpack** for bundling with code splitting
-- **OKLCH colors** (2026 standard)
-- **Logical properties** (RTL language support)
-- **Custom fonts** (InterTight, JetBrains Mono)
+**CORE4** is not just a collection of UI components. It is a **modular and performant design system**, engineered for building complex, accessible, and easily scalable interfaces. It represents a harmonious synthesis of modern CSS methodologies and advanced JavaScript practices, where every aspect—from the color space to component loading—is thoughtfully designed and optimized.
 
-The system is designed for rapid creation of responsive interfaces with a unified visual rhythm (base unit of 4px).
+At its core, the system is built on several key architectural decisions that set it apart from typical solutions:
+
+*   **Industrial-Grade Styling: ITCSS + OKLCH**. Built on the **ITCSS (Inverted Triangle CSS)** architecture, the system ensures ideal code organization: from global settings to specific components. This makes styles maximally predictable, reusable, and resistant to cascade conflicts. The use of **perceptually uniform OKLCH colors**—the 2026 industry standard—guarantees that colors always look harmonious and predictable on any screen, making light and dark themes a mathematically precise process, not a tedious guessing game.
+
+*   **Modular JavaScript with Lazy Loading**. Instead of a monolithic script, CORE4 uses a **modular architecture with dynamic imports**. JavaScript components (modals, accordions, dropdowns) are loaded asynchronously **only when they actually appear in the DOM**. This dramatically speeds up the initial page load. A unified **EventManager** and strict cleanup of listeners in the `destroy()` method ensure no memory leaks, which is critical for long-running SPA applications.
+
+*   **Accessibility (A11y) as a Built-in Feature**. The system is designed to be **ARIA-first**. All interactive components support keyboard navigation (Tab, Escape, arrow keys), correctly manage focus (Focus Trap), and contain all necessary ARIA attributes from day one. This is not an "add-on" but an integral part of the architecture.
+
+*   **Global Adaptability via Logical Properties**. Instead of physical `margin-top` and `padding-left`, the system is built on **logical properties** (`margin-block-start`, `padding-inline-start`). This ensures **automatic support for RTL languages** (Arabic, Hebrew) without the need to write separate rules or override styles.
+
+*   **Engineering Infrastructure for Real-World Development**. The project goes beyond a simple set of files, offering a complete infrastructure, including **design tokens**, **Webpack with code splitting**, and a full **lifecycle management** via `app.reinit()` for dynamically added content.
+
+In essence, CORE4 is an **engineering system** that lets developers and designers focus on logic and user experience, with the confidence that the interface's foundation is robust, performant, and aligned with all modern web standards.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- 🧱 **Modular Grid** — 12-column system based on CSS Grid (Bootstrap analog)
-- 🎨 **OKLCH Colors** — perceptually uniform colors (2026 standard)
-- 🌓 **Dark/Light Theme** — system + manual switching via `data-theme`
-- 📱 **Responsiveness** — 6 breakpoints (`xs`, `sm`, `md`, `lg`, `xl`, `xxl`)
-- 🔮 **Dynamic Components** — modals, accordions, dropdowns, buttons in vanilla JS
-- ♿️ **Accessibility** — keyboard navigation (Tab, Escape, Focus Trap), ARIA attributes
-- 🧪 **Modularity** — SCSS and JS modules for reuse
-- 📦 **Ready-to-use Build** — Webpack + Babel + minification
-- ⚡ **Lazy Loading** — JS modules load on demand only when DOM elements exist
-- 🔄 **Re-initialization** — `app.reinit()` for dynamically added components
-- ✨ **Reveal Animations** — scroll-triggered entrance animations via `data-reveal`
+*   🧱 **Modular Grid** — 12-column system based on CSS Grid
+*   🎨 **OKLCH Colors** — perceptually uniform, 2026 standard
+*   🌓 **Dark/Light Theme** — system + manual switching via `data-theme`
+*   📱 **Responsiveness** — 6 breakpoints (`xs`, `sm`, `md`, `lg`, `xl`, `xxl`)
+*   🔮 **Dynamic Components** — modals, accordions, dropdowns, buttons in vanilla JS
+*   ♿️ **Accessibility** — keyboard navigation, Focus Trap, ARIA attributes
+*   ⚡ **Lazy Loading** — JS modules load only when needed
+*   🔄 **Re-initialization** — `app.reinit()` for dynamically added components
+*   🔤 **Custom Fonts** — InterTight and JetBrains Mono (OFL-1.1)
+*   📦 **Ready-to-use Build** — Webpack + Babel + minification
 
 ---
 
@@ -57,8 +48,8 @@ The system is designed for rapid creation of responsive interfaces with a unifie
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/core4.git
-cd core4
+git clone https://github.com/gkiosov/CORE4.git
+cd CORE4
 ```
 
 ### 2. Install dependencies
@@ -73,7 +64,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:8080` — the page auto-refreshes on changes.
+Open `http://localhost:3000` — the page auto-refreshes on changes.
 
 ### 4. Build for production
 
@@ -81,101 +72,35 @@ Open `http://localhost:8080` — the page auto-refreshes on changes.
 npm run build
 ```
 
-Compiled files will appear in the `build/` folder:
-- `build/css/main.min.css` — minified styles
-- `build/js/main.min.js` — minified script
-- `build/fonts/` — font files
-- `build/icons/` — SVG icons
-- `build/images/` — images
+Compiled files will appear in the `build/` folder.
 
 ---
 
 ## 📁 Project Structure
 
-```bash
+```
 core4/
 ├── source/
-│   ├── assets/
-│   │   └── fonts/             # Font files (InterTight, JetBrains Mono)
+│   ├── assets/                 # Fonts, icons, images
 │   ├── scss/
-│   │   ├── 1-settings/        # Variables, themes, resets
-│   │   │   ├── _variables.scss
-│   │   │   ├── _typography.scss
-│   │   │   ├── _colors.scss
-│   │   │   ├── _themes.scss
-│   │   │   ├── _reset.scss
-│   │   │   └── _index.scss
-│   │   ├── 2-tools/           # Functions and mixins
-│   │   │   ├── _functions.scss
-│   │   │   ├── _mixins.scss
-│   │   │   └── _index.scss
-│   │   ├── 3-generic/         # Base styles, fonts, animations
-│   │   │   ├── _base.scss
-│   │   │   ├── _fonts.scss
-│   │   │   ├── _animations.scss
-│   │   │   ├── _typography.scss
-│   │   │   └── _index.scss
-│   │   ├── 4-objects/         # Grid and utilities
-│   │   │   ├── _grid.scss
-│   │   │   ├── _layout.scss
-│   │   │   ├── _utilities.scss
-│   │   │   └── _index.scss
-│   │   ├── 5-components/      # Components
-│   │   │   ├── _button.scss
-│   │   │   ├── _card.scss
-│   │   │   ├── _modal.scss
-│   │   │   └── _index.scss
-│   │   └── main.scss          # Main import file
+│   │   ├── 1-settings/         # Variables, themes, resets
+│   │   ├── 2-tools/            # Functions and mixins
+│   │   ├── 3-generic/          # Base styles, fonts, animations
+│   │   ├── 4-objects/          # Grid and utilities
+│   │   ├── 5-components/       # Components
+│   │   └── main.scss           # Main import file
 │   │
 │   └── js/
-│       ├── core/              # Core (configs, helpers, events)
-│       │   ├── _config.js
-│       │   ├── _helpers.js
-│       │   ├── _events.js
-│       │   └── _index.js
-│       ├── modules/           # Modules (lazy-loaded)
-│       │   ├── theme/
-│       │   │   ├── _theme.js
-│       │   │   └── _index.js
-│       │   ├── modal/
-│       │   │   ├── _modal.js
-│       │   │   └── _index.js
-│       │   ├── accordion/
-│       │   │   ├── _accordion.js
-│       │   │   └── _index.js
-│       │   ├── button/
-│       │   │   ├── _button.js
-│       │   │   └── _index.js
-│       │   └── dropdown/
-│       │       ├── _dropdown.js
-│       │       └── _index.js
-│       ├── utilities/         # Utilities
-│       │   ├── _dom.js
-│       │   ├── _keyboard.js
-│       │   ├── _focus-trap.js
-│       │   ├── _viewport.js
-│       │   └── _index.js
-│       └── main.js            # Entry point
+│       ├── core/               # Configs, helpers, EventManager
+│       ├── modules/            # Lazy-loaded modules
+│       ├── utilities/          # DOM, keyboard, focus trap, viewport
+│       └── main.js             # Entry point
 │
-├── build/                     # Build output (generated)
-│   ├── css/
-│   │   └── main.min.css
-│   ├── js/
-│   │   └── main.min.js
-│   ├── fonts/
-│   ├── icons/
-│   └── images/
-│
-├── docs/                      # Documentation
-│   ├── SCSS-GUIDE.md
-│   ├── SCSS-GUIDE-RU.md
-│   ├── JAVASCRIPT-GUIDE.md
-│   └── JAVASCRIPT-GUIDE-RU.md
-│
-├── webpack.config.js          # Webpack configuration
-├── package.json               # Dependencies
-├── .gitignore                 # Ignored files
-└── README.md                  # This file
+├── build/                      # Build output (generated)
+├── docs/                       # Documentation
+├── webpack.config.js
+├── package.json
+└── README.md
 ```
 
 ---
@@ -185,7 +110,7 @@ core4/
 | Command | Description |
 |:---|:---|
 | `npm run dev` | Start development server with Hot Reload |
-| `npm run build` | Build production version (minified, no dev server) |
+| `npm run build` | Build production version (minified) |
 | `npm run start` | Same as `npm run dev` |
 | `npm run watch` | Watch mode for development |
 | `npm run test` | Run tests (Jest) |
@@ -195,184 +120,26 @@ core4/
 
 ## 📚 Documentation
 
-- **[SCSS Documentation](docs/SCSS-GUIDE.md)** — detailed description of all functions, mixins, and components.
-- **[SCSS Documentation (RU)](docs/SCSS-GUIDE-RU.md)** — русская версия.
-- **[JavaScript Documentation](docs/JAVASCRIPT-GUIDE.md)** — architecture, modules, utilities, and API reference.
-- **[JavaScript Documentation (RU)](docs/JAVASCRIPT-GUIDE-RU.md)** — русская версия.
+Full documentation is available in the [`docs/`](docs/) folder:
 
-### Key SCSS Functions
-
-```scss
-@use '1-settings' as settings;
-@use '2-tools' as tools;
-
-// Spacing
-.element {
-  padding: tools.spacing(4); // → 16px
-  margin: tools.spacing(6);  // → 24px
-}
-
-// Responsiveness
-.element {
-  font-size: 14px;
-
-  @include tools.respond-to('md') {
-    font-size: 18px;
-  }
-}
-
-// Colors (CSS custom properties)
-.element {
-  color: var(--color-primary);
-  background: var(--color-background-secondary);
-}
-
-// Grid
-<div class="row">
-  <div class="col-4">Column</div>
-</div>
-```
-
----
-
-## 🎨 How to Use
-
-### Include in HTML
-
-```html
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Project</title>
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="build/css/main.min.css">
-</head>
-<body>
-    <!-- Content -->
-
-    <!-- Scripts -->
-    <script src="build/js/main.min.js"></script>
-</body>
-</html>
-```
-
-### Component Examples
-
-```html
-<!-- Button -->
-<button class="btn btn--primary" data-button="default">Primary</button>
-
-<!-- Async Button -->
-<button class="btn btn--primary" data-button="async"
-        data-loading-text="Loading..."
-        data-success-text="Done!">
-  Submit
-</button>
-
-<!-- Card -->
-<div class="card">
-    <div class="card__image">
-        <img src="image.jpg" alt="...">
-    </div>
-    <div class="card__content">
-        <h3 class="card__title">Title</h3>
-        <p class="card__description">Description</p>
-        <button class="btn btn--primary">Buy</button>
-    </div>
-</div>
-
-<!-- Modal -->
-<button data-modal-trigger="my-modal">Open</button>
-
-<div id="my-modal" class="modal" data-modal>
-    <div class="modal__content">
-        <div class="modal__header">
-            <h3>Title</h3>
-            <button data-modal-close>×</button>
-        </div>
-        <div class="modal__body">
-            <p>Content</p>
-        </div>
-    </div>
-</div>
-
-<!-- Accordion -->
-<div data-accordion data-accordion-multiple="true">
-    <div data-accordion-item>
-        <button data-accordion-header>Section 1</button>
-        <div data-accordion-content>Content 1</div>
-    </div>
-</div>
-
-<!-- Dropdown -->
-<div data-dropdown data-dropdown-placement="bottom-start">
-    <button data-dropdown-trigger>Menu</button>
-    <div data-dropdown-menu>
-        <button>Item 1</button>
-        <button>Item 2</button>
-    </div>
-</div>
-
-<!-- Reveal Animation -->
-<div data-reveal data-reveal-direction="up" data-reveal-delay="200">
-    This fades in on scroll
-</div>
-```
-
-### Theme Switching
-
-```javascript
-// Via JS
-document.documentElement.setAttribute('data-theme', 'dark');
-
-// Or via button (already implemented in ThemeManager)
-```
-
-### Global API (Development)
-
-In development mode, the following globals are available:
-
-```javascript
-window.CORE4.app              // App instance
-window.CORE4.core             // Core (CONFIG, EventManager)
-window.CORE4.utils.dom        // DOM helpers
-window.CORE4.utils.keyboard   // Keyboard helpers
-window.CORE4.components       // Components (ThemeManager, Modal, Accordion, Button, Dropdown, FocusTrap)
-```
-
-### Re-initialization for Dynamic Content
-
-If you add components to the DOM dynamically (e.g., via AJAX), call:
-
-```javascript
-await window.CORE4.app.reinit();
-```
-
-This safely destroys old instances and creates new ones.
+| Document                                                  | Description                                                                  |
+|:----------------------------------------------------------|:-----------------------------------------------------------------------------|
+| **[SCSS-GUIDE.md](docs/SCSS-GUIDE.md)**                   | Detailed description of all SCSS functions, mixins, and components (English) |
+| **[SCSS-GUIDE-RU.md](docs/SCSS-GUIDE-RU.md)**             | SCSS documentation (Russian)                                                 |
+| **[JAVASCRIPT-GUIDE.md](docs/JAVASCRIPT-GUIDE.md)**       | JavaScript architecture, modules, utilities, and API reference (English)     |
+| **[JAVASCRIPT-GUIDE-RU.md](docs/JAVASCRIPT-GUIDE-RU.md)** | JavaScript documentation (Russian)                                           |
+| **[FORM-GUIDE.md](docs/FORM-GUIDE.md)**                   | Form Component documentation (English)                                       |
+| **[FORM-GUIDE-RU.md](docs/FORM-GUIDE-RU.md)**             | Form Component documentation (Russian)                                       |
+| **[MODAL-GUIDE.md](docs/MODAL-GUIDE.md)**                 | Modal Component documentation (English)                                      |
+| **[MODAL-GUIDE_RU.md](docs/MODAL-GUIDE-RU.md)**           | Modal Component documentation (Russian)                                      |
+| **[TABS-GUIDE.md](docs/TABS-GUIDE.md)**                   | Tabs Component documentation (English)                                       |
+| **[TABS-GUIDE_RU.md](docs/TABS-GUIDE-RU.md)**             | Tabs Component documentation (Russian)                                       |
 
 ---
 
 ## 🔤 Fonts
 
-CORE4 includes the following open-source fonts:
-
-### Inter Tight
-- **Author:** Rasmus Andersson
-- **License:** [SIL Open Font License 1.1](https://github.com/rsms/inter/blob/master/LICENSE.txt)
-- **Source:** [Google Fonts](https://fonts.google.com/specimen/Inter+Tight) / [GitHub](https://github.com/rsms/inter)
-- **Weights included:** 100 (Thin), 200 (Extra Light), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Extra Bold), 900 (Black)
-
-### JetBrains Mono
-- **Author:** JetBrains
-- **License:** [SIL Open Font License 1.1](https://github.com/JetBrains/JetBrainsMono/blob/master/OFL.txt)
-- **Source:** [JetBrains](https://www.jetbrains.com/lp/mono/) / [GitHub](https://github.com/JetBrains/JetBrainsMono)
-- **Weights included:** 100 (Thin), 200 (Extra Light), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Extra Bold)
-
-Both fonts are free for personal and commercial use.
-
+CORE4 includes **InterTight** and **JetBrains Mono** fonts. Both are licensed under SIL Open Font License 1.1 and are free for personal and commercial use.
 
 ---
 
@@ -389,12 +156,6 @@ Both fonts are free for personal and commercial use.
 ## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-## 🤝 Contact
-
-If you have questions, open an [Issue](https://github.com/your-username/core4/issues).
 
 ---
 
