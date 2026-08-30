@@ -32,6 +32,7 @@ class App {
 				dropdowns: true,
 				revealAnimations: true,
 				forms: true,
+				tabs: true,
 				...config.modules
 			}
 		};
@@ -143,6 +144,18 @@ class App {
 			window.CORE4.components.Wizard = this._factories.forms.Wizard;
 			window.CORE4.components.DraftSaver = this._factories.forms.DraftSaver;
 			window.CORE4.components.PasswordStrength = this._factories.forms.PasswordStrength;
+		}
+
+		// Tabs
+		if (cfg.tabs && document.querySelector('[data-tabs]')) {
+			if (!this._factories.tabs) {
+				this._factories.tabs = await import(
+					/* webpackChunkName: "tabs" */
+					'./modules/tabs/_index.js'
+					);
+			}
+			this._registerModule('tabs', () => this._factories.tabs.initTabs(), isReinit);
+			window.CORE4.components.Tabs = this._factories.tabs.Tabs;
 		}
 	}
 

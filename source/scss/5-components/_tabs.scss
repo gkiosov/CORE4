@@ -1,0 +1,449 @@
+// ==========================================
+// Tabs
+// ==========================================
+// Accessible tab interface with multiple visual variants,
+// gliding indicator, panel animations, and scroll arrows.
+// Variants: underline | pill | segmented | vertical
+// ==========================================
+
+@use 'sass:map';
+@use '../1-settings/index' as settings;
+@use '../2-tools/index' as tools;
+
+// ==========================================
+// Base
+// ==========================================
+
+.tabs {
+	--tabs-indicator-color: var(--color-primary);
+	--tabs-active-color: var(--color-text);
+	--tabs-inactive-color: var(--color-text-secondary);
+	--tabs-disabled-color: var(--color-text-tertiary);
+	--tabs-border-color: var(--color-border);
+	--tabs-bg: transparent;
+	--tabs-active-bg: var(--color-background-secondary);
+	--tabs-hover-bg: var(--color-background-hover);
+	--tabs-panel-bg: transparent;
+
+	position: relative;
+
+	// ------------------------------------------
+	// Nav wrapper (for scroll arrows positioning)
+	// ------------------------------------------
+	&__nav {
+		position: relative;
+	}
+
+	// ------------------------------------------
+	// Tab list
+	// ------------------------------------------
+	&__list {
+		display: flex;
+		gap: tools.spacing(1);
+		list-style: none;
+		margin: 0;
+		overflow-x: auto;
+		padding: 0;
+		position: relative;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	// ------------------------------------------
+	// Tab trigger
+	// ------------------------------------------
+	&__trigger {
+		all: unset;
+		align-items: center;
+		box-sizing: border-box;
+		color: var(--tabs-inactive-color);
+		cursor: pointer;
+		display: inline-flex;
+		font-size: tools.font-size('sm');
+		font-weight: map.get(settings.$font-weight, 'medium');
+		gap: tools.spacing(1);
+		justify-content: center;
+		line-height: tools.line-height('base');
+		padding: tools.spacing(2) tools.spacing(4);
+		position: relative;
+		white-space: nowrap;
+		z-index: 1;
+
+		@include tools.hover(color) {
+			color: var(--tabs-active-color);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--color-border-focus);
+			outline-offset: -2px;
+			border-radius: tools.radius('md');
+		}
+
+		&.is-active {
+			color: var(--tabs-active-color);
+		}
+
+		&.is-disabled {
+			color: var(--tabs-disabled-color);
+			cursor: not-allowed;
+			pointer-events: none;
+			opacity: 0.5;
+		}
+	}
+
+	// ------------------------------------------
+	// Gliding indicator
+	// ------------------------------------------
+	&__indicator {
+		background: var(--tabs-indicator-color);
+		border-radius: tools.radius('full');
+		bottom: 0;
+		display: block;
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		transition: transform 0.35s ease, width 0.35s ease, height 0.35s ease;
+		z-index: 2;
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
+	}
+
+	// ------------------------------------------
+	// Panels wrapper
+	// ------------------------------------------
+	&__panels {
+		position: relative;
+	}
+
+	// ------------------------------------------
+	// Panel
+	// ------------------------------------------
+	&__panel {
+		background: var(--tabs-panel-bg);
+		padding-block: tools.spacing(4);
+
+		&[hidden] {
+			display: none;
+		}
+
+		&--enter {
+			animation: tabs-fade-in 0.35s ease forwards;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
+		}
+
+		&--exit {
+			animation: tabs-fade-out 0.2s ease forwards;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
+		}
+
+		&--slide-left {
+			animation: tabs-slide-left-in 0.35s ease forwards;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
+		}
+
+		&--slide-right {
+			animation: tabs-slide-right-in 0.35s ease forwards;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+			}
+		}
+	}
+}
+
+// ==========================================
+// Variant: Underline (default)
+// ==========================================
+
+.tabs--underline {
+	.tabs__list {
+		border-bottom: 1px solid var(--tabs-border-color);
+	}
+
+	.tabs__trigger {
+		margin-bottom: -1px;
+		padding: tools.spacing(3) tools.spacing(4);
+
+		&.is-active {
+			color: var(--tabs-active-color);
+		}
+	}
+
+	.tabs__indicator {
+		bottom: 0;
+		height: 2px;
+	}
+}
+
+// ==========================================
+// Variant: Pill
+// ==========================================
+
+.tabs--pill {
+	.tabs__list {
+		gap: tools.spacing(1);
+	}
+
+	.tabs__trigger {
+		border-radius: tools.radius('full');
+		padding: tools.spacing(2) tools.spacing(5);
+		transition: background-color 0.2s ease, color 0.2s ease;
+
+		&:hover {
+			background: var(--tabs-hover-bg);
+		}
+
+		&.is-active {
+			background: var(--tabs-active-bg);
+			color: var(--tabs-active-color);
+		}
+	}
+
+	.tabs__indicator {
+		display: none;
+	}
+}
+
+// ==========================================
+// Variant: Segmented
+// ==========================================
+
+.tabs--segmented {
+	.tabs__list {
+		background: var(--color-background-secondary);
+		border-radius: tools.radius('lg');
+		gap: tools.spacing(1);
+		padding: tools.spacing(1);
+	}
+
+	.tabs__trigger {
+		border-radius: tools.radius('md');
+		padding: tools.spacing(2) tools.spacing(5);
+		position: relative;
+		z-index: 1;
+		transition: color 0.2s ease;
+
+		&.is-active {
+			color: var(--tabs-active-color);
+		}
+	}
+
+	.tabs__indicator {
+		background: var(--color-background);
+		border-radius: tools.radius('md');
+		box-shadow: tools.shadow('sm');
+		height: 100%;
+		top: 0;
+		z-index: 0;
+	}
+}
+
+// ==========================================
+// Variant: Vertical
+// ==========================================
+
+.tabs--vertical {
+	display: grid;
+	gap: tools.spacing(4);
+	grid-template-columns: auto 1fr;
+
+	.tabs__list {
+		border-inline-end: 1px solid var(--tabs-border-color);
+		flex-direction: column;
+		gap: tools.spacing(1);
+		overflow-x: visible;
+		overflow-y: auto;
+		padding-inline-end: tools.spacing(2);
+	}
+
+	.tabs__trigger {
+		justify-content: flex-start;
+		padding: tools.spacing(3) tools.spacing(4);
+		width: 100%;
+
+		&.is-active {
+			color: var(--tabs-active-color);
+		}
+	}
+
+	.tabs__indicator {
+		border-radius: tools.radius('full');
+		bottom: auto;
+		left: 0;
+		top: 0;
+		width: 3px;
+	}
+
+	.tabs__panels {
+		min-width: 0;
+	}
+
+	.tabs__panel {
+		padding-block: 0;
+		padding-inline-start: tools.spacing(4);
+	}
+
+	// Mobile: stack vertically
+	@include tools.respond-below('md') {
+		grid-template-columns: 1fr;
+
+		.tabs__list {
+			border-inline-end: none;
+			border-bottom: 1px solid var(--tabs-border-color);
+			flex-direction: row;
+			overflow-x: auto;
+			overflow-y: hidden;
+			padding-inline-end: 0;
+			padding-block-end: tools.spacing(2);
+		}
+
+		.tabs__indicator {
+			bottom: 0;
+			height: 2px;
+			left: 0;
+			top: auto;
+			width: auto;
+		}
+
+		.tabs__panel {
+			padding-inline-start: 0;
+			padding-block-start: tools.spacing(4);
+		}
+	}
+}
+
+// ==========================================
+// Scroll arrows
+// ==========================================
+
+.tabs__scroll-btn {
+	all: unset;
+	align-items: center;
+	background: linear-gradient(to right, var(--color-background) 70%, transparent);
+	color: var(--tabs-inactive-color);
+	cursor: pointer;
+	display: inline-flex;
+	font-size: tools.font-size('xl');
+	height: 100%;
+	justify-content: center;
+	padding: tools.spacing(2);
+	padding-inline-end: tools.spacing(4);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 3;
+
+	&[hidden] {
+		display: none;
+	}
+
+	&:hover {
+		color: var(--tabs-active-color);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--color-border-focus);
+		outline-offset: -2px;
+		border-radius: tools.radius('md');
+	}
+
+	&--prev {
+		background: linear-gradient(to right, var(--color-background) 70%, transparent);
+		left: 0;
+		padding-inline-start: tools.spacing(4);
+		padding-inline-end: tools.spacing(2);
+	}
+
+	&--next {
+		background: linear-gradient(to left, var(--color-background) 70%, transparent);
+		right: 0;
+		padding-inline-start: tools.spacing(2);
+		padding-inline-end: tools.spacing(4);
+	}
+
+	// Hide on touch devices
+	@media (hover: none) and (pointer: coarse) {
+		display: none;
+	}
+}
+
+// ==========================================
+// Scroll-snap for mobile overflow
+// ==========================================
+
+.tabs__list {
+	@include tools.respond-below('sm') {
+		scroll-snap-type: x mandatory;
+
+		.tabs__trigger {
+			scroll-snap-align: start;
+		}
+	}
+}
+
+// ==========================================
+// Keyframes
+// ==========================================
+
+@keyframes tabs-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes tabs-fade-out {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+}
+
+@keyframes tabs-slide-left-in {
+	from {
+		opacity: 0;
+		transform: translateX(24px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes tabs-slide-right-in {
+	from {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
