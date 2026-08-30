@@ -2,6 +2,10 @@
 
 > **A modular design system built with SCSS and JavaScript, featuring themes, OKLCH colors, a responsive grid, and lazy-loaded components.**
 
+![Version](https://img.shields.io/badge/Draft-0.1.0-red.svg)
+![Build Status](https://img.shields.io/badge/Build-passing-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 ---
 
 ## 📋 Table of Contents

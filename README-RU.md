@@ -2,6 +2,10 @@
 
 > **Модульная дизайн-система на SCSS и JavaScript с поддержкой тем, OKLCH-цветов, адаптивной сетки и ленивой загрузки компонентов.**
 
+![Версия](https://img.shields.io/badge/Черновик-0.1.0-red.svg)
+![Статус сборки](https://img.shields.io/badge/Сборка-проходит-brightgreen)
+![Лицензия](https://img.shields.io/badge/Лицензия-MIT-green.svg)
+
 ---
 
 ## 📋 Оглавление
