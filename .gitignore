@@ -9,6 +9,7 @@ texts/
 *.log
 *.tmp
 .DS_Store
+test-results.json
 
 # Настройки редакторов (чтобы не мешать другим)
 .vscode/

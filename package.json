@@ -13,9 +13,15 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
     "moduleNameMapper": {
-      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
-    }
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -23,13 +29,14 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.1",
     "autoprefixer": "^10.5.4",
-    "babel-jest": "^30.4.1",
+    "babel-jest": "^30.5.0",
     "babel-loader": "^9.1.0",
     "cross-env": "^10.1.0",
     "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^6.0.0",
-    "jest": "^30.4.2",
+    "jest": "^30.5.0",
     "jest-environment-jsdom": "^30.4.1",
+    "jsdom": "^30.0.1",
     "mini-css-extract-plugin": "^2.10.2",
     "postcss": "^8.5.26",
     "postcss-loader": "^8.2.1",
@@ -41,7 +48,8 @@
     "webpack-dev-server": "^6.0.0"
   },
   "allowScripts": {
-    "@parcel/watcher@2.6.0": true
+    "@parcel/watcher@2.6.0": true,
+    "css-minimizer-webpack-plugin@6.0.0": true
   },
   "sideEffects": [
     "*.scss",
