@@ -1,6 +1,6 @@
 # CORE4 Form Module Documentation
 
-> **Version:** 0.1.0 Alpha | **Updated:** August 2026
+> **Version:** 0.1.0 Draft | **Updated:** August 2026
 
 ---
 

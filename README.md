@@ -394,6 +394,6 @@ If you have questions, open an [Issue](https://github.com/your-username/core4/is
 
 ---
 
-**Version:** 0.1.0 Alpha  
+**Version:** 0.1.0 Draft  
 **Updated:** August 2026  
 **Author:** George Kiosov
