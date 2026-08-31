@@ -105,7 +105,7 @@ core4/
 ├── docs/
 │   ├── TEST-GUIDE.md
 │   └── TEST-GUIDE-RU.md
-├── jest.config.js
+├── jest.setup.js
 └── package.json
 ```
 
@@ -433,7 +433,7 @@ core4/
 
 ### Настройка Jest
 
-Убедитесь, что `jest.config.js` (или `package.json`) содержит:
+Убедитесь, что `jest.setup.js` (или `package.json`) содержит:
 
 ```js
 module.exports = {
@@ -450,7 +450,7 @@ module.exports = {
 
 `moduleNameMapper` **критичен**: в CORE4 импорты используют явные расширения `.js` (`import { Modal } from '../modules/modal/_modal.js'`), но Jest по умолчанию резолвит модули без расширений.
 
-### Опционально: `jest.setup.js`
+### Опционально: `../jest.config.js`
 
 ```js
 // Мок ResizeObserver для Tabs и других компонентов

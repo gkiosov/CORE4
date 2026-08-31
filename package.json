@@ -11,18 +11,6 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "transform": {
-      "^.+\\.js$": "babel-jest"
-    },
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    },
-    "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
-    ]
-  },
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
@@ -34,8 +22,9 @@
     "cross-env": "^10.1.0",
     "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^6.0.0",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^30.5.0",
-    "jest-environment-jsdom": "^30.4.1",
+    "jest-environment-jsdom": "^30.5.0",
     "jsdom": "^30.0.1",
     "mini-css-extract-plugin": "^2.10.2",
     "postcss": "^8.5.26",
@@ -49,7 +38,8 @@
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
-    "css-minimizer-webpack-plugin@6.0.0": true
+    "css-minimizer-webpack-plugin@6.0.0": true,
+    "unrs-resolver@1.12.2": true
   },
   "sideEffects": [
     "*.scss",

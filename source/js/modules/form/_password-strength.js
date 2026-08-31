@@ -218,6 +218,7 @@ export class PasswordStrength {
 
 	_handleInput() {
 		const result = this.calculate(this.field.value);
+		this.field.dataset.strengthScore = result.score;
 		this._render(result);
 
 		EventManager.dispatch(this.field, 'password:strength', {

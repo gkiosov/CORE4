@@ -105,7 +105,7 @@ core4/
 ├── docs/
 │   ├── TEST-GUIDE.md
 │   └── TEST-GUIDE-RU.md
-├── jest.config.js
+├── jest.setup.js
 └── package.json
 ```
 
@@ -433,7 +433,7 @@ Tests the application orchestrator from `main.js`.
 
 ### Jest Setup
 
-Ensure `jest.config.js` (or `package.json`) contains:
+Ensure `jest.setup.js` (or `package.json`) contains:
 
 ```js
 module.exports = {
@@ -450,7 +450,7 @@ module.exports = {
 
 The `moduleNameMapper` is **critical**: CORE4 imports use explicit `.js` extensions (`import { Modal } from '../modules/modal/_modal.js'`), but Jest resolves modules without extensions by default.
 
-### Optional: `jest.setup.js`
+### Optional: `../jest.config.js`
 
 ```js
 // Mock ResizeObserver for tabs and other components
