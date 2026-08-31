@@ -149,7 +149,7 @@ const BUILT_IN_RULES = {
 		if (!target) return { valid: true };
 
 		const targetValue = target.type === 'checkbox' || target.type === 'radio'
-			? target.checked
+			? (target.checked ? 'checked' : 'unchecked')
 			: target.value;
 
 		const label = target.labels?.[0]?.textContent || targetId;
@@ -737,7 +737,7 @@ export class Form {
 			const target = document.getElementById(targetId);
 			if (target) {
 				const targetValue = target.type === 'checkbox' || target.type === 'radio'
-					? target.checked
+					? (target.checked ? 'checked' : 'unchecked')
 					: target.value;
 				if (expectedValue !== undefined) {
 					if (String(targetValue) !== expectedValue) return false;
@@ -753,7 +753,7 @@ export class Form {
 			const target = document.getElementById(targetId);
 			if (target) {
 				const targetValue = target.type === 'checkbox' || target.type === 'radio'
-					? target.checked
+					? (target.checked ? 'checked' : 'unchecked')
 					: target.value;
 				if (expectedValue !== undefined) {
 					if (String(targetValue) === expectedValue) return false;
@@ -827,6 +827,13 @@ export class Form {
         <span class="form__progress__text">0%</span>
       `;
 			this.element.insertBefore(progressEl, this.element.firstChild);
+		} else {
+			if (!progressEl.hasAttribute('role')) {
+				progressEl.setAttribute('role', 'progressbar');
+				progressEl.setAttribute('aria-valuemin', '0');
+				progressEl.setAttribute('aria-valuemax', '100');
+				progressEl.setAttribute('aria-valuenow', '0');
+			}
 		}
 
 		this._updateProgress();
@@ -1367,7 +1374,7 @@ export class Form {
 		// 2. Data-attribute rules
 		if (isValid) {
 			for (const [ruleName, validator] of Object.entries(BUILT_IN_RULES)) {
-				const attrName = `data-validate-${ruleName}`;
+				const attrName = `data-validate-${ruleName.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}`;
 				if (field.hasAttribute(attrName)) {
 					const param = field.getAttribute(attrName);
 					const result = validator(value, field, param);
@@ -1703,8 +1710,8 @@ export class Form {
 	 * @private
 	 */
 	_enforceMaxlength(field) {
-		const max = field.dataset.maxlength || field.maxLength;
-		if (!max || max === '-1') return;
+		const max = field.dataset.maxlength;
+		if (!max) return;
 
 		const limit = parseInt(max, 10);
 		if (field.value.length > limit) {

@@ -56,8 +56,10 @@ export class PasswordStrength {
 			this._initIndicator();
 		}
 
-		// Initial check
-		this._handleInput();
+		// Initial check — skip empty field to avoid "Too weak" on load
+		if (field.value) {
+			this._handleInput();
+		}
 	}
 
 	// ================================

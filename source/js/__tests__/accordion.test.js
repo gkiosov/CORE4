@@ -4,6 +4,12 @@
 
 import { Accordion, initAccordions } from '../modules/accordion/_accordion.js';
 
+function flushTransition(item) {
+    const event = new Event('transitionend', { bubbles: true });
+    Object.defineProperty(event, 'propertyName', { value: 'height' });
+    item.content.dispatchEvent(event);
+}
+
 describe('Accordion', () => {
     beforeEach(() => {
         document.body.innerHTML = '';
@@ -32,7 +38,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         expect(accordion.items.length).toBe(3);
         expect(accordion.items[0].header.textContent).toBe('Header 1');
     });
@@ -41,7 +46,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         new Accordion(el);
-
         const headers = el.querySelectorAll('[data-accordion-header]');
         headers.forEach(header => {
             expect(header.getAttribute('aria-expanded')).toBe('false');
@@ -53,7 +57,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.open(0);
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(true);
         expect(accordion.items[0].header.getAttribute('aria-expanded')).toBe('true');
@@ -63,7 +66,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.open(0);
         accordion.close(0, true);
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(false);
@@ -74,11 +76,10 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.toggle(0);
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(true);
-
         accordion.toggle(0);
+        flushTransition(accordion.items[0]);
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(false);
     });
 
@@ -86,10 +87,9 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.open(0);
         accordion.open(1);
-
+        flushTransition(accordion.items[0]);
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(false);
         expect(accordion.items[1].item.classList.contains('is-open')).toBe(true);
     });
@@ -98,10 +98,8 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML(true);
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.open(0);
         accordion.open(1);
-
         expect(accordion.items[0].item.classList.contains('is-open')).toBe(true);
         expect(accordion.items[1].item.classList.contains('is-open')).toBe(true);
     });
@@ -110,7 +108,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.expandAll();
         accordion.items.forEach(item => {
             expect(item.item.classList.contains('is-open')).toBe(true);
@@ -122,7 +119,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.expandAll();
         accordion.collapseAll(true);
         accordion.items.forEach(item => {
@@ -135,7 +131,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         new Accordion(el);
-
         const header = el.querySelector('[data-accordion-header]');
         header.click();
         expect(header.closest('[data-accordion-item]').classList.contains('is-open')).toBe(true);
@@ -145,11 +140,9 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         new Accordion(el);
-
         const header = el.querySelector('[data-accordion-header]');
         const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
         Object.defineProperty(event, 'preventDefault', { value: jest.fn() });
-
         header.dispatchEvent(event);
         expect(header.closest('[data-accordion-item]').classList.contains('is-open')).toBe(true);
     });
@@ -158,7 +151,6 @@ describe('Accordion', () => {
         document.body.innerHTML = createAccordionHTML();
         const el = document.querySelector('[data-accordion]');
         const accordion = new Accordion(el);
-
         accordion.destroy();
         expect(accordion.items.length).toBe(0);
     });

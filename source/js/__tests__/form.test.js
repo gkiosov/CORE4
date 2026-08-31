@@ -218,12 +218,12 @@ describe('Wizard', () => {
         expect(wizard.getCurrentStep()).toBe(0);
     });
 
-    test('goToStep navigates to specific step', () => {
+    test('goToStep navigates to specific step', async () => {
         document.body.innerHTML = createWizardHTML();
         const el = document.getElementById('test-wizard');
         const wizard = new Wizard(el);
 
-        wizard.goToStep(2);
+        await wizard.goToStep(2);
         expect(wizard.getCurrentStep()).toBe(2);
     });
 

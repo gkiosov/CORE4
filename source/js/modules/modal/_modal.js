@@ -240,6 +240,14 @@ export class Modal {
 			this.element.addEventListener('click', this._handlers.overlayClick);
 		}
 
+		// Escape key
+		if (this.options.closeOnEscape) {
+			this._handlers.escape = (e) => {
+				if (e.key === 'Escape') this.close();
+			};
+			document.addEventListener('keydown', this._handlers.escape);
+		}
+
 		// Touch swipe-down to close (mobile)
 		this._handlers.touchStart = (e) => this._onTouchStart(e);
 		this._handlers.touchMove = (e) => this._onTouchMove(e);
@@ -460,6 +468,12 @@ export class Modal {
 		if (this._handlers.overlayClick) {
 			this.element.removeEventListener('click', this._handlers.overlayClick);
 			this._handlers.overlayClick = null;
+		}
+
+		// Escape key cleanup
+		if (this._handlers.escape) {
+			document.removeEventListener('keydown', this._handlers.escape);
+			this._handlers.escape = null;
 		}
 
 		if (this._handlers.touchStart) {

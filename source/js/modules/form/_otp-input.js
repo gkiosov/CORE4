@@ -43,7 +43,7 @@ export class OtpInput {
 			for (let i = 0; i < this.length; i++) {
 				const input = document.createElement('input');
 				input.type = 'text';
-				input.className = 'form__otp__digit';
+				input.className = 'form__otp__digit form__input';
 				input.maxLength = 1;
 				input.inputMode = 'numeric';
 				input.pattern = '[0-9]*';
