@@ -223,6 +223,9 @@ describe('Wizard', () => {
         const el = document.getElementById('test-wizard');
         const wizard = new Wizard(el);
 
+        el.querySelector('input[name="field1"]').value = 'test';
+        await wizard.next();
+        await wizard.next();
         await wizard.goToStep(2);
         expect(wizard.getCurrentStep()).toBe(2);
     });
