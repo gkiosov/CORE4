@@ -1235,3 +1235,22 @@ fieldset.is-valid {
 		}
 	}
 }
+
+// ==========================================
+// 21. OTP fields
+// ==========================================
+
+.form__otp {
+	display: flex;
+	gap: 8px;
+
+	&__digit {
+		width: 48px;
+		height: 56px;
+		text-align: center;
+		font-size: 1.5rem;
+		font-weight: 600;
+		letter-spacing: 0;
+		padding: 0;
+	}
+}

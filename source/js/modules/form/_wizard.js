@@ -163,6 +163,7 @@ export class Wizard {
 	_showStep(index) {
 		this.steps.forEach((step, i) => {
 			toggleClass(step, this.options.activeClass, i === index);
+			step.hidden = (i !== index);
 			step.setAttribute('aria-hidden', String(i !== index));
 		});
 
